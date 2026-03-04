@@ -5,22 +5,22 @@
 @layer base {
   :root {
     --background: 15 53% 5%;
-    --foreground: 0 0% 100%;
+    --foreground: 40 20% 95%;
 
-    --card: 15 53% 7%;
-    --card-foreground: 0 0% 100%;
+    --card: 15 30% 8%;
+    --card-foreground: 40 20% 95%;
 
-    --popover: 15 53% 7%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 15 30% 8%;
+    --popover-foreground: 40 20% 95%;
 
     --primary: 44 98% 44%;
     --primary-foreground: 15 53% 5%;
 
-    --secondary: 15 20% 12%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 15 15% 12%;
+    --secondary-foreground: 40 20% 95%;
 
     --muted: 15 10% 15%;
-    --muted-foreground: 30 10% 60%;
+    --muted-foreground: 30 10% 55%;
 
     --accent: 44 98% 44%;
     --accent-foreground: 15 53% 5%;
@@ -28,11 +28,11 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 100% / 0.1;
-    --input: 0 0% 100% / 0.1;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 100% / 0.08;
     --ring: 44 98% 44%;
 
-    --radius: 0.5rem;
+    --radius: 0.25rem;
 
     --sidebar-background: 15 53% 5%;
     --sidebar-foreground: 0 0% 100%;
@@ -40,7 +40,7 @@
     --sidebar-primary-foreground: 15 53% 5%;
     --sidebar-accent: 15 20% 12%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100% / 0.1;
+    --sidebar-border: 0 0% 100% / 0.08;
     --sidebar-ring: 44 98% 44%;
   }
 }
@@ -59,22 +59,52 @@
   }
 }
 
-@layer utilities {
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-yellow-400;
-  }
-}
-
-/* Marquee animation */
+/* Marquee */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 40s linear infinite;
 }
 
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Film grain overlay */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  30% { transform: translate(3%, -15%); }
+  50% { transform: translate(12%, 9%); }
+  70% { transform: translate(9%, 4%); }
+  90% { transform: translate(-1%, 7%); }
+}
+
+.film-grain::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Cinematic letterbox bars */
+.letterbox::before,
+.letterbox::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8%;
+  background: hsl(var(--background));
+  z-index: 5;
+}
+.letterbox::before { top: 0; }
+.letterbox::after { bottom: 0; }
