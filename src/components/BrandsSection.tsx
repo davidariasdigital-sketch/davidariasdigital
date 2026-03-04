@@ -9,84 +9,90 @@ const BrandsSection = () => {
 
   return (
     <>
-      <section className="py-32 md:py-40 px-8 md:px-12">
-        <div className="max-w-[1200px] mx-auto">
+      <section className="py-28 md:py-40 px-6 md:px-12 relative">
+        <div className="orb w-[400px] h-[400px] bg-primary/15 top-1/3 right-0 float-slow" />
+
+        <div className="max-w-5xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="mb-16"
+            className="text-center mb-16"
           >
-            <p className="text-[10px] tracking-[0.4em] uppercase text-primary font-medium mb-3">
+            <span className="glass-subtle rounded-full px-4 py-1.5 text-[11px] font-medium text-primary inline-block mb-6">
               Proyectos Propios
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
               Mis Marcas
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* SOLAR */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative aspect-[4/5] overflow-hidden group"
+              transition={{ duration: 0.7 }}
+              className="glass-card overflow-hidden group hover:scale-[1.01] transition-transform duration-500"
             >
-              <img
-                src={brandSolar}
-                alt="SOLAR Productora"
-                className="absolute inset-0 w-full h-full object-cover brightness-[0.25] group-hover:brightness-[0.35] group-hover:scale-[1.03] transition-all duration-700"
-              />
-              <div className="relative z-10 p-10 md:p-14 flex flex-col justify-end h-full">
-                <Film size={24} className="text-primary/70 mb-6" />
-                <h3 className="text-5xl md:text-6xl font-black tracking-tight text-foreground">
-                  SOLAR
-                </h3>
-                <p className="mt-4 text-muted-foreground text-[13px] leading-[1.7] max-w-xs">
-                  Productora de videoclips musicales. Creamos universos visuales
-                  únicos para artistas.
+              <div className="relative aspect-[4/3] overflow-hidden rounded-t-[calc(var(--radius)-1px)]">
+                <img
+                  src={brandSolar}
+                  alt="SOLAR Productora"
+                  className="w-full h-full object-cover brightness-[0.4] group-hover:brightness-[0.55] group-hover:scale-105 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <Film size={20} className="text-primary mb-3" />
+                  <h3 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">SOLAR</h3>
+                </div>
+              </div>
+              <div className="p-6 pt-4">
+                <p className="text-foreground/40 text-[13px] leading-relaxed">
+                  Productora de videoclips musicales. Creamos universos visuales únicos para artistas.
                 </p>
                 <button
                   onClick={() => setVideoOpen(true)}
-                  className="mt-8 inline-flex items-center gap-3 bg-primary text-primary-foreground font-semibold text-[11px] tracking-[0.2em] uppercase px-7 py-3.5 w-fit hover:brightness-110 transition-all duration-500"
+                  className="mt-5 inline-flex items-center gap-2 bg-primary text-primary-foreground font-semibold text-[12px] px-5 py-2.5 rounded-xl hover:brightness-110 hover:shadow-[0_0_30px_-8px_hsl(var(--primary)/0.4)] transition-all duration-300"
                 >
-                  Ver Reel <Play size={12} />
+                  Ver Reel <Play size={13} />
                 </button>
               </div>
             </motion.div>
 
             {/* InHub */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative aspect-[4/5] overflow-hidden group"
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="glass-card overflow-hidden group hover:scale-[1.01] transition-transform duration-500"
             >
-              <img
-                src={brandInhub}
-                alt="InHub Agencia"
-                className="absolute inset-0 w-full h-full object-cover brightness-[0.25] group-hover:brightness-[0.35] group-hover:scale-[1.03] transition-all duration-700"
-              />
-              <div className="relative z-10 p-10 md:p-14 flex flex-col justify-end h-full">
-                <Smartphone size={24} className="text-primary/70 mb-6" />
-                <h3 className="text-5xl md:text-6xl font-black tracking-tight text-foreground">
-                  InHub
-                </h3>
-                <p className="mt-4 text-muted-foreground text-[13px] leading-[1.7] max-w-xs">
-                  Agencia de creación de contenido publicitario potenciado con
-                  Inteligencia Artificial.
+              <div className="relative aspect-[4/3] overflow-hidden rounded-t-[calc(var(--radius)-1px)]">
+                <img
+                  src={brandInhub}
+                  alt="InHub Agencia"
+                  className="w-full h-full object-cover brightness-[0.4] group-hover:brightness-[0.55] group-hover:scale-105 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <Smartphone size={20} className="text-primary mb-3" />
+                  <h3 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">InHub</h3>
+                </div>
+              </div>
+              <div className="p-6 pt-4">
+                <p className="text-foreground/40 text-[13px] leading-relaxed">
+                  Agencia de creación de contenido publicitario potenciado con Inteligencia Artificial.
                 </p>
                 <a
                   href="https://wa.me/573108781633?text=Hola%2C%20me%20interesa%20cotizar%20un%20proyecto%20con%20InHub."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-8 inline-flex items-center gap-3 border border-foreground/15 text-foreground/80 hover:text-foreground hover:border-foreground/40 font-medium text-[11px] tracking-[0.2em] uppercase px-7 py-3.5 w-fit transition-all duration-500"
+                  className="mt-5 inline-flex items-center gap-2 glass font-medium text-[12px] text-foreground/70 hover:text-foreground px-5 py-2.5 rounded-xl hover:scale-[1.02] transition-all duration-300"
                 >
-                  Cotizar Proyecto <MessageCircle size={12} />
+                  Cotizar Proyecto <MessageCircle size={13} />
                 </a>
               </div>
             </motion.div>
@@ -101,31 +107,32 @@ const BrandsSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[100] bg-background/97 flex items-center justify-center p-6"
+            className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-xl flex items-center justify-center p-6"
             onClick={() => setVideoOpen(false)}
           >
             <button
               onClick={() => setVideoOpen(false)}
-              className="absolute top-8 right-8 text-foreground/40 hover:text-foreground transition-colors z-10"
+              className="absolute top-6 right-6 glass-subtle rounded-full p-2 text-foreground/40 hover:text-foreground transition-colors z-10"
             >
-              <X size={28} />
+              <X size={20} />
             </button>
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-5xl aspect-video"
+              className="w-full max-w-5xl glass-card p-2 md:p-3"
               onClick={(e) => e.stopPropagation()}
             >
-              <iframe
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                title="SOLAR Reel"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+              <div className="aspect-video rounded-[calc(var(--radius)-0.5rem)] overflow-hidden">
+                <iframe
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                  title="SOLAR Reel"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
             </motion.div>
           </motion.div>
         )}
