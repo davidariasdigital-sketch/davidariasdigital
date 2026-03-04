@@ -1,34 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Sobre Mí", href: "#sobre-mí" },
   { label: "Reel", href: "#reel" },
+  { label: "Servicios", href: "#servicios" },
   { label: "Contacto", href: "#contacto" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <motion.nav
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1, delay: 0.5 }}
-      className="fixed top-0 left-0 w-full z-50 mix-blend-difference"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-700 rounded-2xl ${
+        scrolled ? "glass" : "bg-transparent"
+      }`}
     >
-      <div className="max-w-[1400px] mx-auto px-8 md:px-12 py-6 flex items-center justify-between">
-        <a href="#inicio" className="text-xl font-bold tracking-[0.15em] text-foreground">
-          DA<span className="text-xs align-super">®</span>
+      <div className="px-6 py-4 flex items-center justify-between">
+        <a href="#inicio" className="text-lg font-bold tracking-[0.1em] text-foreground">
+          DA<span className="text-[10px] align-super text-primary">®</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-12">
+        <div className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="text-[11px] font-medium tracking-[0.25em] uppercase text-foreground/70 hover:text-foreground transition-colors duration-500"
+              className="text-[12px] font-medium tracking-wide text-foreground/60 hover:text-foreground px-4 py-2 rounded-xl hover:bg-foreground/5 transition-all duration-300"
             >
               {item.label}
             </a>
@@ -37,17 +47,17 @@ const Navbar = () => {
 
         <a
           href="#contacto"
-          className="hidden md:inline-flex text-[11px] font-medium tracking-[0.25em] uppercase border border-foreground/20 px-7 py-2.5 text-foreground/70 hover:text-foreground hover:border-foreground/50 transition-all duration-500"
+          className="hidden md:inline-flex text-[12px] font-semibold tracking-wide bg-primary text-primary-foreground px-5 py-2 rounded-xl hover:brightness-110 transition-all duration-300"
         >
           Hablemos
         </a>
 
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground"
+          className="md:hidden text-foreground/70"
           aria-label="Menú"
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
@@ -57,15 +67,15 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden overflow-hidden bg-background/95 backdrop-blur-xl border-t border-foreground/5"
+            className="md:hidden overflow-hidden"
           >
-            <div className="px-8 py-10 flex flex-col gap-6">
+            <div className="px-6 pb-5 flex flex-col gap-1">
               {navItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="text-[11px] font-medium tracking-[0.25em] uppercase text-foreground/70 hover:text-foreground transition-colors"
+                  className="text-[13px] font-medium text-foreground/60 hover:text-foreground px-4 py-3 rounded-xl hover:bg-foreground/5 transition-all"
                 >
                   {item.label}
                 </a>
@@ -73,7 +83,7 @@ const Navbar = () => {
               <a
                 href="#contacto"
                 onClick={() => setOpen(false)}
-                className="text-[11px] font-medium tracking-[0.25em] uppercase border border-foreground/20 px-7 py-3 text-foreground/70 text-center hover:text-foreground transition-all"
+                className="text-[13px] font-semibold bg-primary text-primary-foreground px-4 py-3 rounded-xl text-center mt-2"
               >
                 Hablemos
               </a>
