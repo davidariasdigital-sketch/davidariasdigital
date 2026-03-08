@@ -24,6 +24,41 @@ interface Client {
   created_at: string;
 }
 
+const ICON_MAP: Record<string, typeof User> = {
+  "La Pescadería": UtensilsCrossed, "Angus Burguer": UtensilsCrossed,
+  "Restaurante 1975": UtensilsCrossed, "Jazz Café": Coffee, "La Cava": Coffee,
+  "Hair Beauty": Scissors, "Salon IN": Scissors, "Kimeline": Scissors,
+  "Epioné": Heart, "Dermocorea": Heart, "Vitane": Heart, "Deopies": Heart,
+  "Nutricionista Natalia Valencia": Heart, "Aromasense": Sparkles,
+  "Luminance": Sparkles, "Iluminata": Sparkles, "Self": Sparkles,
+  "Recamier Corp": Sparkles, "Coloriss": Palette, "Rombo Quadrado": Palette,
+  "Greencode": Leaf, "Palmetto": Leaf, "Uva de lujo": Leaf,
+  "Suarez Abogados": Scale, "Comité Olímpico": Dumbbell,
+  "Joykeys": Music, "Resonance": Music, "Muss": Music, "Follies": Music,
+  "Tanga": ShoppingBag, "Nize": ShoppingBag, "Ruuts": ShoppingBag,
+  "Sra Buenaventura": Star, "Shibumi": Star, "Atavico": Star,
+  "Hunts": Store, "TQ": Briefcase, "Yanko": Briefcase, "Satillos": Store,
+  "Impocali": Building2, "Whitman": Briefcase, "Michelangelo": UtensilsCrossed,
+  "El Cortijo": UtensilsCrossed,
+};
+
+const COLORS = [
+  "bg-primary/15 text-primary",
+  "bg-amber-500/15 text-amber-600",
+  "bg-emerald-500/15 text-emerald-600",
+  "bg-rose-500/15 text-rose-600",
+  "bg-violet-500/15 text-violet-600",
+  "bg-sky-500/15 text-sky-600",
+  "bg-orange-500/15 text-orange-600",
+];
+
+const getClientIcon = (name: string) => ICON_MAP[name] || User;
+const getClientColor = (name: string) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return COLORS[Math.abs(hash) % COLORS.length];
+};
+
 const ClientsView = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState("");
