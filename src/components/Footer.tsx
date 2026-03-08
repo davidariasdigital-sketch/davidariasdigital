@@ -66,16 +66,6 @@ const Footer = () => {
           })}
         </motion.div>
 
-        {/* Big type */}
-        <div className="text-center mb-12">
-          <h2 className="text-[clamp(3rem,8vw,6rem)] font-black leading-[0.85] tracking-tight">
-            <span className="text-foreground/[0.06]">DIGITAL</span>
-          </h2>
-          <h2 className="text-[clamp(3rem,8vw,6rem)] font-black leading-[0.85] tracking-tight">
-            <span className="text-primary/20">CRAFTSMAN</span>
-          </h2>
-        </div>
-
         {/* Copyright */}
         <div className="pt-6 border-t border-border text-center">
           <p className="text-muted-foreground/60 text-[11px] tracking-wider">
