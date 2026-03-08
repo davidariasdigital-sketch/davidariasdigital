@@ -8,10 +8,11 @@ import ClientsView from "@/components/dashboard/ClientsView";
 import QuotationsView from "@/components/dashboard/QuotationsView";
 import TasksView from "@/components/dashboard/TasksView";
 import InvoicesView from "@/components/dashboard/InvoicesView";
+import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import { motion } from "framer-motion";
 import { LogOut } from "lucide-react";
 
-type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
+type View = "overview" | "clients" | "quotations" | "tasks" | "invoices" | "content-planner";
 
 const viewLabels: Record<View, string> = {
   overview: "Resumen",
@@ -19,6 +20,7 @@ const viewLabels: Record<View, string> = {
   quotations: "Cotizaciones",
   tasks: "Tareas",
   invoices: "Cuentas por Cobrar",
+  "content-planner": "Planeador de Contenido",
 };
 
 const Dashboard = () => {
@@ -63,6 +65,7 @@ const Dashboard = () => {
       case "quotations": return <QuotationsView />;
       case "tasks": return <TasksView />;
       case "invoices": return <InvoicesView />;
+      case "content-planner": return <ContentPlannerView />;
     }
   };
 

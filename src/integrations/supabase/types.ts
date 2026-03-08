@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      content_items: {
+        Row: {
+          column_index: number
+          created_at: string
+          id: string
+          is_idea: boolean
+          month: string
+          row_index: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          column_index?: number
+          created_at?: string
+          id?: string
+          is_idea?: boolean
+          month: string
+          row_index?: number
+          title?: string
+          user_id: string
+        }
+        Update: {
+          column_index?: number
+          created_at?: string
+          id?: string
+          is_idea?: boolean
+          month?: string
+          row_index?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           client_id: string | null
