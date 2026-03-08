@@ -52,6 +52,7 @@ const QuotationsView = () => {
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [showAI, setShowAI] = useState(false);
   const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
+  const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
