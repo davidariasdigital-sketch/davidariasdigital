@@ -35,10 +35,10 @@
     --radius: 1.5rem;
 
     /* Neumorphic tokens */
-    --neu-shadow-light: 0 0% 100%;
-    --neu-shadow-dark: 220 15% 88%;
-    --neu-bg: 30 15% 96%;
-    --neu-inset: 0 0% 100% / 0.7;
+    --neu-shadow-light: 0 0% 15%;
+    --neu-shadow-dark: 0 0% 2%;
+    --neu-bg: 0 0% 6%;
+    --neu-inset: 0 0% 20% / 0.3;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 20% 14%;
