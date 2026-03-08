@@ -19,7 +19,7 @@ const ServicesSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="servicios" className="py-28 md:py-40 px-6 md:px-12 relative">
+    <section id="servicios" className="py-16 md:py-24 px-6 md:px-12 relative">
       <div className="blob w-[500px] h-[500px] bg-pink-300/15 bottom-0 left-0 float-slower" />
 
       <div className="max-w-4xl mx-auto relative z-10">
