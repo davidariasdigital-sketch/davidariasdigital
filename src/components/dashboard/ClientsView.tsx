@@ -130,20 +130,30 @@ const ClientsView = () => {
         </form>
       )}
 
-      <div className="space-y-3">
-        {filtered.map((c) => (
-          <div key={c.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-foreground text-sm">{c.name}</p>
-              <p className="text-xs text-muted-foreground">{[c.company, c.email].filter(Boolean).join(" · ")}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+        {filtered.map((c) => {
+          const Icon = getClientIcon(c.name);
+          const color = getClientColor(c.name);
+          return (
+            <div
+              key={c.id}
+              className="liquid-glass rounded-[var(--radius)] aspect-square p-4 flex flex-col items-center justify-center text-center relative group hover:scale-[1.02] transition-transform"
+            >
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleEdit(c)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/50"><Edit2 size={12} /></button>
+                <button onClick={() => handleDelete(c.id)} className="text-muted-foreground hover:text-destructive p-1 rounded-lg hover:bg-destructive/10"><Trash2 size={12} /></button>
+              </div>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 ${color}`}>
+                <Icon size={22} className="text-inherit" />
+              </div>
+              <p className="font-semibold text-foreground text-xs leading-tight line-clamp-2">{c.name}</p>
+              {c.company && <p className="text-[10px] text-muted-foreground mt-1 truncate w-full">{c.company}</p>}
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => handleEdit(c)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(c.id)} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/10"><Trash2 size={14} /></button>
-            </div>
-          </div>
-        ))}
-        {filtered.length === 0 && <p className="text-center text-muted-foreground text-sm py-8">No hay clientes aún</p>}
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center text-muted-foreground text-sm py-8">No hay clientes aún</div>
+        )}
       </div>
     </div>
   );
