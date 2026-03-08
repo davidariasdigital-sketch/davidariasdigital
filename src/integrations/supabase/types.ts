@@ -107,6 +107,7 @@ export type Database = {
       quotations: {
         Row: {
           client_id: string | null
+          conditions: Json
           created_at: string
           description: string | null
           id: string
@@ -118,6 +119,7 @@ export type Database = {
         }
         Insert: {
           client_id?: string | null
+          conditions?: Json
           created_at?: string
           description?: string | null
           id?: string
@@ -129,6 +131,7 @@ export type Database = {
         }
         Update: {
           client_id?: string | null
+          conditions?: Json
           created_at?: string
           description?: string | null
           id?: string

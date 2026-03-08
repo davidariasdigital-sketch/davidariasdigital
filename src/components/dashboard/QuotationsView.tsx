@@ -19,7 +19,17 @@ interface Quotation {
   client_id: string | null;
   created_at: string;
   clients?: { name: string } | null;
+  conditions?: string[];
 }
+
+const DEFAULT_CONDITIONS = [
+  "Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.",
+  "La entrega del contenido total editado se coordina directamente con el cliente.",
+  "Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.",
+  "Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.",
+  "Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.",
+  "Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.",
+];
 
 interface Client {
   id: string;
@@ -42,6 +52,7 @@ const QuotationsView = () => {
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [showAI, setShowAI] = useState(false);
   const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
+  const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -66,6 +77,7 @@ const QuotationsView = () => {
     }
 
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+    const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
     const payload = {
       title: form.title,
       description: form.description || null,
@@ -73,12 +85,13 @@ const QuotationsView = () => {
       status: form.status as any,
       items: items as any,
       total,
+      conditions: conditions as any,
       user_id: user.id,
     };
 
     if (editing) {
       const { user_id, ...updatePayload } = payload;
-      const { error } = await supabase.from("quotations").update(updatePayload).eq("id", editing.id);
+      const { error } = await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
       if (error) console.error("Update error:", error);
     } else {
       const { error } = await supabase.from("quotations").insert(payload);
@@ -91,6 +104,7 @@ const QuotationsView = () => {
   const resetForm = () => {
     setForm({ title: "", description: "", client_id: "", status: "borrador" });
     setItems([{ description: "", amount: 0 }]);
+    setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setShowForm(false);
     setEditing(null);
   };
@@ -99,6 +113,9 @@ const QuotationsView = () => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status });
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
+    // Restore selected conditions from saved data
+    const savedConditions = (q.conditions as string[]) ?? [];
+    setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     setShowForm(true);
   };
 
@@ -180,6 +197,25 @@ const QuotationsView = () => {
               </div>
             ))}
             <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary hover:underline">+ Agregar concepto</button>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condiciones del PDF</p>
+            {DEFAULT_CONDITIONS.map((condition, i) => (
+              <label key={i} className="flex items-start gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedConditions[i]}
+                  onChange={() => {
+                    const n = [...selectedConditions];
+                    n[i] = !n[i];
+                    setSelectedConditions(n);
+                  }}
+                  className="mt-0.5 accent-primary"
+                />
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{condition}</span>
+              </label>
+            ))}
           </div>
 
           <div className="flex items-center justify-between">
