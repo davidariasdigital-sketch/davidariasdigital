@@ -6,6 +6,7 @@ import ServicesSection from "@/components/ServicesSection";
 import BrandsSection from "@/components/BrandsSection";
 import BrandsShowcase from "@/components/BrandsShowcase";
 import Footer from "@/components/Footer";
+import ElevenLabsWidget from "@/components/ElevenLabsWidget";
 
 const Index = () => {
   return (
@@ -18,6 +19,7 @@ const Index = () => {
       <ServicesSection />
       <BrandsSection />
       <Footer />
+      <ElevenLabsWidget />
     </div>
   );
 };
