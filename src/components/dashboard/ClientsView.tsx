@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Trash2, Edit2, X, Upload } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, X, Upload, User, Building2, UtensilsCrossed, Scissors, Heart, Scale, Music, Sparkles, Leaf, ShoppingBag, Dumbbell, Coffee, Palette, Star, Briefcase, Store } from "lucide-react";
 import { toast } from "sonner";
 
 const BRAND_CLIENTS = [
