@@ -1,0 +1,1 @@
+ALTER TABLE public.quotations ADD COLUMN conditions jsonb NOT NULL DEFAULT '[]'::jsonb;
