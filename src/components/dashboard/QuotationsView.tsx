@@ -239,7 +239,10 @@ const QuotationsView = () => {
           <div key={q.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold text-foreground text-sm">{q.title}</p>
-              <p className="text-xs text-muted-foreground">{q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">
+                {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
+                {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-semibold px-3 py-1 rounded-full border-0 focus:outline-none ${statusColors[q.status] ?? ""}`}>
