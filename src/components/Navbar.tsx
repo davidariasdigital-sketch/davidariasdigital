@@ -20,14 +20,15 @@ const Navbar = () => {
   }, []);
 
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
-      className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl transition-all duration-700 rounded-full ${
-        scrolled ? "liquid-glass-rainbow" : "bg-transparent"
-      }`}
-    >
+    <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className={`w-full max-w-4xl transition-all duration-700 rounded-full ${
+          scrolled ? "liquid-glass-rainbow" : "bg-transparent"
+        }`}
+      >
       <div className="px-6 py-3 flex items-center justify-between">
         <a href="#inicio" className="text-lg font-extrabold tracking-[0.08em] text-foreground">
           DA<span className="text-[10px] align-super text-primary">®</span>
@@ -91,7 +92,8 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+      </motion.nav>
+    </div>
   );
 };
 
