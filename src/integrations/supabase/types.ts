@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           column_index: number
           created_at: string
+          format: string | null
           id: string
           is_idea: boolean
           month: string
@@ -61,6 +62,7 @@ export type Database = {
         Insert: {
           column_index?: number
           created_at?: string
+          format?: string | null
           id?: string
           is_idea?: boolean
           month: string
@@ -71,6 +73,7 @@ export type Database = {
         Update: {
           column_index?: number
           created_at?: string
+          format?: string | null
           id?: string
           is_idea?: boolean
           month?: string
