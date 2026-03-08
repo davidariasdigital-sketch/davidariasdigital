@@ -20,7 +20,7 @@ const Footer = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="neu-card p-10 md:p-16 text-center mb-20 glow-soft"
+          className="liquid-glass-rainbow rounded-[var(--radius)] p-10 md:p-16 text-center mb-20 glow-soft"
         >
           <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-4">
             Creemos algo
@@ -57,7 +57,7 @@ const Footer = () => {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="neu-card rounded-full px-5 py-3 flex items-center gap-3 text-muted-foreground hover:text-primary text-[12px] font-medium transition-all duration-300 hover:scale-[1.03]"
+                className="liquid-btn rounded-full px-5 py-3 flex items-center gap-3 text-muted-foreground hover:text-primary text-[12px] font-medium"
               >
                 <Icon size={14} />
                 {link.label}

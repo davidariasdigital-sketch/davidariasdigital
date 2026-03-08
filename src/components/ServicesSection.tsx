@@ -30,7 +30,9 @@ const ServicesSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <span className="pill-badge mb-6">Inversión aproximada</span>
+          <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
+            Inversión aproximada
+          </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground text-balance">
             Servicios e Inversión
           </h2>
@@ -49,7 +51,7 @@ const ServicesSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.04 }}
-                className="neu-card overflow-hidden hover:scale-[1.005] transition-transform duration-300"
+                className="liquid-glass rounded-[var(--radius)] overflow-hidden hover:scale-[1.005] transition-transform duration-300"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}

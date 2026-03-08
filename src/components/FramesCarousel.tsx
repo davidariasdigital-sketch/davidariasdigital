@@ -23,7 +23,9 @@ const FramesCarousel = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <span className="pill-badge mb-6">Destacados Visuales</span>
+          <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
+            Destacados Visuales
+          </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
             Frames Seleccionados
           </h2>
@@ -32,11 +34,8 @@ const FramesCarousel = () => {
 
       <div className="animate-marquee flex gap-5 w-max px-4">
         {doubled.map((src, i) => (
-          <div
-            key={i}
-            className="w-[340px] md:w-[480px] shrink-0 group"
-          >
-            <div className="neu-card p-2 overflow-hidden hover:scale-[1.02] transition-transform duration-500">
+          <div key={i} className="w-[340px] md:w-[480px] shrink-0 group">
+            <div className="liquid-glass rounded-[var(--radius)] p-2 overflow-hidden hover:scale-[1.02] transition-transform duration-500">
               <div className="aspect-video rounded-[calc(var(--radius)-8px)] overflow-hidden">
                 <img
                   src={src}

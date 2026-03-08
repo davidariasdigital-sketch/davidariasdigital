@@ -20,7 +20,9 @@ const BrandsSection = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <span className="pill-badge mb-6">Proyectos Propios</span>
+            <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
+              Proyectos Propios
+            </span>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
               Mis Marcas
             </h2>
@@ -33,7 +35,7 @@ const BrandsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
-              className="neu-card overflow-hidden group hover:scale-[1.02] transition-transform duration-500"
+              className="liquid-glass-rainbow rounded-[var(--radius)] overflow-hidden group hover:scale-[1.02] transition-transform duration-500"
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-t-[calc(var(--radius)-1px)]">
                 <img
@@ -66,7 +68,7 @@ const BrandsSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="neu-card overflow-hidden group hover:scale-[1.02] transition-transform duration-500"
+              className="liquid-glass-rainbow rounded-[var(--radius)] overflow-hidden group hover:scale-[1.02] transition-transform duration-500"
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-t-[calc(var(--radius)-1px)]">
                 <img
@@ -88,7 +90,7 @@ const BrandsSection = () => {
                   href="https://wa.me/573108781633?text=Hola%2C%20me%20interesa%20cotizar%20un%20proyecto%20con%20InHub."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center gap-2 neu-card font-semibold text-[12px] text-muted-foreground hover:text-foreground px-6 py-2.5 rounded-full hover:scale-[1.03] transition-all duration-300"
+                  className="mt-5 inline-flex items-center gap-2 liquid-btn font-semibold text-[12px] text-muted-foreground hover:text-foreground px-6 py-2.5 rounded-full"
                 >
                   Cotizar Proyecto <MessageCircle size={13} />
                 </a>
@@ -105,12 +107,12 @@ const BrandsSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-foreground/30 backdrop-blur-2xl flex items-center justify-center p-6"
+            className="fixed inset-0 z-[100] bg-foreground/20 backdrop-blur-2xl flex items-center justify-center p-6"
             onClick={() => setVideoOpen(false)}
           >
             <button
               onClick={() => setVideoOpen(false)}
-              className="absolute top-6 right-6 neu-card p-3 rounded-full text-muted-foreground hover:text-foreground transition-colors z-10"
+              className="absolute top-6 right-6 liquid-glass p-3 rounded-full text-muted-foreground hover:text-foreground transition-colors z-10"
             >
               <X size={20} />
             </button>
@@ -119,7 +121,7 @@ const BrandsSection = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-5xl neu-card p-3 md:p-4"
+              className="w-full max-w-5xl liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="aspect-video rounded-[calc(var(--radius)-8px)] overflow-hidden">
