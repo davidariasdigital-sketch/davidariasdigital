@@ -38,7 +38,7 @@ const Navbar = () => {
             <a
               key={item.label}
               href={item.href}
-              className="text-[12px] font-medium tracking-wide text-muted-foreground hover:text-foreground px-4 py-2 rounded-full hover:bg-secondary/60 transition-all duration-300"
+              className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
             >
               {item.label}
             </a>
@@ -47,7 +47,7 @@ const Navbar = () => {
 
         <a
           href="#contacto"
-          className="hidden md:inline-flex text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-lg hover:scale-[1.03] transition-all duration-300"
+          className="hidden md:inline-flex text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
         >
           Hablemos
         </a>
@@ -75,7 +75,7 @@ const Navbar = () => {
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="text-[13px] font-medium text-muted-foreground hover:text-foreground px-4 py-3 rounded-2xl hover:bg-secondary/60 transition-all"
+                  className="text-[13px] font-medium text-foreground/50 hover:text-foreground px-4 py-3 rounded-2xl hover:bg-foreground/5 transition-all"
                 >
                   {item.label}
                 </a>
