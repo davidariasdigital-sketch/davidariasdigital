@@ -86,6 +86,7 @@ const QuotationsView = () => {
       items: items as any,
       total,
       conditions: conditions as any,
+      delivery_date: form.delivery_date || null,
       user_id: user.id,
     };
 
