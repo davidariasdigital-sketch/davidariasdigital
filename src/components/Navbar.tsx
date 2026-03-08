@@ -28,10 +28,8 @@ const Navbar = () => {
         className="w-full max-w-4xl transition-all duration-700 rounded-full liquid-glass-rainbow"
       >
       <div className="px-6 py-3 flex items-center justify-between">
-        <a href="#inicio" className="relative text-xl tracking-[0.05em] text-primary" style={{ fontFamily: "'Maderon', sans-serif" }}>
-          <span className="relative z-10 bg-gradient-to-br from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent drop-shadow-[0_0_12px_hsl(44_90%_48%/0.4)]">
-            Digital
-          </span>
+        <a href="#inicio" className="text-2xl tracking-[0.05em] text-foreground" style={{ fontFamily: "'Maderon', sans-serif" }}>
+          DIGITAL
         </a>
 
         <div className="hidden md:flex items-center gap-1">
