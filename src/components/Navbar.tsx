@@ -28,9 +28,7 @@ const Navbar = () => {
         className="w-full max-w-4xl transition-all duration-700 rounded-full liquid-glass-rainbow"
       >
       <div className="px-6 py-3 flex items-center justify-between">
-        <a href="#inicio" className="text-2xl tracking-[0.05em] text-foreground" style={{ fontFamily: "'Maderon', sans-serif" }}>
-          DIGITAL
-        </a>
+        <div className="w-8" />
 
         <div className="hidden md:flex items-center gap-1">
           {navItems.map((item) => (
