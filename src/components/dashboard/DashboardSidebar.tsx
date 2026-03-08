@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, FileText, FolderKanban, CheckSquare, Palette } from "lucide-react";
+import { LayoutDashboard, Users, FileText, CheckSquare, DollarSign, Palette } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Sidebar,
@@ -13,13 +13,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-type View = "overview" | "clients" | "quotations" | "projects" | "tasks";
+type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
 
 const items = [
   { title: "Resumen", view: "overview" as View, icon: LayoutDashboard },
   { title: "Clientes", view: "clients" as View, icon: Users },
   { title: "Cotizaciones", view: "quotations" as View, icon: FileText },
-  { title: "Proyectos", view: "projects" as View, icon: FolderKanban },
+  { title: "Cuentas por Cobrar", view: "invoices" as View, icon: DollarSign },
   { title: "Tareas", view: "tasks" as View, icon: CheckSquare },
 ];
 

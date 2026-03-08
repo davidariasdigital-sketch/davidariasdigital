@@ -126,7 +126,7 @@ const BrandsSection = () => {
             >
               <div className="aspect-video rounded-[calc(var(--radius)-8px)] overflow-hidden">
                 <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                  src="https://www.youtube.com/embed/FlBSdQNGvz0?autoplay=1"
                   title="SOLAR Reel"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
