@@ -56,8 +56,14 @@ const QuotationsView = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    console.log("handleSubmit called", { form, items });
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    console.log("getUser result", { user: user?.id, userError });
+    if (!user) {
+      console.error("No user found, cannot create quotation");
+      return;
+    }
 
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
     const payload = {
@@ -72,9 +78,11 @@ const QuotationsView = () => {
 
     if (editing) {
       const { user_id, ...updatePayload } = payload;
-      await supabase.from("quotations").update(updatePayload).eq("id", editing.id);
+      const { error } = await supabase.from("quotations").update(updatePayload).eq("id", editing.id);
+      if (error) console.error("Update error:", error);
     } else {
-      await supabase.from("quotations").insert(payload);
+      const { error } = await supabase.from("quotations").insert(payload);
+      if (error) console.error("Insert error:", error);
     }
     resetForm();
     fetchData();
