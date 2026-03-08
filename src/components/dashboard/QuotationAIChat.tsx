@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Sparkles, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/quotation-assistant`;
 
