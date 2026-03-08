@@ -44,7 +44,7 @@ const HeroSection = () => {
                 <span className="block font-black text-foreground text-3xl">DAVID ARIAS
 
                 </span>
-                <span className="block text-[clamp(3.5rem,9vw,7.5rem)] font-black text-primary drop-shadow-sm">
+                <span className="block text-[clamp(3.5rem,9vw,7.5rem)] font-black text-primary drop-shadow-sm" style={{ fontFamily: "'Maderon', sans-serif" }}>
                   DIGITAL
                 </span>
               </h1>
