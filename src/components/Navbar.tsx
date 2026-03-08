@@ -56,7 +56,14 @@ const Navbar = () => {
             ))}
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center gap-2">
+            <Link
+              to="/login"
+              className="text-foreground/40 hover:text-foreground p-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+              aria-label="Iniciar sesión"
+            >
+              <User size={16} />
+            </Link>
             <button
               onClick={() => setOpen(!open)}
               className="md:hidden text-foreground/60 p-2"

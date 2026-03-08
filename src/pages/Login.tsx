@@ -22,7 +22,7 @@ const Login = () => {
       setError("Credenciales incorrectas");
       setLoading(false);
     } else {
-      navigate("/style-guide");
+      navigate("/dashboard");
     }
   };
 
