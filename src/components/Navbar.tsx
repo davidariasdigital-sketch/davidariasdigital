@@ -78,7 +78,7 @@ const Navbar = () => {
             className="md:hidden overflow-hidden"
           >
             <div className="px-6 pb-5 flex flex-col gap-1">
-              {navItems.map((item) => (
+              {[...navItemsBefore, ...navItemsAfter].map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
