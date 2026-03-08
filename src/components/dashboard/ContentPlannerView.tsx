@@ -122,7 +122,7 @@ const ContentPlannerView = () => {
         {[0, 1, 2, 3].map((colIdx) => (
           <ContentColumn
             key={colIdx}
-            label={`Contenido ${colIdx + 1}`}
+            label=""
             colIndex={colIdx}
             isIdea={false}
             items={getSlotItems(colIdx, false)}
@@ -149,7 +149,7 @@ const ContentPlannerView = () => {
           {[0, 1].map((colIdx) => (
             <ContentColumn
               key={`idea-${colIdx}`}
-              label={`Ideas ${colIdx + 1}`}
+              label=""
               colIndex={colIdx}
               isIdea={true}
               items={getSlotItems(colIdx, true)}
@@ -203,11 +203,13 @@ const ContentColumn = ({
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(colIndex, isIdea); }}
     >
-      <span className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${
-        isIdeaStyle ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
-      }`}>
-        {label}
-      </span>
+      {label && (
+        <span className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${
+          isIdeaStyle ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
+        }`}>
+          {label}
+        </span>
+      )}
 
       {items.map((item) => (
         <div
