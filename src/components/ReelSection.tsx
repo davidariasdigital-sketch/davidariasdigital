@@ -3,7 +3,13 @@ import { useRef } from "react";
 
 const stats = [
   { value: "5+", label: "Años de Experiencia", icon: "🎬" },
-  { value: "40+", label: "Marcas", icon: "📺" },
+];
+
+const brandNames = [
+  "Nike", "Adidas", "Samsung", "Coca-Cola", "Bavaria", "Rappi",
+  "Grupo Éxito", "Corona", "Claro", "Movistar", "Alpina", "Colgate",
+  "Nutresa", "Avianca", "Juan Valdez", "Bancolombia", "EPM", "Sura",
+  "Postobón", "Totto",
 ];
 
 const ReelSection = () => {
@@ -17,6 +23,8 @@ const ReelSection = () => {
   const videoOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const videoRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(videoRef, { margin: "-100px", once: true });
+
+  const duplicatedBrands = [...brandNames, ...brandNames];
 
   return (
     <section id="reel" ref={ref} className="py-28 md:py-40 px-6 md:px-12 relative">
@@ -56,7 +64,8 @@ const ReelSection = () => {
           </div>
         </motion.div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Stats */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -73,6 +82,35 @@ const ReelSection = () => {
               </p>
             </motion.div>
           ))}
+
+          {/* Brands marquee card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="liquid-glass rounded-[var(--radius)] p-7 text-center hover:scale-[1.03] transition-transform duration-300 overflow-hidden"
+          >
+            <span className="text-2xl mb-3 block">🏢</span>
+            <p className="text-3xl md:text-4xl font-black text-primary tracking-tight">40+</p>
+            <p className="mt-2 mb-4 text-muted-foreground text-[11px] tracking-wider uppercase font-semibold">
+              Marcas
+            </p>
+            <div className="relative overflow-hidden">
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-card/80 to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card/80 to-transparent z-10 pointer-events-none" />
+              <div className="flex animate-marquee whitespace-nowrap">
+                {duplicatedBrands.map((brand, i) => (
+                  <span
+                    key={`${brand}-${i}`}
+                    className="mx-3 text-[11px] font-semibold text-foreground/40 tracking-wide"
+                  >
+                    {brand}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
