@@ -65,6 +65,7 @@ const Dashboard = () => {
       case "quotations": return <QuotationsView />;
       case "tasks": return <TasksView />;
       case "invoices": return <InvoicesView />;
+      case "content-planner": return <ContentPlannerView />;
     }
   };
 

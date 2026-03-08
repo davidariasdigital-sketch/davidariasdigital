@@ -13,7 +13,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
+type View = "overview" | "clients" | "quotations" | "tasks" | "invoices" | "content-planner";
 
 const items = [
   { title: "Resumen", view: "overview" as View, icon: LayoutDashboard },
@@ -21,6 +21,7 @@ const items = [
   { title: "Cotizaciones", view: "quotations" as View, icon: FileText },
   { title: "Cuentas por Cobrar", view: "invoices" as View, icon: DollarSign },
   { title: "Tareas", view: "tasks" as View, icon: CheckSquare },
+  { title: "Planeador", view: "content-planner" as View, icon: CalendarRange },
 ];
 
 interface Props {
