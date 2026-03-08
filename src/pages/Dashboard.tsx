@@ -8,10 +8,11 @@ import ClientsView from "@/components/dashboard/ClientsView";
 import QuotationsView from "@/components/dashboard/QuotationsView";
 import TasksView from "@/components/dashboard/TasksView";
 import InvoicesView from "@/components/dashboard/InvoicesView";
+import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import { motion } from "framer-motion";
 import { LogOut } from "lucide-react";
 
-type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
+type View = "overview" | "clients" | "quotations" | "tasks" | "invoices" | "content-planner";
 
 const viewLabels: Record<View, string> = {
   overview: "Resumen",
