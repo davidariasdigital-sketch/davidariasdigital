@@ -16,13 +16,13 @@ interface Quotation {
 }
 
 // Brand colors
-const DARK = [26, 26, 26] as const;       // #1A1A1A
-const MUSTARD = [225, 173, 1] as const;    // #E1AD01
-const WHITE = [255, 255, 255] as const;
-const LIGHT_GRAY = [180, 180, 180] as const;
-const MID_GRAY = [120, 120, 120] as const;
-const ROW_ALT = [245, 245, 242] as const;
-const ROW_WHITE = [255, 255, 255] as const;
+const DARK: [number, number, number] = [26, 26, 26];
+const MUSTARD: [number, number, number] = [225, 173, 1];
+const WHITE: [number, number, number] = [255, 255, 255];
+const LIGHT_GRAY: [number, number, number] = [180, 180, 180];
+const MID_GRAY: [number, number, number] = [120, 120, 120];
+const ROW_ALT: [number, number, number] = [245, 245, 242];
+const ROW_WHITE: [number, number, number] = [255, 255, 255];
 
 function generateQuotationNumber(dateStr: string): string {
   const d = new Date(dateStr);
