@@ -77,6 +77,7 @@ const QuotationsView = () => {
     }
 
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+    const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
     const payload = {
       title: form.title,
       description: form.description || null,
@@ -84,6 +85,7 @@ const QuotationsView = () => {
       status: form.status as any,
       items: items as any,
       total,
+      conditions: conditions as any,
       user_id: user.id,
     };
 
