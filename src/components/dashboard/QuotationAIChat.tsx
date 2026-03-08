@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { X, Send, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { X, Sparkles, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-
-type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/quotation-assistant`;
 
@@ -12,24 +10,16 @@ interface Props {
 }
 
 const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [input, setInput] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
-
-  const send = async () => {
-    if (!input.trim() || isLoading) return;
-    const userMsg: Msg = { role: "user", content: input };
-    const allMessages = [...messages, userMsg];
-    setMessages(allMessages);
-    setInput("");
+  const generate = async () => {
+    if (!prompt.trim() || isLoading) return;
     setIsLoading(true);
+    setResult("");
 
-    let assistantSoFar = "";
+    let fullText = "";
 
     try {
       const resp = await fetch(CHAT_URL, {
@@ -38,7 +28,10 @@ const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: allMessages, quotationContext }),
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }],
+          quotationContext,
+        }),
       });
 
       if (!resp.ok || !resp.body) {
@@ -49,19 +42,8 @@ const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let textBuffer = "";
-
-      const upsertAssistant = (chunk: string) => {
-        assistantSoFar += chunk;
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
-            return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-          }
-          return [...prev, { role: "assistant", content: assistantSoFar }];
-        });
-      };
-
       let streamDone = false;
+
       while (!streamDone) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -79,7 +61,10 @@ const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
-            if (content) upsertAssistant(content);
+            if (content) {
+              fullText += content;
+              setResult(fullText);
+            }
           } catch {
             textBuffer = line + "\n" + textBuffer;
             break;
@@ -88,69 +73,84 @@ const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
       }
     } catch (e) {
       console.error(e);
-      setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ ${e instanceof Error ? e.message : "Error desconocido"}` }]);
+      setResult(`⚠️ ${e instanceof Error ? e.message : "Error desconocido"}`);
     }
     setIsLoading(false);
   };
 
   return (
-    <div className="liquid-glass rounded-[var(--radius)] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Sparkles size={16} className="text-primary" />
-          <span className="text-sm font-semibold text-foreground">Asistente de cotizaciones</span>
-        </div>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
-      </div>
-
-      <div ref={scrollRef} className="h-64 overflow-y-auto p-4 space-y-3">
-        {messages.length === 0 && (
-          <div className="text-center py-8">
-            <Sparkles size={24} className="text-primary mx-auto mb-2 opacity-50" />
-            <p className="text-xs text-muted-foreground">Pregúntame cómo redactar tu cotización, qué precios sugerir, o cómo mejorar la presentación.</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl max-h-[85vh] flex flex-col liquid-glass-rainbow rounded-[var(--radius)] overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-2">
+            <Sparkles size={18} className="text-primary" />
+            <span className="text-sm font-bold text-foreground">Asistente de cotización</span>
           </div>
-        )}
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted/50 text-foreground"}`}>
-              {m.role === "assistant" ? (
-                <div className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_li]:my-0.5">
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
-                </div>
-              ) : m.content}
-            </div>
-          </div>
-        ))}
-        {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-          <div className="flex justify-start">
-            <div className="bg-muted/50 rounded-2xl px-4 py-2.5">
-              <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="p-3 border-t border-border">
-        <div className="flex gap-2">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
-            placeholder="Escribe tu pregunta..."
-            className="flex-1 bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <button
-            onClick={send}
-            disabled={isLoading || !input.trim()}
-            className="bg-primary text-primary-foreground p-2.5 rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
-          >
-            <Send size={16} />
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
+            <X size={18} />
           </button>
         </div>
+
+        {/* Input */}
+        {!result && (
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-muted-foreground">
+              Describe qué necesitas cotizar y la IA generará un resumen profesional.
+            </p>
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Ej: Cotización para un video corporativo de 2 minutos con filmación en locación, edición y motion graphics..."
+              className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[100px] resize-none"
+              autoFocus
+            />
+            <button
+              onClick={generate}
+              disabled={isLoading || !prompt.trim()}
+              className="w-full bg-primary text-primary-foreground text-sm font-semibold py-3 rounded-full hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" /> Generando...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} /> Generar cotización
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Result */}
+        {result && (
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="prose prose-sm prose-invert max-w-none [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-foreground [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:text-muted-foreground [&_p]:text-sm [&_li]:text-muted-foreground [&_li]:text-sm [&_strong]:text-foreground [&_table]:w-full [&_th]:text-left [&_th]:text-xs [&_th]:text-muted-foreground [&_th]:uppercase [&_th]:tracking-wider [&_th]:pb-2 [&_td]:py-1.5 [&_td]:text-sm [&_td]:text-foreground [&_hr]:border-border">
+              <ReactMarkdown>{result}</ReactMarkdown>
+            </div>
+
+            {!isLoading && (
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => { setResult(""); setPrompt(""); }}
+                  className="flex-1 text-sm font-semibold py-2.5 rounded-full border border-border text-foreground hover:bg-muted/50 transition-all"
+                >
+                  Nueva consulta
+                </button>
+                <button
+                  onClick={onClose}
+                  className="flex-1 bg-primary text-primary-foreground text-sm font-semibold py-2.5 rounded-full hover:shadow-lg transition-all"
+                >
+                  Cerrar
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
