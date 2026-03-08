@@ -1,6 +1,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Trash2, Edit2, X } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, X, Upload } from "lucide-react";
+import { toast } from "sonner";
+
+const BRAND_CLIENTS = [
+  "La Pescadería", "Uva de lujo", "Palmetto", "El Cortijo", "Comité Olímpico",
+  "Hunts", "Coloriss", "TQ", "Yanko", "Satillos", "La Cava",
+  "Nutricionista Natalia Valencia", "Hair Beauty", "Kimeline", "Angus Burguer",
+  "Michelangelo", "Restaurante 1975", "Epioné", "Rombo Quadrado", "Jazz Café",
+  "Joykeys", "Salon IN", "Iluminata", "Impocali", "Self", "Nize", "Atavico",
+  "Vitane", "Shibumi", "Luminance", "Tanga", "Suarez Abogados", "Dermocorea",
+  "Resonance", "Aromasense", "Greencode", "Deopies", "Muss", "Follies",
+  "Recamier Corp", "Ruuts", "Whitman", "Sra Buenaventura",
+];
 
 interface Client {
   id: string;
