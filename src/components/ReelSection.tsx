@@ -43,19 +43,25 @@ const ReelSection = () => {
         </motion.div>
 
         <motion.div ref={videoRef} style={{ scale: videoScale, opacity: videoOpacity }}>
-          <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft">
-            <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted">
-              {isInView && (
-                <iframe
-                  src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=1&loop=1&playlist=D3ZueneGbbA"
-                  title="Reel David Arias"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              )}
+          <a
+            href="https://www.youtube.com/watch?v=D3ZueneGbbA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft block group"
+          >
+            <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted relative">
+              <img
+                src="https://img.youtube.com/vi/D3ZueneGbbA/maxresdefault.jpg"
+                alt="Reel David Arias"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
             </div>
-          </div>
+          </a>
         </motion.div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
