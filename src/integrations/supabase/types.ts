@@ -109,6 +109,7 @@ export type Database = {
           client_id: string | null
           conditions: Json
           created_at: string
+          delivery_date: string | null
           description: string | null
           id: string
           items: Json
@@ -121,6 +122,7 @@ export type Database = {
           client_id?: string | null
           conditions?: Json
           created_at?: string
+          delivery_date?: string | null
           description?: string | null
           id?: string
           items?: Json
@@ -133,6 +135,7 @@ export type Database = {
           client_id?: string | null
           conditions?: Json
           created_at?: string
+          delivery_date?: string | null
           description?: string | null
           id?: string
           items?: Json

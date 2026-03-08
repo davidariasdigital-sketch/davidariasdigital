@@ -48,7 +48,7 @@ const QuotationsView = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string });
+  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [showAI, setShowAI] = useState(false);
   const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
@@ -86,6 +86,7 @@ const QuotationsView = () => {
       items: items as any,
       total,
       conditions: conditions as any,
+      delivery_date: form.delivery_date || null,
       user_id: user.id,
     };
 
@@ -102,7 +103,7 @@ const QuotationsView = () => {
   };
 
   const resetForm = () => {
-    setForm({ title: "", description: "", client_id: "", status: "borrador" });
+    setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0 }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setShowForm(false);
@@ -111,7 +112,7 @@ const QuotationsView = () => {
 
   const handleEdit = (q: Quotation) => {
     setEditing(q);
-    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status });
+    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
     // Restore selected conditions from saved data
     const savedConditions = (q.conditions as string[]) ?? [];
@@ -186,6 +187,12 @@ const QuotationsView = () => {
             </select>
           </div>
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción" className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[60px]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Fecha de realización / entrega (opcional)</label>
+              <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+            </div>
+          </div>
 
           <div className="space-y-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Conceptos</p>
@@ -232,7 +239,10 @@ const QuotationsView = () => {
           <div key={q.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between">
             <div>
               <p className="font-semibold text-foreground text-sm">{q.title}</p>
-              <p className="text-xs text-muted-foreground">{q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">
+                {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
+                {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-semibold px-3 py-1 rounded-full border-0 focus:outline-none ${statusColors[q.status] ?? ""}`}>
