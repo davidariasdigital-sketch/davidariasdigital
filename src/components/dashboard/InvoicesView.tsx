@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, DollarSign } from "lucide-react";
+import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 
 interface Invoice {
   id: string;
