@@ -39,12 +39,9 @@ const Navbar = () => {
               </a>
             ))}
 
-            <a
-              href="#contacto"
-              className="text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
-            >
-              Hablemos
-            </a>
+            <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/30 flex-shrink-0 pointer-events-none">
+              <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
+            </div>
 
             {navItemsAfter.map((item) => (
               <a
