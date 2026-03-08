@@ -7,7 +7,7 @@ const HeroSection = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end start"]
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -28,24 +28,24 @@ const HeroSection = () => {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            >
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
+              
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
-                className="liquid-glass rounded-full px-5 py-2 mb-8 inline-flex items-center gap-2"
-              >
+                className="liquid-glass rounded-full px-5 py-2 mb-8 inline-flex items-center gap-2">
+                
                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-[11px] font-semibold tracking-wider text-foreground/70">Disponible para proyectos</span>
               </motion.div>
 
               <h1 className="leading-[0.9] tracking-[-0.03em]">
-                <span className="block text-[clamp(3.5rem,9vw,7.5rem)] font-black text-foreground">
-                  DAVID
+                <span className="block font-black text-foreground text-3xl">DAVID ARIAS
+
                 </span>
                 <span className="block text-[clamp(3.5rem,9vw,7.5rem)] font-black text-primary drop-shadow-sm">
-                  ARIAS
+                  DIGITAL
                 </span>
               </h1>
 
@@ -59,8 +59,8 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.7 }}
-              className="flex flex-col gap-2"
-            >
+              className="flex flex-col gap-2">
+              
               <a href="mailto:davidariasdigital@gmail.com" className="flex items-center gap-3 text-muted-foreground text-sm hover:text-primary transition-colors duration-300">
                 <Mail size={14} className="text-primary/60" /> davidariasdigital@gmail.com
               </a>
@@ -73,21 +73,21 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.7 }}
-              className="flex flex-wrap gap-3 pt-2"
-            >
+              className="flex flex-wrap gap-3 pt-2">
+              
               <a
                 href="https://wa.me/573108781633"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 bg-primary text-primary-foreground font-bold text-[13px] px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"
-              >
+                className="group inline-flex items-center gap-2.5 bg-primary text-primary-foreground font-bold text-[13px] px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
+                
                 Chatea en WhatsApp
                 <MessageCircle size={15} className="group-hover:rotate-12 transition-transform duration-300" />
               </a>
               <a
                 href="#reel"
-                className="group inline-flex items-center gap-2.5 liquid-btn font-semibold text-[13px] text-muted-foreground hover:text-foreground px-7 py-3.5 rounded-full"
-              >
+                className="group inline-flex items-center gap-2.5 liquid-btn font-semibold text-[13px] text-muted-foreground hover:text-foreground px-7 py-3.5 rounded-full">
+                
                 Ver Reel
                 <Play size={13} className="group-hover:translate-x-0.5 transition-transform duration-300" />
               </a>
@@ -97,21 +97,21 @@ const HeroSection = () => {
           {/* Right — portrait */}
           <motion.div
             style={{ y: imgY }}
-            className="lg:col-span-2 flex justify-center lg:justify-end"
-          >
+            className="lg:col-span-2 flex justify-center lg:justify-end">
+            
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative"
-            >
+              className="relative">
+              
               <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 w-[280px] md:w-[340px] lg:w-[380px]">
                 <div className="rounded-[calc(var(--radius)-8px)] overflow-hidden">
                   <img
                     src={davidPortrait}
                     alt="David Arias — Director de Fotografía"
-                    className="w-full h-auto"
-                  />
+                    className="w-full h-auto" />
+                  
                 </div>
                 <div className="flex items-center justify-between px-3 py-3">
                   <div>
@@ -127,8 +127,8 @@ const HeroSection = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2, duration: 0.6 }}
-                className="absolute -right-5 top-12 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block"
-              >
+                className="absolute -right-5 top-12 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block">
+                
                 <p className="text-[10px] font-extrabold text-primary">10+ Años</p>
                 <p className="text-[9px] text-muted-foreground">Experiencia</p>
               </motion.div>
@@ -137,8 +137,8 @@ const HeroSection = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.4, duration: 0.6 }}
-                className="absolute -left-5 bottom-24 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block"
-              >
+                className="absolute -left-5 bottom-24 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block">
+                
                 <p className="text-[10px] font-extrabold text-primary">50+</p>
                 <p className="text-[9px] text-muted-foreground">Comerciales</p>
               </motion.div>
@@ -152,19 +152,19 @@ const HeroSection = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
-      >
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        
         <div className="liquid-glass rounded-full px-5 py-2.5 flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground font-medium">Scroll</span>
           <motion.div
             animate={{ y: [0, 4, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="w-1 h-3 rounded-full bg-primary/50"
-          />
+            className="w-1 h-3 rounded-full bg-primary/50" />
+          
         </div>
       </motion.div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default HeroSection;
