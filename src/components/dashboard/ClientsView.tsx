@@ -38,6 +38,23 @@ const ClientsView = () => {
 
   useEffect(() => { fetchClients(); }, []);
 
+  const seedClients = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const existing = clients.map((c) => c.name.toLowerCase());
+    const toInsert = BRAND_CLIENTS
+      .filter((name) => !existing.includes(name.toLowerCase()))
+      .map((name) => ({ name, user_id: user.id }));
+    if (toInsert.length === 0) {
+      toast.info("Todos los clientes ya están agregados");
+      return;
+    }
+    const { error } = await supabase.from("clients").insert(toInsert);
+    if (error) { toast.error("Error al importar"); return; }
+    toast.success(`${toInsert.length} clientes importados`);
+    fetchClients();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
