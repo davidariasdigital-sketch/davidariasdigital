@@ -18,7 +18,7 @@ const ReelSection = () => {
   const videoRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(videoRef, { margin: "-100px", once: true });
 
-  const duplicatedBrands = [...brandNames, ...brandNames];
+  
 
   return (
     <section id="reel" ref={ref} className="py-28 md:py-40 px-6 md:px-12 relative">
