@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
-const navItems = [
+const navItemsBefore = [
   { label: "Sobre Mí", href: "#inicio" },
   { label: "Reel", href: "#reel" },
+];
+
+const navItemsAfter = [
   { label: "Servicios", href: "#servicios" },
   { label: "Contacto", href: "#contacto" },
 ];
