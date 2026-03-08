@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 const stats = [
   { value: "5+", label: "Años de Experiencia", icon: "🎬" },
@@ -16,7 +16,23 @@ const ReelSection = () => {
   const videoScale = useTransform(scrollYProgress, [0, 0.3], [0.92, 1]);
   const videoOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const videoRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(videoRef, { margin: "-100px", once: true });
+  const iframeContainerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(videoRef, { margin: "-100px", once: false });
+  const hasAutoPlayed = useRef(false);
+
+  useEffect(() => {
+    if (isInView && !hasAutoPlayed.current && iframeContainerRef.current) {
+      hasAutoPlayed.current = true;
+      iframeContainerRef.current.innerHTML = `<iframe 
+        src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=0&rel=0&modestbranding=1" 
+        title="Reel David Arias"
+        class="w-full h-full absolute inset-0"
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>`;
+    }
+  }, [isInView]);
 
   
 
