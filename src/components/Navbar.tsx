@@ -25,12 +25,8 @@ const Navbar = () => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="w-full max-w-4xl rounded-full liquid-glass-rainbow"
       >
-        <div className="px-4 md:px-6 py-2 grid grid-cols-[auto_1fr_auto] items-center gap-4">
-          <div className="w-10 h-10 rounded-full overflow-hidden ring-[2.5px] ring-primary flex-shrink-0 pointer-events-none shadow-[0_4px_15px_-2px_rgba(0,0,0,0.3)]">
-            <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
-          </div>
-
-          <div className="hidden md:flex items-center justify-center gap-1">
+        <div className="px-4 md:px-6 py-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <div className="hidden md:flex items-center gap-1">
             {navItemsBefore.map((item) => (
               <a
                 key={item.label}
@@ -40,7 +36,13 @@ const Navbar = () => {
                 {item.label}
               </a>
             ))}
+          </div>
 
+          <div className="w-10 h-10 rounded-full overflow-hidden ring-[2.5px] ring-primary flex-shrink-0 pointer-events-none shadow-[0_4px_15px_-2px_rgba(0,0,0,0.3)]">
+            <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
+          </div>
+
+          <div className="hidden md:flex items-center justify-end gap-1">
             {navItemsAfter.map((item) => (
               <a
                 key={item.label}
@@ -50,9 +52,6 @@ const Navbar = () => {
                 {item.label}
               </a>
             ))}
-          </div>
-
-          <div className="flex justify-end items-center gap-2">
             <Link
               to="/login"
               className="text-foreground/40 hover:text-foreground p-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
