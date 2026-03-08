@@ -1,0 +1,173 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Plus, X, Trash2, Edit2 } from "lucide-react";
+
+interface QuotationItem {
+  description: string;
+  amount: number;
+}
+
+interface Quotation {
+  id: string;
+  title: string;
+  description: string | null;
+  items: QuotationItem[];
+  total: number;
+  status: string;
+  client_id: string | null;
+  created_at: string;
+  clients?: { name: string } | null;
+}
+
+interface Client {
+  id: string;
+  name: string;
+}
+
+const statusColors: Record<string, string> = {
+  borrador: "bg-muted text-muted-foreground",
+  enviada: "bg-primary/20 text-primary",
+  aceptada: "bg-green-500/20 text-green-400",
+  rechazada: "bg-destructive/20 text-destructive",
+};
+
+const QuotationsView = () => {
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Quotation | null>(null);
+  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string });
+  const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
+
+  const fetchData = async () => {
+    const [q, c] = await Promise.all([
+      supabase.from("quotations").select("*, clients(name)").order("created_at", { ascending: false }),
+      supabase.from("clients").select("id, name"),
+    ]);
+    if (q.data) setQuotations(q.data as unknown as Quotation[]);
+    if (c.data) setClients(c.data);
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+    const payload = {
+      title: form.title,
+      description: form.description || null,
+      client_id: form.client_id || null,
+      status: form.status as any,
+      items: items as any,
+      total,
+      user_id: user.id,
+    };
+
+    if (editing) {
+      const { user_id, ...updatePayload } = payload;
+      await supabase.from("quotations").update(updatePayload).eq("id", editing.id);
+    } else {
+      await supabase.from("quotations").insert(payload);
+    }
+    resetForm();
+    fetchData();
+  };
+
+  const resetForm = () => {
+    setForm({ title: "", description: "", client_id: "", status: "borrador" });
+    setItems([{ description: "", amount: 0 }]);
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const handleEdit = (q: Quotation) => {
+    setEditing(q);
+    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status });
+    setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    await supabase.from("quotations").delete().eq("id", id);
+    fetchData();
+  };
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("quotations").update({ status: status as any }).eq("id", id);
+    fetchData();
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Cotizaciones</h1>
+        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+          <Plus size={16} /> Nueva
+        </button>
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className="liquid-glass rounded-[var(--radius)] p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-foreground">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
+            <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
+              <option value="">Sin cliente</option>
+              {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción" className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[60px]" />
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Conceptos</p>
+            {items.map((item, i) => (
+              <div key={i} className="flex gap-2">
+                <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className="flex-1 bg-muted/50 border border-border rounded-xl px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className="w-28 bg-muted/50 border border-border rounded-xl px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-destructive p-2"><X size={14} /></button>}
+              </div>
+            ))}
+            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary hover:underline">+ Agregar concepto</button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold text-foreground">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
+            <button type="submit" className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all">
+              {editing ? "Guardar" : "Crear"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="space-y-3">
+        {quotations.map((q) => (
+          <div key={q.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-foreground text-sm">{q.title}</p>
+              <p className="text-xs text-muted-foreground">{q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-semibold px-3 py-1 rounded-full border-0 focus:outline-none ${statusColors[q.status] ?? ""}`}>
+                <option value="borrador">Borrador</option>
+                <option value="enviada">Enviada</option>
+                <option value="aceptada">Aceptada</option>
+                <option value="rechazada">Rechazada</option>
+              </select>
+              <button onClick={() => handleEdit(q)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50"><Edit2 size={14} /></button>
+              <button onClick={() => handleDelete(q.id)} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/10"><Trash2 size={14} /></button>
+            </div>
+          </div>
+        ))}
+        {quotations.length === 0 && <p className="text-center text-muted-foreground text-sm py-8">No hay cotizaciones aún</p>}
+      </div>
+    </div>
+  );
+};
+
+export default QuotationsView;
