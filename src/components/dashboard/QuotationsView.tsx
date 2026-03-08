@@ -111,7 +111,7 @@ const QuotationsView = () => {
 
   const handleEdit = (q: Quotation) => {
     setEditing(q);
-    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status });
+    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
     // Restore selected conditions from saved data
     const savedConditions = (q.conditions as string[]) ?? [];
