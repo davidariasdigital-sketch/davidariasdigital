@@ -41,7 +41,7 @@ const HeroSection = () => {
               </motion.div>
 
               <h1 className="leading-[0.9] tracking-[-0.03em]">
-                <span className="block text-foreground font-medium text-5xl">David Arias 
+                <span className="block text-foreground font-medium text-2xl">David Arias 
 
                 </span>
                 <span className="block font-normal text-primary drop-shadow-sm text-9xl" style={{ fontFamily: "'Maderon', sans-serif" }}>
