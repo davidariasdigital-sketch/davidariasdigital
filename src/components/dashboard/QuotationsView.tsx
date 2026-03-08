@@ -48,7 +48,7 @@ const QuotationsView = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string });
+  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [showAI, setShowAI] = useState(false);
   const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
