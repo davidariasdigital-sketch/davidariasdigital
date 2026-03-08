@@ -1,46 +1,42 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Tv, Music, CalendarDays, Palette, Aperture, Smartphone, Handshake,
-  ChevronDown, ArrowUpRight,
+  ArrowUpRight,
 } from "lucide-react";
 
 const services = [
-  { icon: Tv, title: "Producción Comercial", price: "Desde $2.5M COP", description: "Producción integral de comerciales publicitarios con calidad cinematográfica para marcas que buscan destacar." },
-  { icon: Music, title: "Videos Musicales", price: "Desde $3M COP", description: "Creación de universos visuales únicos que potencian la identidad artística de cada proyecto musical." },
-  { icon: CalendarDays, title: "Cubrimiento de Eventos", price: "Desde $1.5M COP", description: "Cobertura audiovisual profesional de eventos corporativos, conciertos y activaciones de marca." },
-  { icon: Palette, title: "Color Grading", price: "Desde $800K COP", description: "Corrección y etalonaje de color profesional para darle la estética cinematográfica a tu proyecto." },
-  { icon: Aperture, title: "Sesión Fotográfica", price: "Desde $1.2M COP", description: "Fotografía publicitaria y editorial con dirección de arte e iluminación profesional." },
-  { icon: Smartphone, title: "Pack Redes Sociales", price: "Desde $2M COP", description: "Creación de contenido audiovisual optimizado para redes sociales con estrategia visual." },
-  { icon: Handshake, title: "Colaboración / Alianzas", price: "A convenir", description: "Proyectos colaborativos y alianzas estratégicas con marcas y creadores afines." },
+  { icon: Tv, title: "Producción Comercial", description: "Comerciales publicitarios con calidad cinematográfica." },
+  { icon: Music, title: "Videos Musicales", description: "Universos visuales únicos para proyectos musicales." },
+  { icon: CalendarDays, title: "Cubrimiento de Eventos", description: "Cobertura audiovisual profesional de eventos." },
+  { icon: Palette, title: "Color Grading", description: "Corrección y etalonaje de color cinematográfico." },
+  { icon: Aperture, title: "Sesión Fotográfica", description: "Fotografía publicitaria y editorial profesional." },
+  { icon: Smartphone, title: "Pack Redes Sociales", description: "Contenido audiovisual optimizado para redes." },
+  { icon: Handshake, title: "Colaboración / Alianzas", description: "Proyectos colaborativos con marcas y creadores." },
 ];
 
 const ServicesSection = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
   return (
     <section id="servicios" className="py-16 md:py-24 px-6 md:px-12 relative">
       <div className="blob w-[500px] h-[500px] bg-pink-300/15 bottom-0 left-0 float-slower" />
 
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-5xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
-            Inversión aproximada
+            ¿Qué necesitas?
           </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground text-balance">
-            Servicios e Inversión
+            Menú de Servicios
           </h2>
         </motion.div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {services.map((service, i) => {
-            const isOpen = openIndex === i;
             const Icon = service.icon;
             const whatsappMsg = encodeURIComponent(`Hola David, me interesa el servicio de ${service.title}. ¿Podemos hablar?`);
 
@@ -50,57 +46,26 @@ const ServicesSection = () => {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.04 }}
-                className="liquid-glass rounded-[var(--radius)] overflow-hidden hover:scale-[1.005] transition-transform duration-300"
+                transition={{ duration: 0.5, delay: i * 0.05 }}
+                className="liquid-glass rounded-[var(--radius)] p-5 flex flex-col items-center text-center hover:scale-[1.03] transition-transform duration-300 group"
               >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="w-full flex items-center justify-between p-5 md:p-6 text-left group"
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Icon size={20} className="text-primary" />
+                </div>
+                <h3 className="font-bold text-[13px] text-foreground mb-2 leading-tight">
+                  {service.title}
+                </h3>
+                <p className="text-muted-foreground text-[11px] leading-relaxed mb-4 flex-1">
+                  {service.description}
+                </p>
+                <a
+                  href={`https://wa.me/573108781633?text=${whatsappMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-[11px] font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon size={18} className="text-primary" />
-                    </div>
-                    <span className="font-semibold text-[14px] text-foreground/80 group-hover:text-foreground transition-colors">
-                      {service.title}
-                    </span>
-                  </div>
-                  <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ChevronDown size={18} className="text-muted-foreground" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 md:px-6 pb-6 pt-1 ml-[60px]">
-                        <p className="text-2xl font-black text-primary tracking-tight">
-                          {service.price}
-                        </p>
-                        <p className="mt-2 text-muted-foreground text-[13px] leading-relaxed">
-                          {service.description}
-                        </p>
-                        <a
-                          href={`https://wa.me/573108781633?text=${whatsappMsg}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-2 bg-primary text-primary-foreground hover:shadow-lg text-[12px] font-bold px-5 py-2.5 rounded-full transition-all duration-300"
-                        >
-                          Reservar Ahora <ArrowUpRight size={13} />
-                        </a>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  Solicitar <ArrowUpRight size={12} />
+                </a>
               </motion.div>
             );
           })}
