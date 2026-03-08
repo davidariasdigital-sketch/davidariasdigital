@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Trash2, Edit2, X, Upload } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, X, Upload, User, Building2, UtensilsCrossed, Scissors, Heart, Scale, Music, Sparkles, Leaf, ShoppingBag, Dumbbell, Coffee, Palette, Star, Briefcase, Store } from "lucide-react";
 import { toast } from "sonner";
 
 const BRAND_CLIENTS = [
@@ -23,6 +23,41 @@ interface Client {
   notes: string | null;
   created_at: string;
 }
+
+const ICON_MAP: Record<string, typeof User> = {
+  "La Pescadería": UtensilsCrossed, "Angus Burguer": UtensilsCrossed,
+  "Restaurante 1975": UtensilsCrossed, "Jazz Café": Coffee, "La Cava": Coffee,
+  "Hair Beauty": Scissors, "Salon IN": Scissors, "Kimeline": Scissors,
+  "Epioné": Heart, "Dermocorea": Heart, "Vitane": Heart, "Deopies": Heart,
+  "Nutricionista Natalia Valencia": Heart, "Aromasense": Sparkles,
+  "Luminance": Sparkles, "Iluminata": Sparkles, "Self": Sparkles,
+  "Recamier Corp": Sparkles, "Coloriss": Palette, "Rombo Quadrado": Palette,
+  "Greencode": Leaf, "Palmetto": Leaf, "Uva de lujo": Leaf,
+  "Suarez Abogados": Scale, "Comité Olímpico": Dumbbell,
+  "Joykeys": Music, "Resonance": Music, "Muss": Music, "Follies": Music,
+  "Tanga": ShoppingBag, "Nize": ShoppingBag, "Ruuts": ShoppingBag,
+  "Sra Buenaventura": Star, "Shibumi": Star, "Atavico": Star,
+  "Hunts": Store, "TQ": Briefcase, "Yanko": Briefcase, "Satillos": Store,
+  "Impocali": Building2, "Whitman": Briefcase, "Michelangelo": UtensilsCrossed,
+  "El Cortijo": UtensilsCrossed,
+};
+
+const COLORS = [
+  "bg-primary/15 text-primary",
+  "bg-amber-500/15 text-amber-600",
+  "bg-emerald-500/15 text-emerald-600",
+  "bg-rose-500/15 text-rose-600",
+  "bg-violet-500/15 text-violet-600",
+  "bg-sky-500/15 text-sky-600",
+  "bg-orange-500/15 text-orange-600",
+];
+
+const getClientIcon = (name: string) => ICON_MAP[name] || User;
+const getClientColor = (name: string) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return COLORS[Math.abs(hash) % COLORS.length];
+};
 
 const ClientsView = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -130,20 +165,30 @@ const ClientsView = () => {
         </form>
       )}
 
-      <div className="space-y-3">
-        {filtered.map((c) => (
-          <div key={c.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-foreground text-sm">{c.name}</p>
-              <p className="text-xs text-muted-foreground">{[c.company, c.email].filter(Boolean).join(" · ")}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+        {filtered.map((c) => {
+          const Icon = getClientIcon(c.name);
+          const color = getClientColor(c.name);
+          return (
+            <div
+              key={c.id}
+              className="liquid-glass rounded-[var(--radius)] aspect-square p-4 flex flex-col items-center justify-center text-center relative group hover:scale-[1.02] transition-transform"
+            >
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleEdit(c)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/50"><Edit2 size={12} /></button>
+                <button onClick={() => handleDelete(c.id)} className="text-muted-foreground hover:text-destructive p-1 rounded-lg hover:bg-destructive/10"><Trash2 size={12} /></button>
+              </div>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 ${color}`}>
+                <Icon size={22} className="text-inherit" />
+              </div>
+              <p className="font-semibold text-foreground text-xs leading-tight line-clamp-2">{c.name}</p>
+              {c.company && <p className="text-[10px] text-muted-foreground mt-1 truncate w-full">{c.company}</p>}
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => handleEdit(c)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(c.id)} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/10"><Trash2 size={14} /></button>
-            </div>
-          </div>
-        ))}
-        {filtered.length === 0 && <p className="text-center text-muted-foreground text-sm py-8">No hay clientes aún</p>}
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center text-muted-foreground text-sm py-8">No hay clientes aún</div>
+        )}
       </div>
     </div>
   );
