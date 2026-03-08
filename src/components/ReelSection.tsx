@@ -21,7 +21,7 @@ const ReelSection = () => {
   
 
   return (
-    <section id="reel" ref={ref} className="py-28 md:py-40 px-6 md:px-12 relative">
+    <section id="reel" ref={ref} className="py-16 md:py-24 px-6 md:px-12 relative">
       <div className="blob w-[500px] h-[500px] bg-primary/20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 float-slower" />
 
       <div className="max-w-5xl mx-auto relative z-10">

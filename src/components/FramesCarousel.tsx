@@ -12,7 +12,7 @@ const FramesCarousel = () => {
   const doubled = [...frames, ...frames];
 
   return (
-    <section className="py-28 md:py-40 overflow-hidden relative">
+    <section className="py-16 md:py-24 overflow-hidden relative">
       <div className="blob w-[400px] h-[400px] bg-blue-300/20 top-0 right-0 float-slow" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-14 relative z-10">
