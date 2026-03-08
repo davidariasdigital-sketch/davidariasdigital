@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import davidNavbar from "@/assets/david-navbar.jpg";
 
 const navItemsBefore = [
   { label: "Sobre Mí", href: "#inicio" },
