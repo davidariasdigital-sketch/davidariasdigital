@@ -34,7 +34,22 @@ const Navbar = () => {
         <div className="w-8" />
 
         <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
+          {navItemsBefore.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            href="#contacto"
+            className="text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
+          >
+            Hablemos
+          </a>
+          {navItemsAfter.map((item) => (
             <a
               key={item.label}
               href={item.href}
@@ -44,13 +59,6 @@ const Navbar = () => {
             </a>
           ))}
         </div>
-
-        <a
-          href="#contacto"
-          className="hidden md:inline-flex text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
-        >
-          Hablemos
-        </a>
 
         <button
           onClick={() => setOpen(!open)}
