@@ -41,16 +41,18 @@ const ReelSection = () => {
           </h2>
         </motion.div>
 
-        <motion.div style={{ scale: videoScale, opacity: videoOpacity }}>
+        <motion.div ref={videoRef} style={{ scale: videoScale, opacity: videoOpacity }}>
           <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft">
             <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted">
-              <iframe
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                title="Reel David Arias"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+              {isInView && (
+                <iframe
+                  src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=1&loop=1&playlist=D3ZueneGbbA"
+                  title="Reel David Arias"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              )}
             </div>
           </div>
         </motion.div>
