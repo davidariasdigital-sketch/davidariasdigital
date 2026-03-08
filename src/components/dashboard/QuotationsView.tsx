@@ -199,6 +199,25 @@ const QuotationsView = () => {
             <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary hover:underline">+ Agregar concepto</button>
           </div>
 
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condiciones del PDF</p>
+            {DEFAULT_CONDITIONS.map((condition, i) => (
+              <label key={i} className="flex items-start gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedConditions[i]}
+                  onChange={() => {
+                    const n = [...selectedConditions];
+                    n[i] = !n[i];
+                    setSelectedConditions(n);
+                  }}
+                  className="mt-0.5 accent-primary"
+                />
+                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{condition}</span>
+              </label>
+            ))}
+          </div>
+
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-foreground">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
             <button type="submit" className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all">
