@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Sparkles, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/quotation-assistant`;
 
@@ -130,7 +130,7 @@ const QuotationAIChat = ({ quotationContext, onClose }: Props) => {
         {result && (
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             <div className="prose prose-sm prose-invert max-w-none [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-foreground [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:text-muted-foreground [&_p]:text-sm [&_li]:text-muted-foreground [&_li]:text-sm [&_strong]:text-foreground [&_table]:w-full [&_th]:text-left [&_th]:text-xs [&_th]:text-muted-foreground [&_th]:uppercase [&_th]:tracking-wider [&_th]:pb-2 [&_td]:py-1.5 [&_td]:text-sm [&_td]:text-foreground [&_hr]:border-border">
-              <ReactMarkdown>{result}</ReactMarkdown>
+              <div dangerouslySetInnerHTML={{ __html: result.replace(/\n/g, '<br/>') }} />
             </div>
 
             {!isLoading && (
