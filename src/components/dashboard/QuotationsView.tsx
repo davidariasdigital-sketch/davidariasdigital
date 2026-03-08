@@ -113,6 +113,9 @@ const QuotationsView = () => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status });
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
+    // Restore selected conditions from saved data
+    const savedConditions = (q.conditions as string[]) ?? [];
+    setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     setShowForm(true);
   };
 
