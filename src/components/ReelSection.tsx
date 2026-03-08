@@ -2,9 +2,8 @@ import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const stats = [
-  { value: "10+", label: "Años de Experiencia", icon: "🎬" },
-  { value: "50+", label: "Comerciales Producidos", icon: "📺" },
-  { value: "20+", label: "Videoclips Dirigidos", icon: "🎵" },
+  { value: "5+", label: "Años de Experiencia", icon: "🎬" },
+  { value: "40+", label: "Marcas", icon: "📺" },
 ];
 
 const ReelSection = () => {
