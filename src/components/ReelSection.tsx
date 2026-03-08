@@ -3,13 +3,7 @@ import { useRef } from "react";
 
 const stats = [
   { value: "5+", label: "Años de Experiencia", icon: "🎬" },
-];
-
-const brandNames = [
-  "Nike", "Adidas", "Samsung", "Coca-Cola", "Bavaria", "Rappi",
-  "Grupo Éxito", "Corona", "Claro", "Movistar", "Alpina", "Colgate",
-  "Nutresa", "Avianca", "Juan Valdez", "Bancolombia", "EPM", "Sura",
-  "Postobón", "Totto",
+  { value: "40+", label: "Marcas", icon: "🏢" },
 ];
 
 const ReelSection = () => {
