@@ -47,6 +47,63 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number
+          client_id: string | null
+          concept: string
+          created_at: string
+          due_date: string | null
+          id: string
+          notes: string | null
+          paid_date: string | null
+          quotation_id: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          concept: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          quotation_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          concept?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          quotation_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           client_id: string | null
@@ -203,6 +260,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      invoice_status: "pendiente" | "pagada" | "vencida"
       project_status: "pendiente" | "en_progreso" | "completado"
       quotation_status: "borrador" | "enviada" | "aceptada" | "rechazada"
       task_priority: "baja" | "media" | "alta"
@@ -333,6 +391,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      invoice_status: ["pendiente", "pagada", "vencida"],
       project_status: ["pendiente", "en_progreso", "completado"],
       quotation_status: ["borrador", "enviada", "aceptada", "rechazada"],
       task_priority: ["baja", "media", "alta"],
