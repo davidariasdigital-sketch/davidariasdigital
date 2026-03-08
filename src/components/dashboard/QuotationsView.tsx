@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, Sparkles, FileDown } from "lucide-react";
-import QuotationAIChat from "./QuotationAIChat";
+import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
+import { generateQuotationPDF } from "@/lib/quotation-pdf";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 
 interface QuotationItem {
