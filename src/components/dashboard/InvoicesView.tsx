@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, DollarSign } from "lucide-react";
+import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 
 interface Invoice {
   id: string;
@@ -251,6 +252,20 @@ const InvoicesView = () => {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => generateInvoicePDF({
+                  concept: inv.concept,
+                  amount: Number(inv.amount),
+                  clientName: inv.clients?.name ?? "Cliente",
+                  createdAt: inv.created_at,
+                  notes: inv.notes,
+                  due_date: inv.due_date,
+                })}
+                className="p-2 text-muted-foreground hover:text-primary transition-colors"
+                title="Descargar PDF"
+              >
+                <FileDown size={14} />
+              </button>
               <button onClick={() => handleEdit(inv)} className="p-2 text-muted-foreground hover:text-foreground transition-colors"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(inv.id)} className="p-2 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
             </div>
