@@ -25,9 +25,7 @@ const Navbar = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
       className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl transition-all duration-700 rounded-full ${
-        scrolled
-          ? "glass-light shadow-lg"
-          : "bg-transparent"
+        scrolled ? "liquid-glass-rainbow" : "bg-transparent"
       }`}
     >
       <div className="px-6 py-3 flex items-center justify-between">
@@ -40,7 +38,7 @@ const Navbar = () => {
             <a
               key={item.label}
               href={item.href}
-              className="text-[12px] font-medium tracking-wide text-muted-foreground hover:text-foreground px-4 py-2 rounded-full hover:bg-secondary transition-all duration-300"
+              className="text-[12px] font-medium tracking-wide text-muted-foreground hover:text-foreground px-4 py-2 rounded-full hover:bg-secondary/60 transition-all duration-300"
             >
               {item.label}
             </a>
@@ -77,7 +75,7 @@ const Navbar = () => {
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="text-[13px] font-medium text-muted-foreground hover:text-foreground px-4 py-3 rounded-2xl hover:bg-secondary transition-all"
+                  className="text-[13px] font-medium text-muted-foreground hover:text-foreground px-4 py-3 rounded-2xl hover:bg-secondary/60 transition-all"
                 >
                   {item.label}
                 </a>

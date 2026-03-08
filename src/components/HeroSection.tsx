@@ -34,10 +34,10 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
-                className="pill-badge mb-8"
+                className="liquid-glass rounded-full px-5 py-2 mb-8 inline-flex items-center gap-2"
               >
                 <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span>Disponible para proyectos</span>
+                <span className="text-[11px] font-semibold tracking-wider text-foreground/70">Disponible para proyectos</span>
               </motion.div>
 
               <h1 className="leading-[0.9] tracking-[-0.03em]">
@@ -86,7 +86,7 @@ const HeroSection = () => {
               </a>
               <a
                 href="#reel"
-                className="group inline-flex items-center gap-2.5 neu-card font-semibold text-[13px] text-muted-foreground hover:text-foreground px-7 py-3.5 rounded-full hover:scale-[1.03] transition-all duration-300"
+                className="group inline-flex items-center gap-2.5 liquid-btn font-semibold text-[13px] text-muted-foreground hover:text-foreground px-7 py-3.5 rounded-full"
               >
                 Ver Reel
                 <Play size={13} className="group-hover:translate-x-0.5 transition-transform duration-300" />
@@ -105,7 +105,7 @@ const HeroSection = () => {
               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative"
             >
-              <div className="neu-card p-3 w-[280px] md:w-[340px] lg:w-[380px]">
+              <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 w-[280px] md:w-[340px] lg:w-[380px]">
                 <div className="rounded-[calc(var(--radius)-8px)] overflow-hidden">
                   <img
                     src={davidPortrait}
@@ -127,7 +127,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.2, duration: 0.6 }}
-                className="absolute -right-5 top-12 neu-card px-4 py-2.5 hidden lg:block"
+                className="absolute -right-5 top-12 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block"
               >
                 <p className="text-[10px] font-extrabold text-primary">10+ Años</p>
                 <p className="text-[9px] text-muted-foreground">Experiencia</p>
@@ -137,7 +137,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1.4, duration: 0.6 }}
-                className="absolute -left-5 bottom-24 neu-card px-4 py-2.5 hidden lg:block"
+                className="absolute -left-5 bottom-24 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block"
               >
                 <p className="text-[10px] font-extrabold text-primary">50+</p>
                 <p className="text-[9px] text-muted-foreground">Comerciales</p>
@@ -154,7 +154,7 @@ const HeroSection = () => {
         transition={{ delay: 2, duration: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
-        <div className="neu-card px-5 py-2.5 flex items-center gap-2 rounded-full">
+        <div className="liquid-glass rounded-full px-5 py-2.5 flex items-center gap-2">
           <span className="text-[10px] text-muted-foreground font-medium">Scroll</span>
           <motion.div
             animate={{ y: [0, 4, 0] }}

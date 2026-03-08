@@ -29,7 +29,9 @@ const ReelSection = () => {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16"
         >
-          <span className="pill-badge mb-6">Showreel 2026</span>
+          <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
+            Showreel 2026
+          </span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground text-balance">
             El trabajo habla
             <br />
@@ -38,7 +40,7 @@ const ReelSection = () => {
         </motion.div>
 
         <motion.div style={{ scale: videoScale, opacity: videoOpacity }}>
-          <div className="neu-card p-3 md:p-4 glow-soft">
+          <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft">
             <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted">
               <iframe
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
@@ -59,7 +61,7 @@ const ReelSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="neu-card p-7 text-center hover:scale-[1.03] transition-transform duration-300"
+              className="liquid-glass rounded-[var(--radius)] p-7 text-center hover:scale-[1.03] transition-transform duration-300"
             >
               <span className="text-2xl mb-3 block">{stat.icon}</span>
               <p className="text-3xl md:text-4xl font-black text-primary tracking-tight">{stat.value}</p>
