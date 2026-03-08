@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
@@ -14,13 +14,6 @@ const navItemsAfter = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">
@@ -28,77 +21,81 @@ const Navbar = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-full max-w-4xl transition-all duration-700 rounded-full liquid-glass-rainbow"
+        className="w-full max-w-4xl rounded-full liquid-glass-rainbow"
       >
-      <div className="px-6 py-3 flex items-center justify-between">
-        <div className="w-8" />
+        <div className="px-4 md:px-6 py-3 grid grid-cols-[1fr_auto_1fr] items-center">
+          <div className="hidden md:block" />
 
-        <div className="hidden md:flex items-center gap-1">
-          {navItemsBefore.map((item) => (
+          <div className="hidden md:flex items-center justify-center gap-1">
+            {navItemsBefore.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+              >
+                {item.label}
+              </a>
+            ))}
+
             <a
-              key={item.label}
-              href={item.href}
-              className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+              href="#contacto"
+              className="text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
             >
-              {item.label}
+              Hablemos
             </a>
-          ))}
-          <a
-            href="#contacto"
-            className="text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-[0_0_20px_-4px_hsl(var(--primary)/0.4)] hover:scale-[1.03] transition-all duration-300"
-          >
-            Hablemos
-          </a>
-          {navItemsAfter.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+
+            {navItemsAfter.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={() => setOpen(!open)}
+              className="md:hidden text-foreground/60 p-2"
+              aria-label="Menú"
             >
-              {item.label}
-            </a>
-          ))}
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground/60"
-          aria-label="Menú"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden overflow-hidden"
-          >
-            <div className="px-6 pb-5 flex flex-col gap-1">
-              {[...navItemsBefore, ...navItemsAfter].map((item) => (
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden overflow-hidden"
+            >
+              <div className="px-6 pb-5 flex flex-col gap-1">
+                {[...navItemsBefore, ...navItemsAfter].map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className="text-[13px] font-medium text-foreground/50 hover:text-foreground px-4 py-3 rounded-2xl hover:bg-foreground/5 transition-all"
+                  >
+                    {item.label}
+                  </a>
+                ))}
                 <a
-                  key={item.label}
-                  href={item.href}
+                  href="#contacto"
                   onClick={() => setOpen(false)}
-                  className="text-[13px] font-medium text-foreground/50 hover:text-foreground px-4 py-3 rounded-2xl hover:bg-foreground/5 transition-all"
+                  className="text-[13px] font-bold bg-primary text-primary-foreground px-4 py-3 rounded-2xl text-center mt-2"
                 >
-                  {item.label}
+                  Hablemos
                 </a>
-              ))}
-              <a
-                href="#contacto"
-                onClick={() => setOpen(false)}
-                className="text-[13px] font-bold bg-primary text-primary-foreground px-4 py-3 rounded-2xl text-center mt-2"
-              >
-                Hablemos
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
     </div>
   );
