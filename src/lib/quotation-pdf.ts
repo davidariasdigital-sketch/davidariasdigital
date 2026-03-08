@@ -249,14 +249,16 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...MID_GRAY);
 
-  const terms = [
-    `• Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.`,
-    `• La entrega del contenido total editado se coordina directamente con el cliente.`,
-    `• Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.`,
-    `• Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.`,
-    `• Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.`,
-    `• Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.`,
+  const defaultTerms = [
+    `Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.`,
+    `La entrega del contenido total editado se coordina directamente con el cliente.`,
+    `Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.`,
+    `Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.`,
+    `Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.`,
+    `Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.`,
   ];
+
+  const terms = (q.conditions && q.conditions.length > 0 ? q.conditions : defaultTerms).map(t => `• ${t}`);
 
   terms.forEach((term) => {
     const lines = doc.splitTextToSize(term, contentWidth);
