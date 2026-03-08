@@ -91,8 +91,15 @@ const ClientsView = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-          <Plus size={16} /> Nuevo
+        <div className="flex items-center gap-2">
+          <button onClick={seedClients} className="flex items-center gap-2 bg-muted text-foreground text-sm font-semibold px-4 py-2 rounded-full hover:bg-muted/80 transition-all">
+            <Upload size={16} /> Importar marcas
+          </button>
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+            <Plus size={16} /> Nuevo
+          </button>
+        </div>
+      </div>
         </button>
       </div>
 
