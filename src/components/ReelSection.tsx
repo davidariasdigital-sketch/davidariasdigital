@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 const stats = [
   { value: "5+", label: "Años de Experiencia", icon: "🎬" },
@@ -16,7 +16,23 @@ const ReelSection = () => {
   const videoScale = useTransform(scrollYProgress, [0, 0.3], [0.92, 1]);
   const videoOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
   const videoRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(videoRef, { margin: "-100px", once: true });
+  const iframeContainerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(videoRef, { margin: "-100px", once: false });
+  const hasAutoPlayed = useRef(false);
+
+  useEffect(() => {
+    if (isInView && !hasAutoPlayed.current && iframeContainerRef.current) {
+      hasAutoPlayed.current = true;
+      iframeContainerRef.current.innerHTML = `<iframe 
+        src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=0&rel=0&modestbranding=1" 
+        title="Reel David Arias"
+        class="w-full h-full absolute inset-0"
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>`;
+    }
+  }, [isInView]);
 
   
 
@@ -43,25 +59,20 @@ const ReelSection = () => {
         </motion.div>
 
         <motion.div ref={videoRef} style={{ scale: videoScale, opacity: videoOpacity }}>
-          <a
-            href="https://www.youtube.com/watch?v=D3ZueneGbbA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft block group"
-          >
-            <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted relative">
+          <div className="liquid-glass-rainbow rounded-[var(--radius)] p-3 md:p-4 glow-soft block">
+            <div className="aspect-video w-full rounded-[calc(var(--radius)-8px)] overflow-hidden bg-muted relative" ref={iframeContainerRef}>
               <img
                 src="https://img.youtube.com/vi/D3ZueneGbbA/maxresdefault.jpg"
                 alt="Reel David Arias"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/90 flex items-center justify-center shadow-lg">
                   <svg className="w-7 h-7 md:w-8 md:h-8 text-primary-foreground ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
               </div>
             </div>
-          </a>
+          </div>
         </motion.div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
