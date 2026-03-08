@@ -19,7 +19,17 @@ interface Quotation {
   client_id: string | null;
   created_at: string;
   clients?: { name: string } | null;
+  conditions?: string[];
 }
+
+const DEFAULT_CONDITIONS = [
+  "Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.",
+  "La entrega del contenido total editado se coordina directamente con el cliente.",
+  "Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.",
+  "Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.",
+  "Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.",
+  "Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.",
+];
 
 interface Client {
   id: string;
