@@ -90,7 +90,7 @@ const QuotationsView = () => {
     };
 
     if (editing) {
-      const { user_id, conditions: _c, ...updatePayload } = payload;
+      const { user_id, ...updatePayload } = payload;
       const { error } = await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
       if (error) console.error("Update error:", error);
     } else {
