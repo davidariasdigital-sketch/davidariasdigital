@@ -11,30 +11,30 @@ const links = [
 const Footer = () => {
   return (
     <footer id="contacto" className="pt-28 md:pt-40 pb-10 px-6 md:px-12 relative">
-      <div className="orb w-[600px] h-[600px] bg-primary/10 bottom-20 left-1/2 -translate-x-1/2 float-slow" />
+      <div className="blob w-[600px] h-[600px] bg-primary/10 bottom-20 left-1/2 -translate-x-1/2 float-slow" />
 
       <div className="max-w-5xl mx-auto relative z-10">
-        {/* CTA Glass Card */}
+        {/* CTA Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="glass-card p-10 md:p-16 text-center mb-20 glow-primary"
+          className="neu-card p-10 md:p-16 text-center mb-20 glow-soft"
         >
           <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-4">
             Creemos algo
             <br />
             <span className="text-primary">icónico.</span>
           </h2>
-          <p className="text-foreground/40 text-sm max-w-md mx-auto mb-8">
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
             ¿Tienes un proyecto en mente? Hablemos y hagamos realidad tu visión con contenido cinematográfico de alto nivel.
           </p>
           <a
             href="https://wa.me/573108781633"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-semibold text-[13px] px-8 py-4 rounded-2xl hover:shadow-[0_0_50px_-10px_hsl(var(--primary)/0.5)] hover:scale-[1.03] transition-all duration-300"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-bold text-[13px] px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"
           >
             Iniciar conversación
             <Mail size={15} />
@@ -57,7 +57,7 @@ const Footer = () => {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="glass-subtle rounded-xl px-4 py-3 flex items-center gap-3 text-foreground/40 hover:text-primary text-[12px] font-medium transition-all duration-300 hover:scale-[1.03]"
+                className="neu-card rounded-full px-5 py-3 flex items-center gap-3 text-muted-foreground hover:text-primary text-[12px] font-medium transition-all duration-300 hover:scale-[1.03]"
               >
                 <Icon size={14} />
                 {link.label}
@@ -69,7 +69,7 @@ const Footer = () => {
         {/* Big type */}
         <div className="text-center mb-12">
           <h2 className="text-[clamp(3rem,8vw,6rem)] font-black leading-[0.85] tracking-tight">
-            <span className="text-foreground/8">DIGITAL</span>
+            <span className="text-foreground/[0.06]">DIGITAL</span>
           </h2>
           <h2 className="text-[clamp(3rem,8vw,6rem)] font-black leading-[0.85] tracking-tight">
             <span className="text-primary/20">CRAFTSMAN</span>
@@ -77,8 +77,8 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="pt-6 border-t border-foreground/5 text-center">
-          <p className="text-foreground/25 text-[11px] tracking-wider">
+        <div className="pt-6 border-t border-border text-center">
+          <p className="text-muted-foreground/60 text-[11px] tracking-wider">
             © 2026 David Arias Digital. Todos los derechos reservados. Diseñado
             con <Heart size={10} className="inline text-primary/50 mx-0.5" /> en Colombia
           </p>

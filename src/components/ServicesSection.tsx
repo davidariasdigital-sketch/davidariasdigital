@@ -20,7 +20,7 @@ const ServicesSection = () => {
 
   return (
     <section id="servicios" className="py-28 md:py-40 px-6 md:px-12 relative">
-      <div className="orb w-[500px] h-[500px] bg-purple-500/10 bottom-0 left-0 float-slower" />
+      <div className="blob w-[500px] h-[500px] bg-pink-300/15 bottom-0 left-0 float-slower" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         <motion.div
@@ -30,15 +30,13 @@ const ServicesSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <span className="glass-subtle rounded-full px-4 py-1.5 text-[11px] font-medium text-primary inline-block mb-6">
-            Inversión aproximada
-          </span>
+          <span className="pill-badge mb-6">Inversión aproximada</span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground text-balance">
             Servicios e Inversión
           </h2>
         </motion.div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {services.map((service, i) => {
             const isOpen = openIndex === i;
             const Icon = service.icon;
@@ -51,17 +49,17 @@ const ServicesSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.04 }}
-                className="glass-card overflow-hidden hover:scale-[1.005] transition-transform duration-300"
+                className="neu-card overflow-hidden hover:scale-[1.005] transition-transform duration-300"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
                   className="w-full flex items-center justify-between p-5 md:p-6 text-left group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <div className="w-11 h-11 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                       <Icon size={18} className="text-primary" />
                     </div>
-                    <span className="font-semibold text-[14px] text-foreground/90 group-hover:text-foreground transition-colors">
+                    <span className="font-semibold text-[14px] text-foreground/80 group-hover:text-foreground transition-colors">
                       {service.title}
                     </span>
                   </div>
@@ -69,7 +67,7 @@ const ServicesSection = () => {
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <ChevronDown size={18} className="text-foreground/30" />
+                    <ChevronDown size={18} className="text-muted-foreground" />
                   </motion.div>
                 </button>
 
@@ -82,18 +80,18 @@ const ServicesSection = () => {
                       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 md:px-6 pb-6 pt-1 ml-14">
+                      <div className="px-5 md:px-6 pb-6 pt-1 ml-[60px]">
                         <p className="text-2xl font-black text-primary tracking-tight">
                           {service.price}
                         </p>
-                        <p className="mt-2 text-foreground/40 text-[13px] leading-relaxed">
+                        <p className="mt-2 text-muted-foreground text-[13px] leading-relaxed">
                           {service.description}
                         </p>
                         <a
                           href={`https://wa.me/573108781633?text=${whatsappMsg}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary text-[12px] font-semibold px-4 py-2 rounded-xl transition-all duration-300"
+                          className="mt-4 inline-flex items-center gap-2 bg-primary text-primary-foreground hover:shadow-lg text-[12px] font-bold px-5 py-2.5 rounded-full transition-all duration-300"
                         >
                           Reservar Ahora <ArrowUpRight size={13} />
                         </a>

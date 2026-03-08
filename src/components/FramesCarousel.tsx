@@ -13,7 +13,7 @@ const FramesCarousel = () => {
 
   return (
     <section className="py-28 md:py-40 overflow-hidden relative">
-      <div className="orb w-[400px] h-[400px] bg-blue-500/15 top-0 right-0 float-slow" />
+      <div className="blob w-[400px] h-[400px] bg-blue-300/20 top-0 right-0 float-slow" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-14 relative z-10">
         <motion.div
@@ -23,23 +23,21 @@ const FramesCarousel = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <span className="glass-subtle rounded-full px-4 py-1.5 text-[11px] font-medium text-primary inline-block mb-6">
-            Destacados Visuales
-          </span>
+          <span className="pill-badge mb-6">Destacados Visuales</span>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
             Frames Seleccionados
           </h2>
         </motion.div>
       </div>
 
-      <div className="animate-marquee flex gap-4 w-max px-4">
+      <div className="animate-marquee flex gap-5 w-max px-4">
         {doubled.map((src, i) => (
           <div
             key={i}
             className="w-[340px] md:w-[480px] shrink-0 group"
           >
-            <div className="glass-card p-1.5 overflow-hidden hover:scale-[1.02] transition-transform duration-500">
-              <div className="aspect-video rounded-[calc(var(--radius)-0.4rem)] overflow-hidden">
+            <div className="neu-card p-2 overflow-hidden hover:scale-[1.02] transition-transform duration-500">
+              <div className="aspect-video rounded-[calc(var(--radius)-8px)] overflow-hidden">
                 <img
                   src={src}
                   alt={`Frame ${(i % frames.length) + 1}`}

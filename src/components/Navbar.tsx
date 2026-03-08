@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "Sobre Mí", href: "#sobre-mí" },
+  { label: "Sobre Mí", href: "#inicio" },
   { label: "Reel", href: "#reel" },
   { label: "Servicios", href: "#servicios" },
   { label: "Contacto", href: "#contacto" },
@@ -24,12 +24,14 @@ const Navbar = () => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-700 rounded-2xl ${
-        scrolled ? "glass" : "bg-transparent"
+      className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-4xl transition-all duration-700 rounded-full ${
+        scrolled
+          ? "glass-light shadow-lg"
+          : "bg-transparent"
       }`}
     >
-      <div className="px-6 py-4 flex items-center justify-between">
-        <a href="#inicio" className="text-lg font-bold tracking-[0.1em] text-foreground">
+      <div className="px-6 py-3 flex items-center justify-between">
+        <a href="#inicio" className="text-lg font-extrabold tracking-[0.08em] text-foreground">
           DA<span className="text-[10px] align-super text-primary">®</span>
         </a>
 
@@ -38,7 +40,7 @@ const Navbar = () => {
             <a
               key={item.label}
               href={item.href}
-              className="text-[12px] font-medium tracking-wide text-foreground/60 hover:text-foreground px-4 py-2 rounded-xl hover:bg-foreground/5 transition-all duration-300"
+              className="text-[12px] font-medium tracking-wide text-muted-foreground hover:text-foreground px-4 py-2 rounded-full hover:bg-secondary transition-all duration-300"
             >
               {item.label}
             </a>
@@ -47,14 +49,14 @@ const Navbar = () => {
 
         <a
           href="#contacto"
-          className="hidden md:inline-flex text-[12px] font-semibold tracking-wide bg-primary text-primary-foreground px-5 py-2 rounded-xl hover:brightness-110 transition-all duration-300"
+          className="hidden md:inline-flex text-[12px] font-bold tracking-wide bg-primary text-primary-foreground px-6 py-2.5 rounded-full hover:shadow-lg hover:scale-[1.03] transition-all duration-300"
         >
           Hablemos
         </a>
 
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground/70"
+          className="md:hidden text-foreground/60"
           aria-label="Menú"
         >
           {open ? <X size={20} /> : <Menu size={20} />}
@@ -75,7 +77,7 @@ const Navbar = () => {
                   key={item.label}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="text-[13px] font-medium text-foreground/60 hover:text-foreground px-4 py-3 rounded-xl hover:bg-foreground/5 transition-all"
+                  className="text-[13px] font-medium text-muted-foreground hover:text-foreground px-4 py-3 rounded-2xl hover:bg-secondary transition-all"
                 >
                   {item.label}
                 </a>
@@ -83,7 +85,7 @@ const Navbar = () => {
               <a
                 href="#contacto"
                 onClick={() => setOpen(false)}
-                className="text-[13px] font-semibold bg-primary text-primary-foreground px-4 py-3 rounded-xl text-center mt-2"
+                className="text-[13px] font-bold bg-primary text-primary-foreground px-4 py-3 rounded-2xl text-center mt-2"
               >
                 Hablemos
               </a>
