@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, FileText, CheckSquare, DollarSign } from "lucide-react";
+import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
 
@@ -41,7 +42,7 @@ const OverviewView = ({ onNavigate }: Props) => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h1 className="text-2xl font-bold text-foreground">Bienvenido</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((card) => (
@@ -56,6 +57,9 @@ const OverviewView = ({ onNavigate }: Props) => {
           </button>
         ))}
       </div>
+
+      {/* Monthly Calendar */}
+      <MonthlyCalendar />
     </div>
   );
 };
