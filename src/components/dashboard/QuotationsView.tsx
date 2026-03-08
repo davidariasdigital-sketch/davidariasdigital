@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, Sparkles, FileDown } from "lucide-react";
-import QuotationAIChat from "./QuotationAIChat";
+import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 
 interface QuotationItem {
@@ -50,8 +49,6 @@ const QuotationsView = () => {
   const [editing, setEditing] = useState<Quotation | null>(null);
   const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
-  const [showAI, setShowAI] = useState(false);
-  const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
 
   const fetchData = async () => {
@@ -67,14 +64,8 @@ const QuotationsView = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("handleSubmit called", { form, items });
-    
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    console.log("getUser result", { user: user?.id, userError });
-    if (!user) {
-      console.error("No user found, cannot create quotation");
-      return;
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
     const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
@@ -92,11 +83,9 @@ const QuotationsView = () => {
 
     if (editing) {
       const { user_id, ...updatePayload } = payload;
-      const { error } = await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
-      if (error) console.error("Update error:", error);
+      await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
     } else {
-      const { error } = await supabase.from("quotations").insert(payload);
-      if (error) console.error("Insert error:", error);
+      await supabase.from("quotations").insert(payload);
     }
     resetForm();
     fetchData();
@@ -114,7 +103,6 @@ const QuotationsView = () => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
-    // Restore selected conditions from saved data
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     setShowForm(true);
@@ -134,50 +122,20 @@ const QuotationsView = () => {
     generateQuotationPDF(q);
   };
 
-  const openAIForQuotation = (q: Quotation | null) => {
-    setAiQuotation(q);
-    setShowAI(true);
-  };
-
-  const getFormContext = () => {
-    if (showForm) {
-      return `Título: ${form.title}\nDescripción: ${form.description}\nConceptos: ${items.map(i => `${i.description} - $${i.amount}`).join(", ")}\nTotal: $${items.reduce((s, i) => s + (Number(i.amount) || 0), 0)}`;
-    }
-    if (aiQuotation) {
-      return `Título: ${aiQuotation.title}\nDescripción: ${aiQuotation.description ?? ""}\nCliente: ${aiQuotation.clients?.name ?? "Sin cliente"}\nConceptos: ${aiQuotation.items.map(i => `${i.description} - $${i.amount}`).join(", ")}\nTotal: $${Number(aiQuotation.total)}`;
-    }
-    return "";
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Cotizaciones</h1>
-        <div className="flex items-center gap-2">
-          <button onClick={() => openAIForQuotation(null)} className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full liquid-btn text-foreground hover:text-primary transition-colors">
-            <Sparkles size={16} /> Asistente IA
-          </button>
-          <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-            <Plus size={16} /> Nueva
-          </button>
-        </div>
+        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+          <Plus size={16} /> Nueva
+        </button>
       </div>
-
-      {showAI && (
-        <QuotationAIChat
-          quotationContext={getFormContext()}
-          onClose={() => { setShowAI(false); setAiQuotation(null); }}
-        />
-      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="liquid-glass rounded-[var(--radius)] p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-foreground">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => openAIForQuotation(null)} className="text-primary hover:text-primary/80 p-1.5" title="Pedir ayuda a la IA"><Sparkles size={14} /></button>
-              <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
-            </div>
+            <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
@@ -251,7 +209,6 @@ const QuotationsView = () => {
                 <option value="aceptada">Aceptada</option>
                 <option value="rechazada">Rechazada</option>
               </select>
-              <button onClick={() => openAIForQuotation(q)} className="text-muted-foreground hover:text-primary p-1.5 rounded-lg hover:bg-primary/10" title="Asistente IA"><Sparkles size={14} /></button>
               <button onClick={() => handleDownloadPDF(q)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(q)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/10"><Trash2 size={14} /></button>
