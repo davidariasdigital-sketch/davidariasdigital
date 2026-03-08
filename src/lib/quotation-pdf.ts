@@ -13,6 +13,7 @@ interface Quotation {
   status: string;
   created_at: string;
   clients?: { name: string } | null;
+  conditions?: string[];
 }
 
 // Brand colors
