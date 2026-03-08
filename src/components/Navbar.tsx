@@ -42,8 +42,7 @@ const Navbar = () => {
             <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
           </div>
 
-          <div className="hidden md:flex items-center gap-1">
-
+          <div className="hidden md:flex items-center justify-end gap-1">
             {navItemsAfter.map((item) => (
               <a
                 key={item.label}
@@ -53,9 +52,6 @@ const Navbar = () => {
                 {item.label}
               </a>
             ))}
-          </div>
-
-          <div className="flex justify-end items-center gap-2">
             <Link
               to="/login"
               className="text-foreground/40 hover:text-foreground p-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
