@@ -1,0 +1,1 @@
+ALTER TABLE public.quotations ADD COLUMN delivery_date date DEFAULT NULL;
