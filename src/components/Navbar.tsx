@@ -25,9 +25,7 @@ const Navbar = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className={`w-full max-w-4xl transition-all duration-700 rounded-full ${
-          scrolled ? "liquid-glass-rainbow" : "bg-transparent"
-        }`}
+        className="w-full max-w-4xl transition-all duration-700 rounded-full liquid-glass-rainbow"
       >
       <div className="px-6 py-3 flex items-center justify-between">
         <a href="#inicio" className="text-lg font-extrabold tracking-[0.08em] text-foreground">
