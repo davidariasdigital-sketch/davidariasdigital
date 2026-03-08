@@ -222,7 +222,7 @@
     border-radius: inherit;
     background: linear-gradient(
       105deg,
-      hsl(0 0% 100% / 0.55) 0%,
+      hsl(0 0% 100% / 0.08) 0%,
       hsl(0 0% 100% / 0) 40%
     );
     pointer-events: none;
