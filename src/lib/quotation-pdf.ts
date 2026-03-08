@@ -132,6 +132,18 @@ export function generateQuotationPDF(q: Quotation) {
 
   y += 6;
 
+  // Delivery date (if present)
+  if (q.delivery_date) {
+    const deliveryStr = new Date(q.delivery_date).toLocaleDateString("es-CO", {
+      year: "numeric", month: "long", day: "numeric",
+    });
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...MID_GRAY);
+    doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
+    y += 5;
+  }
+
   // Expiration date
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
