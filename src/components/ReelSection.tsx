@@ -16,6 +16,8 @@ const ReelSection = () => {
 
   const videoScale = useTransform(scrollYProgress, [0, 0.3], [0.92, 1]);
   const videoOpacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
+  const videoRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(videoRef, { margin: "-100px", once: true });
 
   return (
     <section id="reel" ref={ref} className="py-28 md:py-40 px-6 md:px-12 relative">
