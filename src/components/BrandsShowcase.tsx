@@ -2,10 +2,14 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const brandNames = [
-  "Nike", "Adidas", "Samsung", "Coca-Cola", "Bavaria", "Rappi",
-  "Grupo Éxito", "Corona", "Claro", "Movistar", "Alpina", "Colgate",
-  "Nutresa", "Avianca", "Juan Valdez", "Bancolombia", "EPM", "Sura",
-  "Postobón", "Totto",
+  "La Pescadería", "Uva de lujo", "Palmetto", "El Cortijo", "Comité Olímpico",
+  "Hunts", "Coloriss", "TQ", "Yanko", "Satillos", "La Cava",
+  "Nutricionista Natalia Valencia", "Hair Beauty", "Kimeline", "Angus Burguer",
+  "Michelangelo", "Restaurante 1975", "Epioné", "Rombo Quadrado", "Jazz Café",
+  "Joykeys", "Salon IN", "Iluminata", "Impocali", "Self", "Nize", "Atavico",
+  "Vitane", "Shibumi", "Luminance", "Tanga", "Suarez Abogados", "Dermocorea",
+  "Resonance", "Aromasense", "Greencode", "Deopies", "Muss", "Follies",
+  "Recamier Corp", "Ruuts", "Whitman", "Sra Buenaventura",
 ];
 
 const BrandsShowcase = () => {
