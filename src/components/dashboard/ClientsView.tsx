@@ -1,6 +1,18 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Trash2, Edit2, X } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, X, Upload } from "lucide-react";
+import { toast } from "sonner";
+
+const BRAND_CLIENTS = [
+  "La Pescadería", "Uva de lujo", "Palmetto", "El Cortijo", "Comité Olímpico",
+  "Hunts", "Coloriss", "TQ", "Yanko", "Satillos", "La Cava",
+  "Nutricionista Natalia Valencia", "Hair Beauty", "Kimeline", "Angus Burguer",
+  "Michelangelo", "Restaurante 1975", "Epioné", "Rombo Quadrado", "Jazz Café",
+  "Joykeys", "Salon IN", "Iluminata", "Impocali", "Self", "Nize", "Atavico",
+  "Vitane", "Shibumi", "Luminance", "Tanga", "Suarez Abogados", "Dermocorea",
+  "Resonance", "Aromasense", "Greencode", "Deopies", "Muss", "Follies",
+  "Recamier Corp", "Ruuts", "Whitman", "Sra Buenaventura",
+];
 
 interface Client {
   id: string;
@@ -25,6 +37,23 @@ const ClientsView = () => {
   };
 
   useEffect(() => { fetchClients(); }, []);
+
+  const seedClients = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const existing = clients.map((c) => c.name.toLowerCase());
+    const toInsert = BRAND_CLIENTS
+      .filter((name) => !existing.includes(name.toLowerCase()))
+      .map((name) => ({ name, user_id: user.id }));
+    if (toInsert.length === 0) {
+      toast.info("Todos los clientes ya están agregados");
+      return;
+    }
+    const { error } = await supabase.from("clients").insert(toInsert);
+    if (error) { toast.error("Error al importar"); return; }
+    toast.success(`${toInsert.length} clientes importados`);
+    fetchClients();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,9 +91,14 @@ const ClientsView = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Clientes</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-          <Plus size={16} /> Nuevo
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={seedClients} className="flex items-center gap-2 bg-muted text-foreground text-sm font-semibold px-4 py-2 rounded-full hover:bg-muted/80 transition-all">
+            <Upload size={16} /> Importar marcas
+          </button>
+          <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+            <Plus size={16} /> Nuevo
+          </button>
+        </div>
       </div>
 
       <div className="relative">
