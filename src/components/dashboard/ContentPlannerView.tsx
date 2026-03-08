@@ -203,11 +203,13 @@ const ContentColumn = ({
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(colIndex, isIdea); }}
     >
-      <span className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${
-        isIdeaStyle ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
-      }`}>
-        {label}
-      </span>
+      {label && (
+        <span className={`text-[11px] font-semibold uppercase tracking-wider mb-1 ${
+          isIdeaStyle ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground"
+        }`}>
+          {label}
+        </span>
+      )}
 
       {items.map((item) => (
         <div
