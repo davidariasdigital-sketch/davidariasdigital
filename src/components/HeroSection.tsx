@@ -129,7 +129,7 @@ const HeroSection = () => {
                 transition={{ delay: 1.2, duration: 0.6 }}
                 className="absolute -right-5 top-12 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block">
                 
-                <p className="text-[10px] font-extrabold text-primary">10+ Años</p>
+                <p className="text-[10px] font-extrabold text-primary">5+ Años</p>
                 <p className="text-[9px] text-muted-foreground">Experiencia</p>
               </motion.div>
 
@@ -139,8 +139,8 @@ const HeroSection = () => {
                 transition={{ delay: 1.4, duration: 0.6 }}
                 className="absolute -left-5 bottom-24 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block">
                 
-                <p className="text-[10px] font-extrabold text-primary">50+</p>
-                <p className="text-[9px] text-muted-foreground">Comerciales</p>
+                <p className="text-[10px] font-extrabold text-primary">40+</p>
+                <p className="text-[9px] text-muted-foreground">Marcas</p>
               </motion.div>
             </motion.div>
           </motion.div>
