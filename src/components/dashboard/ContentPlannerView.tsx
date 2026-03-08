@@ -149,7 +149,7 @@ const ContentPlannerView = () => {
           {[0, 1].map((colIdx) => (
             <ContentColumn
               key={`idea-${colIdx}`}
-              label={`Ideas ${colIdx + 1}`}
+              label=""
               colIndex={colIdx}
               isIdea={true}
               items={getSlotItems(colIdx, true)}
