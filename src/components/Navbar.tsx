@@ -39,7 +39,7 @@ const Navbar = () => {
               </a>
             ))}
 
-            <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/30 flex-shrink-0 pointer-events-none">
+            <div className="w-14 h-14 -my-4 rounded-full overflow-hidden ring-[3px] ring-primary flex-shrink-0 pointer-events-none shadow-[0_0_15px_-3px_hsl(var(--primary)/0.5)]">
               <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
             </div>
 
