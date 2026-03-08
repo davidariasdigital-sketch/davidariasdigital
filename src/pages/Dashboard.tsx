@@ -20,6 +20,7 @@ const viewLabels: Record<View, string> = {
   quotations: "Cotizaciones",
   tasks: "Tareas",
   invoices: "Cuentas por Cobrar",
+  "content-planner": "Planeador de Contenido",
 };
 
 const Dashboard = () => {
