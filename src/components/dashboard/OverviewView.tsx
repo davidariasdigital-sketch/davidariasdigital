@@ -17,7 +17,7 @@ const OverviewView = ({ onNavigate }: Props) => {
         supabase.from("clients").select("id", { count: "exact", head: true }),
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "enviada"),
         supabase.from("tasks").select("id", { count: "exact", head: true }).eq("completed", false),
-        supabase.from("invoices").select("amount").eq("status", "pendiente"),
+        supabase.from("invoices" as any).select("amount").eq("status", "pendiente"),
       ]);
       const pendingAmount = (inv.data ?? []).reduce((sum, i) => sum + Number(i.amount), 0);
       setStats({
