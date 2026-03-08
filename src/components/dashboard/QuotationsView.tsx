@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2 } from "lucide-react";
+import { Plus, X, Trash2, Edit2, Sparkles, FileDown } from "lucide-react";
+import QuotationAIChat from "./QuotationAIChat";
+import { generateQuotationPDF } from "@/lib/quotation-pdf";
 
 interface QuotationItem {
   description: string;
@@ -38,6 +40,8 @@ const QuotationsView = () => {
   const [editing, setEditing] = useState<Quotation | null>(null);
   const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
+  const [showAI, setShowAI] = useState(false);
+  const [aiQuotation, setAiQuotation] = useState<Quotation | null>(null);
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -100,20 +104,54 @@ const QuotationsView = () => {
     fetchData();
   };
 
+  const handleDownloadPDF = (q: Quotation) => {
+    generateQuotationPDF(q);
+  };
+
+  const openAIForQuotation = (q: Quotation | null) => {
+    setAiQuotation(q);
+    setShowAI(true);
+  };
+
+  const getFormContext = () => {
+    if (showForm) {
+      return `Título: ${form.title}\nDescripción: ${form.description}\nConceptos: ${items.map(i => `${i.description} - $${i.amount}`).join(", ")}\nTotal: $${items.reduce((s, i) => s + (Number(i.amount) || 0), 0)}`;
+    }
+    if (aiQuotation) {
+      return `Título: ${aiQuotation.title}\nDescripción: ${aiQuotation.description ?? ""}\nCliente: ${aiQuotation.clients?.name ?? "Sin cliente"}\nConceptos: ${aiQuotation.items.map(i => `${i.description} - $${i.amount}`).join(", ")}\nTotal: $${Number(aiQuotation.total)}`;
+    }
+    return "";
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Cotizaciones</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-          <Plus size={16} /> Nueva
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => openAIForQuotation(null)} className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full liquid-btn text-foreground hover:text-primary transition-colors">
+            <Sparkles size={16} /> Asistente IA
+          </button>
+          <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+            <Plus size={16} /> Nueva
+          </button>
+        </div>
       </div>
+
+      {showAI && (
+        <QuotationAIChat
+          quotationContext={getFormContext()}
+          onClose={() => { setShowAI(false); setAiQuotation(null); }}
+        />
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="liquid-glass rounded-[var(--radius)] p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-foreground">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
-            <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => openAIForQuotation(null)} className="text-primary hover:text-primary/80 p-1.5" title="Pedir ayuda a la IA"><Sparkles size={14} /></button>
+              <button type="button" onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
@@ -159,6 +197,8 @@ const QuotationsView = () => {
                 <option value="aceptada">Aceptada</option>
                 <option value="rechazada">Rechazada</option>
               </select>
+              <button onClick={() => openAIForQuotation(q)} className="text-muted-foreground hover:text-primary p-1.5 rounded-lg hover:bg-primary/10" title="Asistente IA"><Sparkles size={14} /></button>
+              <button onClick={() => handleDownloadPDF(q)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(q)} className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-muted/50"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="text-muted-foreground hover:text-destructive p-1.5 rounded-lg hover:bg-destructive/10"><Trash2 size={14} /></button>
             </div>
