@@ -129,7 +129,7 @@ const HeroSection = () => {
                 transition={{ delay: 1.2, duration: 0.6 }}
                 className="absolute -right-5 top-12 liquid-glass rounded-2xl px-4 py-2.5 hidden lg:block">
                 
-                <p className="text-[10px] font-extrabold text-primary">10+ Años</p>
+                <p className="text-[10px] font-extrabold text-primary">5+ Años</p>
                 <p className="text-[9px] text-muted-foreground">Experiencia</p>
               </motion.div>
 
