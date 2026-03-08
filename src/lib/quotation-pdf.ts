@@ -24,6 +24,11 @@ const MID_GRAY: [number, number, number] = [120, 120, 120];
 const ROW_ALT: [number, number, number] = [245, 245, 242];
 const ROW_WHITE: [number, number, number] = [255, 255, 255];
 
+// Contact info
+const BUSINESS_NAME = "David Arias";
+const BUSINESS_EMAIL = "davidariasdigital@gmail.com";
+const BUSINESS_PHONE = "+57 310 878 1633";
+
 function generateQuotationNumber(dateStr: string): string {
   const d = new Date(dateStr);
   const y = d.getFullYear();
@@ -31,6 +36,16 @@ function generateQuotationNumber(dateStr: string): string {
   const day = String(d.getDate()).padStart(2, "0");
   const seq = String(Math.floor(Math.random() * 999) + 1).padStart(3, "0");
   return `COT-${y}${m}${day}-${seq}`;
+}
+
+function formatCOP(value: number): string {
+  return `$${Number(value).toLocaleString("es-CO")} COP`;
+}
+
+function getExpirationDate(createdAt: string): string {
+  const d = new Date(createdAt);
+  d.setMonth(d.getMonth() + 1);
+  return d.toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" });
 }
 
 export function generateQuotationPDF(q: Quotation) {
@@ -59,7 +74,7 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...WHITE);
-  const dateStr = new Date(q.created_at).toLocaleDateString("es-MX", {
+  const dateStr = new Date(q.created_at).toLocaleDateString("es-CO", {
     year: "numeric", month: "long", day: "numeric",
   });
   doc.text(quotationNum, pw - margin, 22, { align: "right" });
@@ -84,26 +99,22 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text("David Creativo", margin, y);
+  doc.text(BUSINESS_NAME, margin, y);
   y += 5;
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...MID_GRAY);
-  doc.text("contacto@davidcreativo.com", margin, y);
+  doc.text(BUSINESS_EMAIL, margin, y);
   y += 4;
-  doc.text("+52 (555) 123-4567", margin, y);
-  y += 4;
-  doc.text("www.davidcreativo.com", margin, y);
+  doc.text(BUSINESS_PHONE, margin, y);
 
   // Client box (right side)
   if (q.clients?.name) {
     const boxX = colMid + 10;
     const boxW = pw - margin - boxX;
     const boxY = 50;
-    // Mustard left border
     doc.setFillColor(...MUSTARD);
     doc.rect(boxX, boxY, 2, 18, "F");
-    // Light background
     doc.setFillColor(250, 249, 245);
     doc.rect(boxX + 2, boxY, boxW - 2, 18, "F");
 
@@ -117,7 +128,14 @@ export function generateQuotationPDF(q: Quotation) {
     doc.text(q.clients.name, boxX + 6, boxY + 13);
   }
 
-  y += 10;
+  y += 6;
+
+  // Expiration date
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...MID_GRAY);
+  doc.text(`Válida hasta: ${getExpirationDate(q.created_at)}`, margin, y);
+  y += 8;
 
   // ─── TITLE & DESCRIPTION ───
   doc.setFontSize(14);
@@ -156,7 +174,7 @@ export function generateQuotationPDF(q: Quotation) {
   // ─── TABLE ROWS ───
   doc.setFont("helvetica", "normal");
   q.items.forEach((item, i) => {
-    if (y > ph - 50) {
+    if (y > ph - 80) {
       doc.addPage();
       y = 25;
     }
@@ -178,10 +196,7 @@ export function generateQuotationPDF(q: Quotation) {
 
     doc.setTextColor(...DARK);
     doc.setFont("helvetica", "bold");
-    doc.text(
-      `$${Number(item.amount).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`,
-      colAmt - 4, y + 1, { align: "right" }
-    );
+    doc.text(formatCOP(item.amount), colAmt - 4, y + 1, { align: "right" });
     doc.setFont("helvetica", "normal");
 
     y += cellH;
@@ -194,52 +209,73 @@ export function generateQuotationPDF(q: Quotation) {
 
   // ─── TOTAL BLOCK ───
   y += 6;
-  const totalBoxW = 80;
+  const totalBoxW = 90;
   const totalBoxX = pw - margin - totalBoxW;
   const totalBoxH = 28;
 
   doc.setFillColor(...DARK);
   doc.roundedRect(totalBoxX, y, totalBoxW, totalBoxH, 3, 3, "F");
 
-  // Subtotal label
   doc.setFontSize(7);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...LIGHT_GRAY);
-  doc.text(`${q.items.length} concepto${q.items.length !== 1 ? "s" : ""}`, totalBoxX + 6, y + 8);
-  doc.text("SUBTOTAL", totalBoxX + totalBoxW - 6, y + 8, { align: "right" });
+  doc.text(`${q.items.length} concepto${q.items.length !== 1 ? "s" : ""} · Precio incluye retención en la fuente`, totalBoxX + 6, y + 8);
 
-  // Total amount
-  doc.setFontSize(16);
+  doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...MUSTARD);
-  doc.text(
-    `$${Number(q.total).toLocaleString("es-MX", { minimumFractionDigits: 2 })}`,
-    totalBoxX + totalBoxW - 6, y + 22, { align: "right" }
-  );
+  doc.text(formatCOP(q.total), totalBoxX + totalBoxW - 6, y + 22, { align: "right" });
 
   doc.setFontSize(8);
   doc.setTextColor(...WHITE);
   doc.text("TOTAL", totalBoxX + 6, y + 22);
 
-  // ─── FOOTER ───
-  const footerY = ph - 25;
+  // ─── TERMS & CONDITIONS ───
+  y += totalBoxH + 12;
 
-  // Mustard separator
-  doc.setDrawColor(...MUSTARD);
-  doc.setLineWidth(0.5);
-  doc.line(margin, footerY, pw - margin, footerY);
+  if (y > ph - 70) {
+    doc.addPage();
+    y = 25;
+  }
 
-  // Terms
-  doc.setFontSize(7);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...DARK);
+  doc.text("CONDICIONES", margin, y);
+  y += 6;
+
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...MID_GRAY);
-  doc.text("Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.", margin, footerY + 6);
-  doc.text("Los precios están expresados en pesos mexicanos (MXN) e incluyen IVA.", margin, footerY + 10);
 
-  // Generated notice
+  const terms = [
+    `• Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.`,
+    `• La entrega del contenido total editado se coordina directamente con el cliente.`,
+    `• Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.`,
+    `• Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.`,
+    `• Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.`,
+    `• Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.`,
+  ];
+
+  terms.forEach((term) => {
+    const lines = doc.splitTextToSize(term, contentWidth);
+    if (y + lines.length * 4 > ph - 20) {
+      doc.addPage();
+      y = 25;
+    }
+    doc.text(lines, margin, y);
+    y += lines.length * 4 + 2;
+  });
+
+  // ─── FOOTER ───
+  const footerY = ph - 12;
+  doc.setDrawColor(...MUSTARD);
+  doc.setLineWidth(0.5);
+  doc.line(margin, footerY - 4, pw - margin, footerY - 4);
+
   doc.setFontSize(6);
   doc.setTextColor(200, 200, 200);
-  doc.text("Documento generado automáticamente", pw / 2, footerY + 16, { align: "center" });
+  doc.text("Documento generado automáticamente", pw / 2, footerY, { align: "center" });
 
   doc.save(`cotizacion-${q.title.toLowerCase().replace(/\s+/g, "-")}.pdf`);
 }
