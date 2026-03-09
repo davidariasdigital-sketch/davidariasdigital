@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar } from "lucide-react";
 
 interface CalendarEvent {
   id: string; title: string; description: string | null; event_date: string;
@@ -19,11 +19,11 @@ const COLORS = [
 ];
 
 const colorClasses: Record<string, string> = {
-  primary: "bg-primary/15 text-primary border-primary/30",
-  blue: "bg-blue-100 text-blue-700 border-blue-200",
-  green: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  red: "bg-red-100 text-red-700 border-red-200",
-  purple: "bg-purple-100 text-purple-700 border-purple-200",
+  primary: "bg-primary/15 text-[hsl(var(--dash-text))] border-primary/30",
+  blue: "bg-blue-50 text-blue-700 border-blue-200",
+  green: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  red: "bg-red-50 text-red-700 border-red-200",
+  purple: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
 const dotClasses: Record<string, string> = {
@@ -103,58 +103,67 @@ const MonthlyCalendar = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-display font-bold text-white">{MONTHS[month]} {year}</h2>
-          <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline">HOY</button>
+      {/* Header */}
+      <div className="dash-tile rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Calendar size={20} className="text-[hsl(var(--dash-text))]" />
+            <div>
+              <h2 className="text-lg font-display font-bold text-[hsl(var(--dash-text))]">{MONTHS[month]} {year}</h2>
+              <p className="text-xs text-[hsl(var(--dash-text-muted))]">Calendario de actividades</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline mr-2">HOY</button>
+            <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronLeft size={16} /></button>
+            <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronRight size={16} /></button>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronLeft size={16} /></button>
-          <button onClick={nextMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronRight size={16} /></button>
+
+        {/* Grid */}
+        <div className="border border-[hsl(var(--dash-card-border))] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-7 border-b border-[hsl(var(--dash-card-border))]">
+            {DAYS.map((d) => (
+              <div key={d} className="text-center text-[10px] font-bold text-[hsl(var(--dash-text-muted))] py-2.5 uppercase tracking-wider">{d}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7">
+            {cells.map((day, i) => {
+              const dayEvents = day ? eventsForDay(day) : [];
+              const dateStr = day ? getDateStr(day) : "";
+              const isSelected = selectedDate === dateStr;
+              return (
+                <button
+                  key={i}
+                  onClick={() => day && setSelectedDate(isSelected ? null : dateStr)}
+                  disabled={!day}
+                  className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""} ${isSelected ? "bg-primary/8" : ""}`}
+                >
+                  {day && (
+                    <>
+                      <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>{day}</span>
+                      <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
+                        {dayEvents.slice(0, 2).map((ev) => (
+                          <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
+                            {ev.title}
+                          </div>
+                        ))}
+                        {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(var(--dash-text-muted))]">+{dayEvents.length - 2} más</span>}
+                      </div>
+                    </>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="dash-tile rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-[hsl(0,0%,18%)]">
-          {DAYS.map((d) => (
-            <div key={d} className="text-center text-[10px] font-bold text-[hsl(0,0%,45%)] py-2 uppercase tracking-wider">{d}</div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7">
-          {cells.map((day, i) => {
-            const dayEvents = day ? eventsForDay(day) : [];
-            const dateStr = day ? getDateStr(day) : "";
-            const isSelected = selectedDate === dateStr;
-            return (
-              <button
-                key={i}
-                onClick={() => day && setSelectedDate(isSelected ? null : dateStr)}
-                disabled={!day}
-                className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(0,0%,15%)] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,15%)] cursor-pointer" : ""} ${isSelected ? "bg-primary/10" : ""}`}
-              >
-                {day && (
-                  <>
-                    <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(0,0%,65%)]"}`}>{day}</span>
-                    <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
-                      {dayEvents.slice(0, 2).map((ev) => (
-                        <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
-                          {ev.title}
-                        </div>
-                      ))}
-                      {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(0,0%,50%)]">+{dayEvents.length - 2} más</span>}
-                    </div>
-                  </>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
+      {/* Selected day detail */}
       {selectedDate && (
-        <div className="dash-tile rounded-2xl p-4 space-y-3">
+        <div className="dash-tile rounded-2xl p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white">
+            <h3 className="text-sm font-display font-semibold text-[hsl(var(--dash-text))]">
               {new Date(selectedDate + "T00:00:00").toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}
             </h3>
             <button onClick={() => handleAddEvent(selectedDate)} className="flex items-center gap-1 text-primary text-xs font-bold hover:underline">
@@ -163,11 +172,11 @@ const MonthlyCalendar = () => {
           </div>
 
           {selectedDayEvents.length === 0 && !showForm && (
-            <p className="text-xs text-[hsl(0,0%,45%)] text-center py-4">Sin actividades</p>
+            <p className="text-xs text-[hsl(var(--dash-text-muted))] text-center py-4">Sin actividades</p>
           )}
 
           {selectedDayEvents.map((ev) => (
-            <div key={ev.id} className={`flex items-start justify-between gap-2 rounded-lg border px-3 py-2 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
+            <div key={ev.id} className={`flex items-start justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
               <div className="min-w-0">
                 <p className="text-xs font-bold truncate">{ev.title}</p>
                 <div className="flex items-center gap-2 mt-0.5">
@@ -181,10 +190,10 @@ const MonthlyCalendar = () => {
           ))}
 
           {showForm && (
-            <div className="space-y-3 border-t border-[hsl(0,0%,18%)] pt-3">
+            <div className="space-y-3 border-t border-[hsl(var(--dash-card-border))] pt-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white">Nueva actividad</span>
-                <button onClick={() => setShowForm(false)} className="text-[hsl(0,0%,45%)] hover:text-white"><X size={14} /></button>
+                <span className="text-xs font-semibold text-[hsl(var(--dash-text))]">Nueva actividad</span>
+                <button onClick={() => setShowForm(false)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={14} /></button>
               </div>
               <input placeholder="Título *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} />
               <div className="grid grid-cols-2 gap-3">
@@ -196,12 +205,12 @@ const MonthlyCalendar = () => {
               </div>
               <input placeholder="Descripción (opcional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[hsl(0,0%,45%)]">Color:</span>
+                <span className="text-[10px] text-[hsl(var(--dash-text-muted))]">Color:</span>
                 {COLORS.map((c) => (
-                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-white/50 scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
+                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
                 ))}
               </div>
-              <button onClick={handleSubmit} className="bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">Agendar</button>
+              <button onClick={handleSubmit} className="btn-dark text-xs px-5 py-2.5">Agendar</button>
             </div>
           )}
         </div>

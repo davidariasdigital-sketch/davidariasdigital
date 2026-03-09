@@ -15,14 +15,6 @@ import davidImg from "@/assets/david-navbar.jpg";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
-const viewLabels: Record<View, string> = {
-  overview: "Resumen",
-  clients: "Clientes",
-  quotations: "Cotizaciones",
-  invoices: "Cuentas por Cobrar",
-  "content-planner": "Planeador de Contenido",
-};
-
 const Dashboard = () => {
   const [view, setView] = useState<View>("overview");
   const [loading, setLoading] = useState(true);
@@ -61,28 +53,34 @@ const Dashboard = () => {
 
   return (
     <div className="frame-outer">
-      <div className="frame-container-dark flex">
+      <div className="frame-container-dash flex">
         <SidebarProvider>
           <DashboardSidebar currentView={view} onViewChange={setView} />
           <div className="flex-1 flex flex-col min-h-0">
             {/* Header */}
-            <header className="h-16 flex items-center justify-between px-8 border-b border-[hsl(0,0%,15%)]">
-              <h2 className="text-sm font-display font-bold text-[hsl(0,0%,55%)] tracking-wide">
-                {viewLabels[view]}
-              </h2>
-              <div className="flex items-center gap-4">
+            <header className="h-16 flex items-center justify-between px-8">
+              <div className="flex items-center gap-6">
+                <h2 className="text-xl font-display font-extrabold text-[hsl(var(--dash-text))]">
+                  Dashboard
+                </h2>
+                <p className="text-sm text-[hsl(var(--dash-text-muted))]">
+                  Bienvenido de vuelta, David.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(0,0%,40%)]" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--dash-text-muted))]" />
                   <input
                     type="text"
-                    placeholder="Buscar..."
-                    className="dash-input pl-9 pr-4 py-2 rounded-full text-sm w-44 focus:w-56 transition-all"
+                    placeholder="Buscar archivo..."
+                    className="dash-input pl-9 pr-4 py-2 rounded-full text-sm w-48 focus:w-60 transition-all"
                   />
                 </div>
-                <button className="p-2 rounded-full text-[hsl(0,0%,45%)] hover:text-[hsl(0,0%,80%)] transition-colors">
-                  <Bell size={18} />
+                <button className="relative p-2.5 rounded-full hover:bg-[hsl(0,0%,92%)] transition-colors">
+                  <Bell size={18} className="text-[hsl(var(--dash-text))]" />
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full" />
                 </button>
-                <Avatar className="h-9 w-9 ring-2 ring-[hsl(0,0%,20%)]">
+                <Avatar className="h-10 w-10 ring-2 ring-[hsl(var(--dash-card-border))]">
                   <AvatarImage src={davidImg} alt="David Arias" />
                   <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">DA</AvatarFallback>
                 </Avatar>
@@ -90,7 +88,7 @@ const Dashboard = () => {
             </header>
 
             {/* Content */}
-            <main className="flex-1 px-8 py-6 overflow-auto">
+            <main className="flex-1 px-8 py-4 overflow-auto">
               <motion.div
                 key={view}
                 initial={{ opacity: 0 }}

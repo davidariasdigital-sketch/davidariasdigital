@@ -12,15 +12,15 @@
 
 @layer base {
   :root {
-    /* "El Marco" — Yellow frame background */
+    /* Frame */
     --frame: 48 100% 50%;
 
-    /* Landing: white container */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 8%;
+    /* Landing (dark) */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 96%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 8%;
@@ -46,30 +46,30 @@
 
     --radius: 1rem;
 
-    /* CTA orange */
+    /* CTA */
     --cta: 18 100% 50%;
     --cta-foreground: 0 0% 100%;
 
-    /* Pastel accents */
+    /* Pastels */
     --pastel-pink: 345 100% 92%;
     --pastel-blue: 199 80% 88%;
     --pastel-green: 104 60% 88%;
 
-    /* Dashboard dark tokens */
-    --dash-bg: 0 0% 7%;
-    --dash-card-bg: 0 0% 12%;
-    --dash-card-border: 0 0% 18%;
-    --dash-text: 0 0% 92%;
-    --dash-text-muted: 0 0% 55%;
+    /* Dashboard light tokens */
+    --dash-bg: 220 14% 96%;
+    --dash-card-bg: 0 0% 100%;
+    --dash-card-border: 0 0% 92%;
+    --dash-text: 0 0% 10%;
+    --dash-text-muted: 0 0% 50%;
 
-    /* Sidebar */
-    --sidebar-background: 0 0% 7%;
-    --sidebar-foreground: 0 0% 80%;
+    /* Sidebar (white) */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 25%;
     --sidebar-primary: 48 100% 50%;
     --sidebar-primary-foreground: 0 0% 8%;
-    --sidebar-accent: 0 0% 14%;
-    --sidebar-accent-foreground: 0 0% 92%;
-    --sidebar-border: 0 0% 18%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 25%;
+    --sidebar-border: 0 0% 92%;
     --sidebar-ring: 48 100% 50%;
   }
 }
@@ -93,79 +93,90 @@
 }
 
 @layer components {
-  /* ===== "El Marco" Frame System ===== */
+  /* ===== Frame System ===== */
   .frame-outer {
     background: hsl(var(--frame));
     min-height: 100vh;
-    padding: 1.5rem;
+    padding: 0.75rem;
   }
 
   @media (min-width: 768px) {
     .frame-outer {
-      padding: 2rem;
+      padding: 1rem;
     }
   }
 
   .frame-container {
     background: hsl(var(--background));
-    border-radius: 3rem;
-    min-height: calc(100vh - 3rem);
-    box-shadow:
-      0 25px 50px -12px hsl(0 0% 0% / 0.25),
-      0 0 0 1px hsl(0 0% 0% / 0.05);
+    border-radius: 2rem;
+    min-height: calc(100vh - 1.5rem);
+    box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.25);
     overflow: hidden;
   }
 
   @media (min-width: 768px) {
     .frame-container {
-      min-height: calc(100vh - 4rem);
+      border-radius: 2.5rem;
+      min-height: calc(100vh - 2rem);
     }
   }
 
-  /* Dashboard dark frame */
-  .frame-container-dark {
+  /* Dashboard frame (light gray interior) */
+  .frame-container-dash {
     background: hsl(var(--dash-bg));
-    border-radius: 3rem;
-    min-height: calc(100vh - 3rem);
-    box-shadow:
-      0 25px 50px -12px hsl(0 0% 0% / 0.4),
-      0 0 0 1px hsl(0 0% 0% / 0.1);
+    border-radius: 2rem;
+    min-height: calc(100vh - 1.5rem);
+    box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.2);
     overflow: hidden;
   }
 
   @media (min-width: 768px) {
-    .frame-container-dark {
-      min-height: calc(100vh - 4rem);
+    .frame-container-dash {
+      border-radius: 2.5rem;
+      min-height: calc(100vh - 2rem);
     }
   }
 
-  /* ===== Dashboard Tiles (Bento) ===== */
+  /* ===== Dashboard Cards (Bento) ===== */
   .dash-tile {
     background: hsl(var(--dash-card-bg));
     border: 1px solid hsl(var(--dash-card-border));
-    border-radius: 1.5rem;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    border-radius: 1.25rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .dash-tile:hover {
     transform: translateY(-2px);
-    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 8px 24px -8px hsl(0 0% 0% / 0.08);
   }
 
   .dash-tile-primary {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border: none;
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 24px -6px hsl(var(--primary) / 0.4);
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 24px -6px hsl(var(--primary) / 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .dash-tile-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px -6px hsl(var(--primary) / 0.5);
+    box-shadow: 0 12px 32px -6px hsl(var(--primary) / 0.45);
   }
 
-  /* ===== Inputs (dark dashboard) ===== */
+  .dash-tile-dark {
+    background: hsl(0 0% 8%);
+    color: hsl(0 0% 92%);
+    border: none;
+    border-radius: 1.25rem;
+    transition: transform 0.2s ease;
+  }
+
+  .dash-tile-dark:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ===== Inputs ===== */
   .dash-input {
     background: hsl(var(--dash-card-bg));
     border: 1px solid hsl(var(--dash-card-border));
@@ -180,20 +191,20 @@
   .dash-input:focus {
     outline: none;
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15);
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
   }
 
   /* ===== Sidebar ===== */
   .dash-sidebar {
-    background: hsl(var(--dash-bg));
-    color: hsl(0 0% 80%);
+    background: hsl(var(--sidebar-background));
+    color: hsl(var(--sidebar-foreground));
   }
 
   .dash-sidebar-active {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     font-weight: 700;
-    border-radius: 999px;
+    border-radius: 0.75rem;
   }
 
   /* ===== Buttons ===== */
@@ -212,7 +223,7 @@
 
   .btn-dark {
     background: hsl(0 0% 8%);
-    color: hsl(var(--primary));
+    color: hsl(0 0% 100%);
     border-radius: 999px;
     font-weight: 700;
     transition: transform 0.2s ease;
@@ -222,7 +233,7 @@
     transform: scale(1.03);
   }
 
-  /* ===== Soft badge ===== */
+  /* ===== Badges ===== */
   .pill-badge {
     @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-wider;
     background: hsl(var(--primary) / 0.15);
@@ -271,22 +282,22 @@
   }
 }
 
-/* Custom scrollbar — dark on yellow */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(0 0% 20%);
+  background: hsl(0 0% 75%);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(0 0% 30%);
+  background: hsl(0 0% 60%);
 }
 
-/* Soft ambient blobs (landing page only) */
+/* Blobs */
 .blob {
   position: absolute;
   border-radius: 50%;
