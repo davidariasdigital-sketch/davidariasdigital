@@ -326,9 +326,9 @@ const ContentColumn = ({
 
       <button
         onClick={onAdd}
-        className="mt-auto flex items-center justify-center gap-1 text-[10px] text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-40 hover:opacity-100 transition-all"
+        className="mt-auto flex items-center justify-center text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-30 hover:opacity-80 transition-all"
       >
-        <Plus className="h-3 w-3" /> Agregar
+        <Plus className="h-4 w-4" />
       </button>
     </div>
   );
