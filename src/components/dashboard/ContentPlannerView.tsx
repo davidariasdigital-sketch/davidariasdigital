@@ -252,6 +252,7 @@ interface ContentColumnProps {
   accentClass: string;
   publishedClass: string;
   chipClass: string;
+  square?: boolean;
 }
 
 const ContentColumn = ({
