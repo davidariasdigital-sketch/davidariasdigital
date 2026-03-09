@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy } from "lucide-react";
 
 interface CalendarEvent {
   id: string; title: string; description: string | null; event_date: string;
