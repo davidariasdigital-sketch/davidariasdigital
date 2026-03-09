@@ -181,10 +181,10 @@ const MonthlyCalendar = () => {
           ))}
 
           {showForm && (
-            <div className="space-y-3 border-t border-black/5 pt-3">
+            <div className="space-y-3 border-t border-[hsl(0,0%,18%)] pt-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[hsl(0,0%,15%)]">Nueva actividad</span>
-                <button onClick={() => setShowForm(false)} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={14} /></button>
+                <span className="text-xs font-semibold text-white">Nueva actividad</span>
+                <button onClick={() => setShowForm(false)} className="text-[hsl(0,0%,45%)] hover:text-white"><X size={14} /></button>
               </div>
               <input placeholder="Título *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} />
               <div className="grid grid-cols-2 gap-3">
