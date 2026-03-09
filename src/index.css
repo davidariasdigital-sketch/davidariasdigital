@@ -42,12 +42,6 @@
 
     --radius: 1.5rem;
 
-    /* Neumorphic tokens */
-    --neu-shadow-light: 0 0% 15%;
-    --neu-shadow-dark: 0 0% 2%;
-    --neu-bg: 0 0% 6%;
-    --neu-inset: 0 0% 20% / 0.3;
-
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 96%;
     --sidebar-primary: 44 90% 48%;
@@ -56,6 +50,13 @@
     --sidebar-accent-foreground: 0 0% 96%;
     --sidebar-border: 0 0% 16%;
     --sidebar-ring: 44 90% 48%;
+
+    /* Dashboard light theme tokens */
+    --dash-bg: 240 10% 96%;
+    --dash-card-bg: 0 0% 100%;
+    --dash-card-border: 0 0% 90%;
+    --dash-text: 0 0% 12%;
+    --dash-text-muted: 0 0% 50%;
   }
 }
 
@@ -74,26 +75,88 @@
 }
 
 @layer components {
-  /* Neumorphic card — soft raised */
-  .neu-card {
-    background: hsl(var(--card));
+  /* Soft pill badge */
+  .pill-badge {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-wider;
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ===== Dashboard Light System (optimized — no heavy filters) ===== */
+  .dash-bg {
+    background: hsl(var(--dash-bg));
+  }
+
+  .dash-card {
+    background: hsl(var(--dash-card-bg) / 0.85);
+    border: 1px solid hsl(var(--dash-card-border));
     border-radius: var(--radius);
-    box-shadow:
-      8px 8px 24px 0 hsl(0 0% 0% / 0.5),
-      -4px -4px 16px 0 hsl(0 0% 100% / 0.03);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
   }
 
-  /* Neumorphic inset */
-  .neu-inset {
-    background: hsl(var(--neu-bg));
-    border-radius: calc(var(--radius) - 4px);
-    box-shadow:
-      inset 4px 4px 12px 0 hsl(var(--neu-shadow-dark) / 0.25),
-      inset -4px -4px 12px 0 hsl(var(--neu-shadow-light) / 0.7);
+  .dash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px 0 hsl(0 0% 0% / 0.08);
   }
 
-  /* Frosted glass — dark */
+  .dash-card-highlight {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(38 95% 58%) 100%);
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px -4px hsl(var(--primary) / 0.35);
+    color: hsl(0 0% 100%);
+  }
+
+  .dash-card-dark {
+    background: hsl(0 0% 8%);
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px -4px hsl(0 0% 0% / 0.2);
+    color: hsl(0 0% 96%);
+  }
+
+  .dash-glass {
+    background: hsl(var(--dash-card-bg) / 0.7);
+    border: 1px solid hsl(var(--dash-card-border));
+    box-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.04);
+  }
+
+  .dash-input {
+    background: hsl(var(--dash-card-bg) / 0.6);
+    border: 1px solid hsl(0 0% 0% / 0.06);
+    color: hsl(var(--dash-text));
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .dash-input::placeholder {
+    color: hsl(var(--dash-text-muted));
+  }
+
+  .dash-input:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+  }
+
+  .dash-sidebar {
+    background: hsl(0 0% 7%);
+    color: hsl(0 0% 80%);
+  }
+
+  .dash-sidebar-active {
+    background: hsl(var(--primary));
+    color: hsl(0 0% 100%);
+    font-weight: 600;
+    border-radius: 999px;
+  }
+
+  /* Frosted glass — dark (for landing page) */
   .glass-light {
     background: hsl(0 0% 100% / 0.06);
     backdrop-filter: blur(24px);
@@ -104,7 +167,6 @@
       inset 0 1px 0 0 hsl(0 0% 100% / 0.08);
   }
 
-  /* ===== Liquid Glass Effect (Dark) ===== */
   .liquid-glass {
     position: relative;
     background: linear-gradient(
@@ -120,80 +182,10 @@
     box-shadow:
       inset 0 1px 1px 0 hsl(0 0% 100% / 0.1),
       inset 0 -1px 2px 0 hsl(0 0% 0% / 0.2),
-      0 8px 32px -8px hsl(0 0% 0% / 0.4),
-      0 2px 8px 0 hsl(0 0% 0% / 0.2);
+      0 8px 32px -8px hsl(0 0% 0% / 0.4);
     overflow: hidden;
   }
 
-  .liquid-glass::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      105deg,
-      hsl(0 0% 100% / 0.08) 0%,
-      hsl(0 0% 100% / 0) 30%,
-      hsl(0 0% 100% / 0) 70%,
-      hsl(0 0% 100% / 0.03) 100%
-    );
-    pointer-events: none;
-  }
-
-  /* Liquid glass with subtle rainbow sheen (Dark) */
-  .liquid-glass-rainbow {
-    position: relative;
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.1) 0%,
-      hsl(0 0% 100% / 0.04) 50%,
-      hsl(0 0% 100% / 0.08) 100%
-    );
-    backdrop-filter: blur(24px) saturate(1.5);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    border: 1px solid hsl(0 0% 100% / 0.12);
-    box-shadow:
-      inset 0 1px 2px 0 hsl(0 0% 100% / 0.12),
-      inset 0 -1px 3px 0 hsl(0 0% 0% / 0.15),
-      0 12px 40px -12px hsl(0 0% 0% / 0.5),
-      0 2px 6px 0 hsl(0 0% 0% / 0.2);
-    overflow: hidden;
-  }
-
-  .liquid-glass-rainbow::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      110deg,
-      hsl(340 80% 80% / 0.08) 0%,
-      hsl(280 70% 75% / 0.06) 20%,
-      hsl(200 80% 75% / 0.08) 40%,
-      hsl(160 70% 70% / 0.06) 60%,
-      hsl(44 90% 65% / 0.08) 80%,
-      hsl(340 80% 80% / 0.05) 100%
-    );
-    pointer-events: none;
-  }
-
-  .liquid-glass-rainbow::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    border-radius: inherit;
-    background: linear-gradient(
-      180deg,
-      hsl(0 0% 100% / 0.06) 0%,
-      hsl(0 0% 100% / 0) 100%
-    );
-    pointer-events: none;
-  }
-
-  /* Liquid glass button (Dark) */
   .liquid-btn {
     position: relative;
     background: linear-gradient(
@@ -207,171 +199,24 @@
     border: 1px solid hsl(0 0% 100% / 0.12);
     box-shadow:
       inset 0 1px 1px 0 hsl(0 0% 100% / 0.1),
-      inset 0 -0.5px 1px 0 hsl(0 0% 0% / 0.2),
-      0 4px 16px -4px hsl(0 0% 0% / 0.3),
-      0 1px 4px 0 hsl(0 0% 0% / 0.15);
+      0 4px 16px -4px hsl(0 0% 0% / 0.3);
     overflow: hidden;
     transition: all 0.3s ease;
   }
 
   .liquid-btn:hover {
+    transform: translateY(-1px);
     box-shadow:
       inset 0 1px 1px 0 hsl(0 0% 100% / 0.15),
-      inset 0 -0.5px 1px 0 hsl(0 0% 0% / 0.2),
-      0 8px 28px -6px hsl(0 0% 0% / 0.4),
-      0 2px 6px 0 hsl(0 0% 0% / 0.2);
-    transform: translateY(-1px);
-  }
-
-  .liquid-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      105deg,
-      hsl(0 0% 100% / 0.08) 0%,
-      hsl(0 0% 100% / 0) 40%
-    );
-    pointer-events: none;
-  }
-
-  /* Soft pill badge */
-  .pill-badge {
-    @apply inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-wider;
-    background: hsl(var(--primary) / 0.1);
-    color: hsl(var(--primary));
+      0 8px 28px -6px hsl(0 0% 0% / 0.4);
   }
 
   .glow-soft {
     box-shadow: 0 0 60px -20px hsl(var(--primary) / 0.2);
   }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* ===== Dashboard Light Glass System ===== */
-  .dash-bg {
-    background: linear-gradient(160deg, hsl(230 20% 96%) 0%, hsl(260 15% 93%) 40%, hsl(220 18% 94%) 70%, hsl(240 12% 95%) 100%);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .dash-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .dash-blob-1 {
-    width: 500px; height: 500px;
-    background: hsl(280 60% 80% / 0.25);
-    top: -10%; right: -5%;
-  }
-
-  .dash-blob-2 {
-    width: 400px; height: 400px;
-    background: hsl(200 70% 80% / 0.2);
-    bottom: -15%; left: 10%;
-  }
-
-  .dash-blob-3 {
-    width: 350px; height: 350px;
-    background: hsl(44 90% 70% / 0.15);
-    top: 40%; left: -8%;
-  }
-
-  .dash-glass {
-    background: hsla(0, 0%, 100%, 0.45);
-    backdrop-filter: blur(40px) saturate(1.8);
-    -webkit-backdrop-filter: blur(40px) saturate(1.8);
-    border: 1px solid hsla(0, 0%, 100%, 0.5);
-    box-shadow:
-      0 4px 24px -4px hsla(0, 0%, 0%, 0.06),
-      0 1px 3px 0 hsla(0, 0%, 0%, 0.03),
-      inset 0 1px 0 0 hsla(0, 0%, 100%, 0.8),
-      inset 0 -1px 0 0 hsla(0, 0%, 0%, 0.02);
-  }
-
-  .dash-card {
-    background: hsla(0, 0%, 100%, 0.5);
-    backdrop-filter: blur(40px) saturate(1.6);
-    -webkit-backdrop-filter: blur(40px) saturate(1.6);
-    border: 1px solid hsla(0, 0%, 100%, 0.6);
-    border-radius: var(--radius);
-    box-shadow:
-      0 8px 32px -8px hsla(0, 0%, 0%, 0.08),
-      0 2px 8px 0 hsla(0, 0%, 0%, 0.03),
-      inset 0 1px 0 0 hsla(0, 0%, 100%, 0.9),
-      inset 0 -1px 0 0 hsla(0, 0%, 0%, 0.02);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .dash-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 12px 40px -8px hsla(0, 0%, 0%, 0.12),
-      0 4px 12px 0 hsla(0, 0%, 0%, 0.05),
-      inset 0 1px 0 0 hsla(0, 0%, 100%, 0.9);
-  }
-
-  .dash-card-highlight {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(38 95% 58%) 100%);
-    border: 1px solid hsl(var(--primary) / 0.2);
-    border-radius: var(--radius);
-    box-shadow:
-      0 8px 32px -6px hsl(var(--primary) / 0.4),
-      0 2px 8px 0 hsl(var(--primary) / 0.15),
-      inset 0 1px 2px 0 hsla(0, 0%, 100%, 0.3);
-    color: hsl(0, 0%, 100%);
-  }
-
-  .dash-card-dark {
-    background: hsl(0, 0%, 10%);
-    border: 1px solid hsla(0, 0%, 100%, 0.06);
-    border-radius: var(--radius);
-    box-shadow:
-      0 8px 32px -8px hsla(0, 0%, 0%, 0.3),
-      inset 0 1px 0 0 hsla(0, 0%, 100%, 0.05);
-    color: hsl(0, 0%, 96%);
-  }
-
-  .dash-input {
-    background: hsla(0, 0%, 100%, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsla(0, 0%, 0%, 0.06);
-    color: hsl(0, 0%, 12%);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .dash-input::placeholder {
-    color: hsl(0, 0%, 45%);
-  }
-
-  .dash-input:focus {
-    outline: none;
-    border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
-  }
-
-  .dash-sidebar {
-    background: hsl(0, 0%, 7%);
-    color: hsl(0, 0%, 80%);
-  }
-
-  .dash-sidebar-active {
-    background: hsl(var(--primary));
-    color: hsl(0, 0%, 100%);
-    font-weight: 600;
-    border-radius: 999px;
-  }
 }
 
-/* Soft ambient blobs */
+/* Soft ambient blobs (landing page only) */
 .blob {
   position: absolute;
   border-radius: 50%;
