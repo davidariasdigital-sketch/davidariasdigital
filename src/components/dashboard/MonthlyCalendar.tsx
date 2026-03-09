@@ -161,12 +161,10 @@ const MonthlyCalendar = () => {
                 >
                   {day && (
                     <div className="h-full flex flex-col">
-                      {/* Day number - top right when there's an event */}
-                      {!firstEvent && (
-                        <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
-                          {day}
-                        </span>
-                      )}
+                      {/* Day number — always visible */}
+                      <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                        {day}
+                      </span>
 
                       {/* Event tile — pastel card style */}
                       {firstEvent && style && (
