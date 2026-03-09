@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, FileText, CheckSquare, DollarSign, Palette, CalendarRange } from "lucide-react";
+import { LayoutDashboard, Users, FileText, DollarSign, Palette, CalendarRange } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   Sidebar,
