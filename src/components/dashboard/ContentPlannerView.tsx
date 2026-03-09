@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, GripVertical, Lightbulb, Instagram, Youtube, ChevronDown } from "lucide-react";
+import { Plus, X, GripVertical, Lightbulb, Instagram, Youtube, ChevronDown, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración"];
