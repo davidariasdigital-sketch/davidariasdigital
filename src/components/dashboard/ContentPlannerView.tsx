@@ -267,10 +267,10 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          className={`group relative rounded-lg px-3 py-2.5 text-xs cursor-grab active:cursor-grabbing transition-all border ${
+          className={`group relative rounded-[var(--radius)] px-3 py-3 text-xs cursor-grab active:cursor-grabbing transition-all border backdrop-blur-sm ${
             item.published
-              ? publishedClass + " text-emerald-800 dark:text-emerald-200"
-              : chipClass + " border-transparent text-foreground"
+              ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-800 dark:text-emerald-200"
+              : "bg-background/60 border-border/40 text-foreground hover:border-border/70"
           }`}
         >
           {editingId === item.id ? (
@@ -283,42 +283,43 @@ const ContentColumn = ({
                 if (e.key === "Enter") onEditSave(item.id);
                 if (e.key === "Escape") { onEditChange(item.title); onEditSave(item.id); }
               }}
-              className="w-full bg-transparent outline-none text-xs text-center"
+              className="w-full bg-transparent outline-none text-xs text-center font-medium"
             />
           ) : (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-1.5">
-                <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-30 shrink-0 transition-opacity" />
+            <div className="space-y-2">
+              {/* Title row */}
+              <div className="flex items-start justify-between gap-2">
                 <span
-                  className="flex-1 text-center cursor-text leading-snug font-medium"
+                  className="flex-1 text-[11px] leading-relaxed font-medium cursor-text"
                   onClick={() => onEditStart(item.id, item.title)}
                 >
                   {item.title || "Sin título"}
                 </span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
-                  className={`shrink-0 rounded-full p-0.5 transition-all ${
-                    item.published
-                      ? "text-emerald-600 bg-emerald-500/20 opacity-100"
-                      : "opacity-0 group-hover:opacity-50 hover:opacity-100 hover:bg-muted"
-                  }`}
-                  title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
-                >
-                  <Check className="h-3 w-3" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                  className="opacity-0 group-hover:opacity-40 hover:opacity-100 shrink-0 transition-opacity"
-                >
-                  <X className="h-3 w-3" />
-                </button>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
+                    className={`rounded-full p-1 transition-all ${
+                      item.published
+                        ? "text-emerald-600 bg-emerald-500/20"
+                        : "opacity-0 group-hover:opacity-50 hover:!opacity-100 hover:bg-muted"
+                    }`}
+                    title={item.published ? "No publicado" : "Publicado"}
+                  >
+                    <Check className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                    className="rounded-full p-1 opacity-0 group-hover:opacity-40 hover:!opacity-100 hover:bg-destructive/10 transition-all"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
               </div>
-              <div className="flex justify-center">
-                <FormatSelector
-                  value={item.format}
-                  onChange={(f) => onFormatChange(item.id, f)}
-                />
-              </div>
+              {/* Format badge */}
+              <FormatSelector
+                value={item.format}
+                onChange={(f) => onFormatChange(item.id, f)}
+              />
             </div>
           )}
         </div>
