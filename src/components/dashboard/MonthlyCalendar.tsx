@@ -114,10 +114,10 @@ const MonthlyCalendar = () => {
         </div>
       </div>
 
-      <div className="dash-glass rounded-[var(--radius)] overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-black/5">
+      <div className="dash-tile rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-7 border-b border-[hsl(0,0%,18%)]">
           {DAYS.map((d) => (
-            <div key={d} className="text-center text-[10px] font-bold text-[hsl(0,0%,50%)] py-2 uppercase tracking-wider">{d}</div>
+            <div key={d} className="text-center text-[10px] font-bold text-[hsl(0,0%,45%)] py-2 uppercase tracking-wider">{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7">
