@@ -164,6 +164,7 @@ const ContentPlannerView = () => {
               onEditSave={saveEdit}
               onDelete={deleteItem}
               onFormatChange={updateFormat}
+              onTogglePublished={togglePublished}
               accentClass="bg-pink-500/10 border-pink-500/20"
               chipClass="bg-pink-500/15 text-pink-700 dark:text-pink-300 hover:bg-pink-500/25"
             />
