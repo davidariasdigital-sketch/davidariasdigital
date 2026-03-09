@@ -116,6 +116,16 @@ const MonthlyCalendar = () => {
     fetchEvents();
   };
 
+  const handleDuplicate = async (ev: CalendarEvent) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("events").insert({
+      title: ev.title, description: ev.description, event_date: ev.event_date,
+      event_time: ev.event_time, color: ev.color, client_id: ev.client_id, user_id: user.id,
+    } as any);
+    fetchEvents();
+  };
+
   const selectedDayEvents = selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
   const inputCls = "w-full dash-input rounded-lg px-3 py-2 text-sm";
 
