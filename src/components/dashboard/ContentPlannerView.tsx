@@ -137,13 +137,13 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Top row: Instagram 2x2 + YouTube */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5 items-start">
         {/* Instagram 2x2 */}
         <div>
           <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {[0, 1, 2, 3].map((colIdx) => (
               <ContentColumn
                 key={colIdx}
@@ -170,7 +170,7 @@ const ContentPlannerView = () => {
         </div>
 
         {/* YouTube - single module to the right */}
-        <div className="w-full lg:w-[200px]">
+        <div className="w-full">
           <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
           <ContentColumn
             section="youtube"
@@ -197,7 +197,7 @@ const ContentPlannerView = () => {
       {/* Ideas Futuras - below */}
       <div>
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
             <ContentColumn
               key={`idea-${colIdx}`}
@@ -227,9 +227,9 @@ const ContentPlannerView = () => {
 };
 
 const SectionHeader = ({ icon, label, colorClass }: { icon: React.ReactNode; label: string; colorClass: string }) => (
-  <div className="flex items-center gap-2.5 mb--6">
+  <div className="flex items-center gap-2 mb-3">
     <span className={colorClass}>{icon}</span>
-    <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">{label}</h2>
+    <h2 className="text-xs font-bold uppercase tracking-widest text-foreground/60">{label}</h2>
   </div>
 );
 
