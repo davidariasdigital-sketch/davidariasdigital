@@ -170,7 +170,7 @@ const ContentPlannerView = () => {
         </div>
 
         {/* YouTube - single module to the right */}
-        <div className="w-full lg:w-[200px]">
+        <div className="w-full">
           <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
           <ContentColumn
             section="youtube"
