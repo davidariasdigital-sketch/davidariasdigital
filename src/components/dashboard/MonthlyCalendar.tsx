@@ -130,11 +130,11 @@ const MonthlyCalendar = () => {
                 key={i}
                 onClick={() => day && setSelectedDate(isSelected ? null : dateStr)}
                 disabled={!day}
-                className={`relative min-h-[72px] p-1.5 border-b border-r border-black/5 text-left transition-colors ${day ? "hover:bg-primary/5 cursor-pointer" : ""} ${isSelected ? "bg-primary/10" : ""}`}
+                className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(0,0%,15%)] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,15%)] cursor-pointer" : ""} ${isSelected ? "bg-primary/10" : ""}`}
               >
                 {day && (
                   <>
-                    <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-white font-bold" : "text-[hsl(0,0%,25%)]"}`}>{day}</span>
+                    <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(0,0%,65%)]"}`}>{day}</span>
                     <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
                       {dayEvents.slice(0, 2).map((ev) => (
                         <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
