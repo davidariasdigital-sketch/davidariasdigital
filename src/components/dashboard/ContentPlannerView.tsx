@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, X, GripVertical, Lightbulb, Instagram, Youtube, ChevronDown, Check } from "lucide-react";
 import { toast } from "sonner";
 
-const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración"];
+const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 
 interface ContentItem {
   id: string;
@@ -39,7 +39,6 @@ const ContentPlannerView = () => {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  // section encoded in month field: "IG", "YT", "IDEAS"
   const sectionKey = (section: Section) => section === "instagram" ? "IG" : section === "youtube" ? "YT" : "IDEAS";
 
   const addItem = async (section: Section, colIndex: number) => {
@@ -138,99 +137,94 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <h1 className="text-xl font-bold text-foreground">Planeador de Contenido</h1>
 
       {/* Instagram */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Instagram className="h-4 w-4 text-pink-500" />
-          <h2 className="text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider">Instagram</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn
-              key={colIdx}
-              section="instagram"
-              colIndex={colIdx}
-              items={getSlotItems("instagram", colIdx)}
-              onAdd={() => addItem("instagram", colIdx)}
-              onDrop={handleDrop}
-              onDragStart={handleDragStart}
-              editingId={editingId}
-              editValue={editValue}
-              onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
-              onEditChange={setEditValue}
-              onEditSave={saveEdit}
-              onDelete={deleteItem}
-              onFormatChange={updateFormat}
-              onTogglePublished={togglePublished}
-              accentClass="bg-pink-500/10 border-pink-500/20"
-              chipClass="bg-pink-500/15 text-pink-700 dark:text-pink-300 hover:bg-pink-500/25"
-            />
-          ))}
-        </div>
+      <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[0, 1, 2, 3].map((colIdx) => (
+          <ContentColumn
+            key={colIdx}
+            section="instagram"
+            colIndex={colIdx}
+            items={getSlotItems("instagram", colIdx)}
+            onAdd={() => addItem("instagram", colIdx)}
+            onDrop={handleDrop}
+            onDragStart={handleDragStart}
+            editingId={editingId}
+            editValue={editValue}
+            onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+            onEditChange={setEditValue}
+            onEditSave={saveEdit}
+            onDelete={deleteItem}
+            onFormatChange={updateFormat}
+            onTogglePublished={togglePublished}
+            accentClass="border-pink-500/20"
+            publishedClass="bg-emerald-500/15 border-emerald-500/30"
+            chipClass="bg-pink-500/10 hover:bg-pink-500/15"
+          />
+        ))}
       </div>
 
       {/* YouTube */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Youtube className="h-4 w-4 text-red-500" />
-          <h2 className="text-sm font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">YouTube</h2>
-        </div>
-        <ContentColumn
-          section="youtube"
-          colIndex={0}
-          items={getSlotItems("youtube", 0)}
-          onAdd={() => addItem("youtube", 0)}
-          onDrop={handleDrop}
-          onDragStart={handleDragStart}
-          editingId={editingId}
-          editValue={editValue}
-          onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
-          onEditChange={setEditValue}
-          onEditSave={saveEdit}
-          onDelete={deleteItem}
-          onFormatChange={updateFormat}
-          onTogglePublished={togglePublished}
-          accentClass="bg-red-500/10 border-red-500/20"
-          chipClass="bg-red-500/15 text-red-700 dark:text-red-300 hover:bg-red-500/25"
-        />
-      </div>
+      <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
+      <ContentColumn
+        section="youtube"
+        colIndex={0}
+        items={getSlotItems("youtube", 0)}
+        onAdd={() => addItem("youtube", 0)}
+        onDrop={handleDrop}
+        onDragStart={handleDragStart}
+        editingId={editingId}
+        editValue={editValue}
+        onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+        onEditChange={setEditValue}
+        onEditSave={saveEdit}
+        onDelete={deleteItem}
+        onFormatChange={updateFormat}
+        onTogglePublished={togglePublished}
+        accentClass="border-red-500/20"
+        publishedClass="bg-emerald-500/15 border-emerald-500/30"
+        chipClass="bg-red-500/10 hover:bg-red-500/15"
+      />
 
       {/* Ideas */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Lightbulb className="h-4 w-4 text-amber-500" />
-          <h2 className="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Ideas Futuras</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[0, 1].map((colIdx) => (
-            <ContentColumn
-              key={`idea-${colIdx}`}
-              section="ideas"
-              colIndex={colIdx}
-              items={getSlotItems("ideas", colIdx)}
-              onAdd={() => addItem("ideas", colIdx)}
-              onDrop={handleDrop}
-              onDragStart={handleDragStart}
-              editingId={editingId}
-              editValue={editValue}
-              onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
-              onEditChange={setEditValue}
-              onEditSave={saveEdit}
-              onDelete={deleteItem}
-              onFormatChange={updateFormat}
-              onTogglePublished={togglePublished}
-              accentClass="bg-amber-500/5 border-amber-500/20"
-              chipClass="bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25"
-            />
-          ))}
-        </div>
+      <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[0, 1, 2, 3].map((colIdx) => (
+          <ContentColumn
+            key={`idea-${colIdx}`}
+            section="ideas"
+            colIndex={colIdx}
+            items={getSlotItems("ideas", colIdx)}
+            onAdd={() => addItem("ideas", colIdx)}
+            onDrop={handleDrop}
+            onDragStart={handleDragStart}
+            editingId={editingId}
+            editValue={editValue}
+            onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+            onEditChange={setEditValue}
+            onEditSave={saveEdit}
+            onDelete={deleteItem}
+            onFormatChange={updateFormat}
+            onTogglePublished={togglePublished}
+            accentClass="border-amber-500/20"
+            publishedClass="bg-emerald-500/15 border-emerald-500/30"
+            chipClass="bg-amber-500/10 hover:bg-amber-500/15"
+          />
+        ))}
       </div>
     </div>
   );
 };
+
+const SectionHeader = ({ icon, label, colorClass }: { icon: React.ReactNode; label: string; colorClass: string }) => (
+  <div className="flex items-center gap-2.5 mb--6">
+    <span className={colorClass}>{icon}</span>
+    <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">{label}</h2>
+  </div>
+);
 
 interface ContentColumnProps {
   section: Section;
@@ -248,20 +242,21 @@ interface ContentColumnProps {
   onFormatChange: (id: string, format: string) => void;
   onTogglePublished: (id: string) => void;
   accentClass: string;
+  publishedClass: string;
   chipClass: string;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, accentClass, chipClass,
+  onFormatChange, onTogglePublished, accentClass, publishedClass, chipClass,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
 
   return (
     <div
-      className={`rounded-lg border min-h-[120px] p-3 flex flex-col gap-2 transition-colors ${accentClass} ${
-        dragOver ? "bg-primary/10 border-primary/40" : ""
+      className={`rounded-xl border min-h-[100px] p-3 flex flex-col gap-2.5 transition-all bg-muted/30 ${accentClass} ${
+        dragOver ? "bg-primary/5 border-primary/30 scale-[1.01]" : ""
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
@@ -272,8 +267,10 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          className={`group relative rounded-md px-3 py-2 text-xs cursor-grab active:cursor-grabbing transition-all ${
-            item.published ? "bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border border-emerald-500/30" : chipClass
+          className={`group relative rounded-lg px-3 py-2.5 text-xs cursor-grab active:cursor-grabbing transition-all border ${
+            item.published
+              ? publishedClass + " text-emerald-800 dark:text-emerald-200"
+              : chipClass + " border-transparent text-foreground"
           }`}
         >
           {editingId === item.id ? (
@@ -286,19 +283,24 @@ const ContentColumn = ({
                 if (e.key === "Enter") onEditSave(item.id);
                 if (e.key === "Escape") { onEditChange(item.title); onEditSave(item.id); }
               }}
-              className="w-full bg-transparent outline-none text-xs"
+              className="w-full bg-transparent outline-none text-xs text-center"
             />
           ) : (
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-start gap-1">
-                <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-40 shrink-0 mt-0.5" />
-                <span className="flex-1 cursor-text leading-tight" onClick={() => onEditStart(item.id, item.title)}>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-1.5">
+                <GripVertical className="h-3 w-3 opacity-0 group-hover:opacity-30 shrink-0 transition-opacity" />
+                <span
+                  className="flex-1 text-center cursor-text leading-snug font-medium"
+                  onClick={() => onEditStart(item.id, item.title)}
+                >
                   {item.title || "Sin título"}
                 </span>
                 <button
                   onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
-                  className={`shrink-0 transition-all ${
-                    item.published ? "text-emerald-600 opacity-100" : "opacity-0 group-hover:opacity-60 hover:opacity-100"
+                  className={`shrink-0 rounded-full p-0.5 transition-all ${
+                    item.published
+                      ? "text-emerald-600 bg-emerald-500/20 opacity-100"
+                      : "opacity-0 group-hover:opacity-50 hover:opacity-100 hover:bg-muted"
                   }`}
                   title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
                 >
@@ -306,15 +308,17 @@ const ContentColumn = ({
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                  className="opacity-0 group-hover:opacity-60 hover:opacity-100 shrink-0"
+                  className="opacity-0 group-hover:opacity-40 hover:opacity-100 shrink-0 transition-opacity"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </div>
-              <FormatSelector
-                value={item.format}
-                onChange={(f) => onFormatChange(item.id, f)}
-              />
+              <div className="flex justify-center">
+                <FormatSelector
+                  value={item.format}
+                  onChange={(f) => onFormatChange(item.id, f)}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -322,7 +326,7 @@ const ContentColumn = ({
 
       <button
         onClick={onAdd}
-        className="mt-auto flex items-center justify-center gap-1 text-[10px] text-muted-foreground py-1.5 rounded-md hover:bg-muted/50 opacity-50 hover:opacity-100 transition-opacity"
+        className="mt-auto flex items-center justify-center gap-1 text-[10px] text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-40 hover:opacity-100 transition-all"
       >
         <Plus className="h-3 w-3" /> Agregar
       </button>
@@ -337,18 +341,18 @@ const FormatSelector = ({ value, onChange }: { value: string | null; onChange: (
     <div className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
-        className="flex items-center gap-1 text-[10px] opacity-70 hover:opacity-100 transition-opacity rounded px-1.5 py-0.5 bg-background/50"
+        className="flex items-center gap-1 text-[10px] opacity-60 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-background/60 border border-border/50"
       >
         {value || "Formato"}
         <ChevronDown className="h-2.5 w-2.5" />
       </button>
       {open && (
-        <div className="absolute z-50 top-full left-0 mt-1 bg-popover border border-border rounded-md shadow-md py-1 min-w-[100px]">
+        <div className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-1 bg-popover border border-border rounded-lg shadow-lg py-1 min-w-[120px]">
           {FORMATS.map((f) => (
             <button
               key={f}
               onClick={(e) => { e.stopPropagation(); onChange(f); setOpen(false); }}
-              className={`block w-full text-left px-3 py-1 text-[11px] hover:bg-muted/50 transition-colors ${
+              className={`block w-full text-center px-3 py-1.5 text-[11px] hover:bg-muted/60 transition-colors ${
                 value === f ? "font-semibold text-primary" : "text-foreground"
               }`}
             >

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, FileText, CheckSquare, DollarSign } from "lucide-react";
+import { Users, FileText, DollarSign } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
-type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
+type View = "overview" | "clients" | "quotations" | "invoices";
 
 interface Props {
   onNavigate: (view: View) => void;
@@ -14,10 +14,9 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [c, q, t, inv] = await Promise.all([
+      const [c, q, inv] = await Promise.all([
         supabase.from("clients").select("id", { count: "exact", head: true }),
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "enviada"),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).eq("completed", false),
         supabase.from("invoices" as any).select("amount").eq("status", "pendiente"),
       ]);
       const invData = (inv.data ?? []) as any[];
@@ -25,7 +24,7 @@ const OverviewView = ({ onNavigate }: Props) => {
       setStats({
         clients: c.count ?? 0,
         quotations: q.count ?? 0,
-        tasks: t.count ?? 0,
+        tasks: 0,
         pendingAmount,
       });
     };
@@ -38,7 +37,6 @@ const OverviewView = ({ onNavigate }: Props) => {
     { label: "Clientes", value: String(stats.clients), icon: Users, view: "clients" as View, color: "text-primary" },
     { label: "Cotizaciones pendientes", value: String(stats.quotations), icon: FileText, view: "quotations" as View, color: "text-primary" },
     { label: "Por cobrar", value: formatCOP(stats.pendingAmount), icon: DollarSign, view: "invoices" as View, color: "text-primary" },
-    { label: "Tareas pendientes", value: String(stats.tasks), icon: CheckSquare, view: "tasks" as View, color: "text-primary" },
   ];
 
   return (
