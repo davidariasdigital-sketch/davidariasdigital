@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar } from "lucide-react";
 
@@ -26,10 +26,6 @@ const colorClasses: Record<string, string> = {
   purple: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
-const dotClasses: Record<string, string> = {
-  primary: "bg-primary", blue: "bg-blue-500", green: "bg-green-500", red: "bg-red-500", purple: "bg-purple-500",
-};
-
 const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
@@ -40,8 +36,9 @@ const MonthlyCalendar = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const fetchEvents = async () => {
     const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -56,6 +53,17 @@ const MonthlyCalendar = () => {
   };
 
   useEffect(() => { fetchEvents(); }, [year, month]);
+
+  // Close popup on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setShowPopup(false);
+      }
+    };
+    if (showPopup) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showPopup]);
 
   const prevMonth = () => { if (month === 0) { setMonth(11); setYear(year - 1); } else setMonth(month - 1); };
   const nextMonth = () => { if (month === 11) { setMonth(0); setYear(year + 1); } else setMonth(month + 1); };
@@ -75,10 +83,10 @@ const MonthlyCalendar = () => {
   const eventsForDay = (day: number) => events.filter((e) => e.event_date === getDateStr(day));
   const isToday = (day: number) => day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
 
-  const handleAddEvent = (dateStr: string) => {
+  const openDayPopup = (dateStr: string) => {
     setSelectedDate(dateStr);
     setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
-    setShowForm(true);
+    setShowPopup(true);
   };
 
   const handleSubmit = async () => {
@@ -89,7 +97,7 @@ const MonthlyCalendar = () => {
       title: form.title, description: form.description || null, event_date: selectedDate,
       event_time: form.event_time || null, color: form.color, client_id: form.client_id || null, user_id: user.id,
     } as any);
-    setShowForm(false);
+    setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
     fetchEvents();
   };
 
@@ -99,12 +107,12 @@ const MonthlyCalendar = () => {
   };
 
   const selectedDayEvents = selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
-  const inputCls = "w-full dash-input rounded-lg px-3 py-2 text-xs";
+  const inputCls = "w-full dash-input rounded-lg px-3 py-2 text-sm";
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
+    <>
       <div className="dash-tile rounded-2xl p-6">
+        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Calendar size={20} className="text-[hsl(var(--dash-text))]" />
@@ -131,13 +139,12 @@ const MonthlyCalendar = () => {
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
-              const isSelected = selectedDate === dateStr;
               return (
                 <button
                   key={i}
-                  onClick={() => day && setSelectedDate(isSelected ? null : dateStr)}
+                  onClick={() => day && openDayPopup(dateStr)}
                   disabled={!day}
-                  className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""} ${isSelected ? "bg-primary/8" : ""}`}
+                  className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
                 >
                   {day && (
                     <>
@@ -148,7 +155,7 @@ const MonthlyCalendar = () => {
                             {ev.title}
                           </div>
                         ))}
-                        {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(var(--dash-text-muted))]">+{dayEvents.length - 2} más</span>}
+                        {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(var(--dash-text-muted))]">+{dayEvents.length - 2}</span>}
                       </div>
                     </>
                   )}
@@ -159,43 +166,50 @@ const MonthlyCalendar = () => {
         </div>
       </div>
 
-      {/* Selected day detail */}
-      {selectedDate && (
-        <div className="dash-tile rounded-2xl p-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-display font-semibold text-[hsl(var(--dash-text))]">
-              {new Date(selectedDate + "T00:00:00").toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}
-            </h3>
-            <button onClick={() => handleAddEvent(selectedDate)} className="flex items-center gap-1 text-primary text-xs font-bold hover:underline">
-              <Plus size={12} /> Agendar
-            </button>
-          </div>
-
-          {selectedDayEvents.length === 0 && !showForm && (
-            <p className="text-xs text-[hsl(var(--dash-text-muted))] text-center py-4">Sin actividades</p>
-          )}
-
-          {selectedDayEvents.map((ev) => (
-            <div key={ev.id} className={`flex items-start justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
-              <div className="min-w-0">
-                <p className="text-xs font-bold truncate">{ev.title}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  {ev.event_time && <span className="text-[10px] opacity-75">{ev.event_time.slice(0, 5)}</span>}
-                  {(ev as any).clients?.name && <span className="text-[10px] opacity-75">• {(ev as any).clients.name}</span>}
-                </div>
-                {ev.description && <p className="text-[10px] opacity-60 mt-1">{ev.description}</p>}
-              </div>
-              <button onClick={() => handleDelete(ev.id)} className="p-1 opacity-50 hover:opacity-100 transition-opacity"><Trash2 size={12} /></button>
+      {/* ===== Popup Modal ===== */}
+      {showPopup && selectedDate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Popup header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">
+                {new Date(selectedDate + "T00:00:00").toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}
+              </h3>
+              <button onClick={() => setShowPopup(false)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+                <X size={18} />
+              </button>
             </div>
-          ))}
 
-          {showForm && (
-            <div className="space-y-3 border-t border-[hsl(var(--dash-card-border))] pt-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[hsl(var(--dash-text))]">Nueva actividad</span>
-                <button onClick={() => setShowForm(false)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={14} /></button>
-              </div>
-              <input placeholder="Título *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} />
+            {/* Events list */}
+            <div className="px-6 py-4 space-y-2 max-h-48 overflow-auto">
+              {selectedDayEvents.length === 0 && (
+                <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-3">Sin actividades este día</p>
+              )}
+              {selectedDayEvents.map((ev) => (
+                <div key={ev.id} className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{ev.title}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {ev.event_time && <span className="text-xs opacity-75">{ev.event_time.slice(0, 5)}</span>}
+                      {(ev as any).clients?.name && <span className="text-xs opacity-75">• {(ev as any).clients.name}</span>}
+                    </div>
+                    {ev.description && <p className="text-xs opacity-60 mt-1">{ev.description}</p>}
+                  </div>
+                  <button onClick={() => handleDelete(ev.id)} className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-red-50 transition-all"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+
+            {/* Add event form */}
+            <div className="px-6 py-4 border-t border-[hsl(var(--dash-card-border))] space-y-3">
+              <p className="text-xs font-bold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Añadir actividad</p>
+              <input
+                placeholder="Título *"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className={inputCls}
+                autoFocus
+              />
               <div className="grid grid-cols-2 gap-3">
                 <input type="time" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className={inputCls} />
                 <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
@@ -203,19 +217,31 @@ const MonthlyCalendar = () => {
                   {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              <input placeholder="Descripción (opcional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
+              <input
+                placeholder="Descripción (opcional)"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className={inputCls}
+              />
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[hsl(var(--dash-text-muted))]">Color:</span>
+                <span className="text-xs text-[hsl(var(--dash-text-muted))]">Color:</span>
                 {COLORS.map((c) => (
-                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
+                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-6 h-6 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-40 hover:opacity-70"}`} title={c.label} />
                 ))}
               </div>
-              <button onClick={handleSubmit} className="btn-dark text-xs px-5 py-2.5">Agendar</button>
+              <div className="flex gap-2 pt-1">
+                <button onClick={handleSubmit} disabled={!form.title} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
+                  Agendar
+                </button>
+                <button onClick={() => setShowPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                  Cancelar
+                </button>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
