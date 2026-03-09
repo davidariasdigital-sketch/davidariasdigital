@@ -137,13 +137,13 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       {/* Top row: Instagram 2x2 + YouTube */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-5 items-start">
         {/* Instagram 2x2 */}
         <div>
           <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {[0, 1, 2, 3].map((colIdx) => (
               <ContentColumn
                 key={colIdx}
@@ -164,13 +164,14 @@ const ContentPlannerView = () => {
                 accentClass="border-pink-500/20"
                 publishedClass="bg-emerald-500/15 border-emerald-500/30"
                 chipClass="bg-pink-500/10 hover:bg-pink-500/15"
+                square
               />
             ))}
           </div>
         </div>
 
-        {/* YouTube - single module to the right */}
-        <div className="w-full lg:w-[200px]">
+        {/* YouTube */}
+        <div>
           <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
           <ContentColumn
             section="youtube"
@@ -194,10 +195,10 @@ const ContentPlannerView = () => {
         </div>
       </div>
 
-      {/* Ideas Futuras - below */}
+      {/* Ideas Futuras */}
       <div>
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
             <ContentColumn
               key={`idea-${colIdx}`}
