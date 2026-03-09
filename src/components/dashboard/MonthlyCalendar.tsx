@@ -18,11 +18,21 @@ const COLORS = [
   { value: "purple", label: "Morado", class: "bg-purple-500" },
 ];
 
+// Pastel tile styles matching reference image
+const tileStyles: Record<string, { bg: string; border: string; text: string; label: string }> = {
+  primary: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-900", label: "text-amber-500" },
+  blue:    { bg: "bg-blue-50",  border: "border-blue-200",  text: "text-blue-900",  label: "text-blue-400" },
+  green:   { bg: "bg-green-50", border: "border-green-200", text: "text-green-900", label: "text-green-500" },
+  red:     { bg: "bg-pink-100", border: "border-pink-200",  text: "text-pink-900",  label: "text-pink-400" },
+  purple:  { bg: "bg-purple-50",border: "border-purple-200",text: "text-purple-900",label: "text-purple-400" },
+};
+
+// For popup event list
 const colorClasses: Record<string, string> = {
-  primary: "bg-primary/15 text-[hsl(var(--dash-text))] border-primary/30",
+  primary: "bg-amber-50 text-amber-900 border-amber-200",
   blue: "bg-blue-50 text-blue-700 border-blue-200",
-  green: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  red: "bg-red-50 text-red-700 border-red-200",
+  green: "bg-green-50 text-green-700 border-green-200",
+  red: "bg-pink-100 text-pink-900 border-pink-200",
   purple: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
