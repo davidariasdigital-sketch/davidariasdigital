@@ -228,9 +228,11 @@ const MonthlyCalendar = () => {
                           <p className={`text-[10px] font-bold leading-tight ${style.text} pr-10`}>
                             {firstEvent.title}
                           </p>
-                          <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
-                            {firstEvent.event_time ? firstEvent.event_time.slice(0, 5) : "Producción"}
-                          </p>
+                          {firstEvent.event_time && (
+                            <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
+                              {firstEvent.event_time.slice(0, 5)}
+                            </p>
+                          )}
                         </div>
                       )}
 
