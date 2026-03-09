@@ -224,7 +224,7 @@ const MonthlyCalendar = () => {
               )}
               {selectedDayEvents.map((ev) => (
                 <div key={ev.id} className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold truncate">{ev.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       {ev.event_time && <span className="text-xs opacity-75">{ev.event_time.slice(0, 5)}</span>}
@@ -232,7 +232,14 @@ const MonthlyCalendar = () => {
                     </div>
                     {ev.description && <p className="text-xs opacity-60 mt-1">{ev.description}</p>}
                   </div>
-                  <button onClick={() => handleDelete(ev.id)} className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-red-50 transition-all"><Trash2 size={14} /></button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => handleDuplicate(ev)} title="Duplicar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-blue-50 transition-all">
+                      <Copy size={13} />
+                    </button>
+                    <button onClick={() => handleDelete(ev.id)} title="Eliminar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-red-50 transition-all">
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
