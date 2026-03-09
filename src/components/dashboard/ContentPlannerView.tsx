@@ -255,7 +255,7 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
+      className={`group/col liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
         dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
