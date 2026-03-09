@@ -196,9 +196,9 @@ const MonthlyCalendar = () => {
               </div>
               <input placeholder="Descripción (opcional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[hsl(0,0%,50%)]">Color:</span>
+                <span className="text-[10px] text-[hsl(0,0%,45%)]">Color:</span>
                 {COLORS.map((c) => (
-                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(0,0%,30%)] scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
+                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-white/50 scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
                 ))}
               </div>
               <button onClick={handleSubmit} className="bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">Agendar</button>
