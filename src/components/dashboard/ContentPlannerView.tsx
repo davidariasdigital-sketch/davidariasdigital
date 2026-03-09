@@ -255,8 +255,8 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`rounded-xl border min-h-[100px] p-3 flex flex-col gap-2.5 transition-all bg-muted/30 ${accentClass} ${
-        dragOver ? "bg-primary/5 border-primary/30 scale-[1.01]" : ""
+      className={`liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
+        dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
