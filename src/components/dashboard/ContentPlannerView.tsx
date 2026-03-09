@@ -221,6 +221,7 @@ const ContentPlannerView = () => {
               onEditSave={saveEdit}
               onDelete={deleteItem}
               onFormatChange={updateFormat}
+              onTogglePublished={togglePublished}
               accentClass="bg-amber-500/5 border-amber-500/20"
               chipClass="bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25"
             />
