@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, FileText, CheckSquare, DollarSign } from "lucide-react";
+import { Users, FileText, DollarSign } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "tasks" | "invoices";
