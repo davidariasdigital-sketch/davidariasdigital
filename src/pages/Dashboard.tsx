@@ -59,19 +59,24 @@ const Dashboard = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full dash-bg">
+        {/* Background blobs for glass refraction */}
+        <div className="dash-blob dash-blob-1" />
+        <div className="dash-blob dash-blob-2" />
+        <div className="dash-blob dash-blob-3" />
+        
         <DashboardSidebar currentView={view} onViewChange={setView} />
-        <div className="flex-1 flex flex-col min-h-screen">
-          <header className="h-14 flex items-center justify-between px-8">
-            <h2 className="text-sm font-semibold text-[hsl(0,0%,40%)] tracking-wide">
+        <div className="flex-1 flex flex-col min-h-screen relative z-10">
+          <header className="h-16 flex items-center justify-between px-8">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[hsl(0,0%,45%)]">
               {viewLabels[view]}
             </h2>
           </header>
           <main className="flex-1 px-8 pb-8 overflow-auto">
             <motion.div
               key={view}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
             >
               {renderView()}
             </motion.div>
