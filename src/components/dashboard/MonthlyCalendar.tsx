@@ -111,12 +111,14 @@ const MonthlyCalendar = () => {
     fetchEvents();
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     await supabase.from("events").delete().eq("id", id);
     fetchEvents();
   };
 
-  const handleDuplicate = async (ev: CalendarEvent) => {
+  const handleDuplicate = async (ev: CalendarEvent, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("events").insert({
@@ -124,6 +126,27 @@ const MonthlyCalendar = () => {
       event_time: ev.event_time, color: ev.color, client_id: ev.client_id, user_id: user.id,
     } as any);
     fetchEvents();
+  };
+
+  const handleMoveEvent = async (eventId: string, newDate: string) => {
+    await supabase.from("events").update({ event_date: newDate } as any).eq("id", eventId);
+    fetchEvents();
+  };
+
+  const onDragStart = (e: DragEvent, eventId: string) => {
+    e.dataTransfer.setData("eventId", eventId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const onDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = (e: DragEvent, dateStr: string) => {
+    e.preventDefault();
+    const eventId = e.dataTransfer.getData("eventId");
+    if (eventId && dateStr) handleMoveEvent(eventId, dateStr);
   };
 
   const selectedDayEvents = selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
