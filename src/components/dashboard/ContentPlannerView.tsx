@@ -197,7 +197,7 @@ const ContentPlannerView = () => {
       {/* Ideas Futuras - below */}
       <div>
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
             <ContentColumn
               key={`idea-${colIdx}`}
