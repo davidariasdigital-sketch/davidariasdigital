@@ -40,7 +40,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
 
   return (
     <Sidebar collapsible="icon" className="border-none">
-      <SidebarContent className="dash-sidebar flex flex-col justify-between">
+      <SidebarContent className="dash-sidebar flex flex-col justify-between rounded-r-3xl">
         <div>
           {/* Brand */}
           <div className="px-4 pt-6 pb-4 flex items-center gap-3">

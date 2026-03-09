@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, FileText, DollarSign } from "lucide-react";
+import { Users, FileText, DollarSign, Plus } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices";
@@ -29,34 +29,48 @@ const OverviewView = ({ onNavigate }: Props) => {
   const formatCOP = (v: number) =>
     new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
 
-  const cards = [
-    { label: "Clientes", value: String(stats.clients), icon: Users, view: "clients" as View, highlight: false },
-    { label: "Cotizaciones pendientes", value: String(stats.quotations), icon: FileText, view: "quotations" as View, highlight: false },
-    { label: "Por cobrar", value: formatCOP(stats.pendingAmount), icon: DollarSign, view: "invoices" as View, highlight: true },
-  ];
-
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold text-[hsl(0,0%,15%)]">Bienvenido</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {cards.map((card) => (
-          <button
-            key={card.label}
-            onClick={() => onNavigate(card.view)}
-            className={`rounded-[var(--radius)] p-6 text-left transition-all ${
-              card.highlight ? "dash-card-highlight" : "dash-card"
-            }`}
-          >
-            <card.icon size={20} className={card.highlight ? "text-white/80" : "text-primary"} />
-            <p className={`text-3xl font-bold mt-3 ${card.highlight ? "text-white" : "text-[hsl(0,0%,12%)]"}`}>
-              {card.value}
-            </p>
-            <p className={`text-xs mt-1 ${card.highlight ? "text-white/70" : "text-[hsl(0,0%,50%)]"}`}>
-              {card.label}
-            </p>
-          </button>
-        ))}
+      <div>
+        <h1 className="text-3xl font-bold text-[hsl(0,0%,12%)]">Dashboard</h1>
+        <p className="text-sm text-[hsl(0,0%,50%)] mt-1">Bienvenido de vuelta, David</p>
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Yellow highlight card */}
+        <button
+          onClick={() => onNavigate("invoices")}
+          className="dash-card-highlight rounded-3xl p-7 text-left"
+        >
+          <DollarSign size={22} className="text-white/80" />
+          <p className="text-4xl font-bold mt-4 text-white">{formatCOP(stats.pendingAmount)}</p>
+          <p className="text-xs mt-2 text-white/70 font-medium">Por cobrar</p>
+        </button>
+
+        {/* White card */}
+        <button
+          onClick={() => onNavigate("clients")}
+          className="dash-card rounded-3xl p-7 text-left"
+        >
+          <Users size={22} className="text-primary" />
+          <p className="text-4xl font-bold mt-4 text-[hsl(0,0%,12%)]">{stats.clients}</p>
+          <p className="text-xs mt-2 text-[hsl(0,0%,50%)] font-medium">Clientes</p>
+        </button>
+
+        {/* Dark card */}
+        <button
+          onClick={() => onNavigate("quotations")}
+          className="dash-card-dark rounded-3xl p-7 text-left flex flex-col"
+        >
+          <div className="flex items-center justify-between w-full">
+            <FileText size={22} className="text-white/60" />
+            <Plus size={18} className="text-white/40" />
+          </div>
+          <p className="text-4xl font-bold mt-4 text-white">{stats.quotations}</p>
+          <p className="text-xs mt-2 text-white/50 font-medium">Cotizaciones pendientes</p>
+        </button>
+      </div>
+
       <MonthlyCalendar />
     </div>
   );
