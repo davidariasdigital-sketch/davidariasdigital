@@ -296,6 +296,15 @@ const ContentColumn = ({
                   {item.title || "Sin título"}
                 </span>
                 <button
+                  onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
+                  className={`shrink-0 transition-all ${
+                    item.published ? "text-emerald-600 opacity-100" : "opacity-0 group-hover:opacity-60 hover:opacity-100"
+                  }`}
+                  title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
+                >
+                  <Check className="h-3 w-3" />
+                </button>
+                <button
                   onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
                   className="opacity-0 group-hover:opacity-60 hover:opacity-100 shrink-0"
                 >
