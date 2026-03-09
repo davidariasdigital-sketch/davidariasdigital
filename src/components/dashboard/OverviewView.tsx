@@ -10,7 +10,7 @@ interface Props {
 }
 
 const OverviewView = ({ onNavigate }: Props) => {
-  const [stats, setStats] = useState({ clients: 0, quotations: 0, tasks: 0, pendingAmount: 0 });
+  const [stats, setStats] = useState({ clients: 0, quotations: 0, pendingAmount: 0 });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -21,42 +21,42 @@ const OverviewView = ({ onNavigate }: Props) => {
       ]);
       const invData = (inv.data ?? []) as any[];
       const pendingAmount = invData.reduce((sum: number, i: any) => sum + Number(i.amount), 0);
-      setStats({
-        clients: c.count ?? 0,
-        quotations: q.count ?? 0,
-        tasks: 0,
-        pendingAmount,
-      });
+      setStats({ clients: c.count ?? 0, quotations: q.count ?? 0, pendingAmount });
     };
     fetchStats();
   }, []);
 
-  const formatCOP = (v: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
+  const formatCOP = (v: number) =>
+    new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
 
   const cards = [
-    { label: "Clientes", value: String(stats.clients), icon: Users, view: "clients" as View, color: "text-primary" },
-    { label: "Cotizaciones pendientes", value: String(stats.quotations), icon: FileText, view: "quotations" as View, color: "text-primary" },
-    { label: "Por cobrar", value: formatCOP(stats.pendingAmount), icon: DollarSign, view: "invoices" as View, color: "text-primary" },
+    { label: "Clientes", value: String(stats.clients), icon: Users, view: "clients" as View, highlight: false },
+    { label: "Cotizaciones pendientes", value: String(stats.quotations), icon: FileText, view: "quotations" as View, highlight: false },
+    { label: "Por cobrar", value: formatCOP(stats.pendingAmount), icon: DollarSign, view: "invoices" as View, highlight: true },
   ];
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-foreground">Bienvenido</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <h1 className="text-3xl font-bold text-[hsl(0,0%,15%)]">Bienvenido</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {cards.map((card) => (
           <button
             key={card.label}
             onClick={() => onNavigate(card.view)}
-            className="liquid-glass rounded-[var(--radius)] p-6 text-left hover:scale-[1.02] transition-transform"
+            className={`rounded-[var(--radius)] p-6 text-left transition-all ${
+              card.highlight ? "dash-card-highlight" : "dash-card"
+            }`}
           >
-            <card.icon size={20} className={card.color} />
-            <p className="text-3xl font-bold text-foreground mt-3">{card.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{card.label}</p>
+            <card.icon size={20} className={card.highlight ? "text-white/80" : "text-primary"} />
+            <p className={`text-3xl font-bold mt-3 ${card.highlight ? "text-white" : "text-[hsl(0,0%,12%)]"}`}>
+              {card.value}
+            </p>
+            <p className={`text-xs mt-1 ${card.highlight ? "text-white/70" : "text-[hsl(0,0%,50%)]"}`}>
+              {card.label}
+            </p>
           </button>
         ))}
       </div>
-
-      {/* Monthly Calendar */}
       <MonthlyCalendar />
     </div>
   );
