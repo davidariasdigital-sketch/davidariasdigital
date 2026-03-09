@@ -137,13 +137,13 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* Top row: Instagram 2x2 + YouTube */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5 items-start">
         {/* Instagram 2x2 */}
         <div>
           <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {[0, 1, 2, 3].map((colIdx) => (
               <ContentColumn
                 key={colIdx}
