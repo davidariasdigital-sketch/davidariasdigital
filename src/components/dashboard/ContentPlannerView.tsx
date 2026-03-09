@@ -255,8 +255,8 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`rounded-xl border min-h-[100px] p-3 flex flex-col gap-2.5 transition-all bg-muted/30 ${accentClass} ${
-        dragOver ? "bg-primary/5 border-primary/30 scale-[1.01]" : ""
+      className={`liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
+        dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
@@ -326,9 +326,9 @@ const ContentColumn = ({
 
       <button
         onClick={onAdd}
-        className="mt-auto flex items-center justify-center gap-1 text-[10px] text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-40 hover:opacity-100 transition-all"
+        className="mt-auto flex items-center justify-center text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-30 hover:opacity-80 transition-all"
       >
-        <Plus className="h-3 w-3" /> Agregar
+        <Plus className="h-4 w-4" />
       </button>
     </div>
   );
