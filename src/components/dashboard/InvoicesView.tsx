@@ -17,15 +17,8 @@ interface Invoice {
   clients?: { name: string } | null;
 }
 
-interface Client {
-  id: string;
-  name: string;
-}
-
-interface Quotation {
-  id: string;
-  title: string;
-}
+interface Client { id: string; name: string; }
+interface Quotation { id: string; title: string; }
 
 const statusLabels: Record<string, string> = {
   pendiente: "Pendiente",
@@ -34,9 +27,9 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusColors: Record<string, string> = {
-  pendiente: "bg-yellow-500/20 text-yellow-400",
-  pagada: "bg-green-500/20 text-green-400",
-  vencida: "bg-red-500/20 text-red-400",
+  pendiente: "bg-amber-100 text-amber-700",
+  pagada: "bg-emerald-100 text-emerald-700",
+  vencida: "bg-red-100 text-red-700",
 };
 
 const InvoicesView = () => {
@@ -46,14 +39,7 @@ const InvoicesView = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    concept: "",
-    amount: "",
-    status: "pendiente",
-    due_date: "",
-    paid_date: "",
-    notes: "",
-    client_id: "",
-    quotation_id: "",
+    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "",
   });
 
   const formatCOP = (v: number) =>
@@ -82,38 +68,22 @@ const InvoicesView = () => {
     if (!form.concept || !form.amount) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
     const payload = {
-      concept: form.concept,
-      amount: parseFloat(form.amount),
-      status: form.status as any,
-      due_date: form.due_date || null,
-      paid_date: form.paid_date || null,
-      notes: form.notes || null,
-      client_id: form.client_id || null,
-      quotation_id: form.quotation_id || null,
-      user_id: user.id,
+      concept: form.concept, amount: parseFloat(form.amount), status: form.status as any,
+      due_date: form.due_date || null, paid_date: form.paid_date || null, notes: form.notes || null,
+      client_id: form.client_id || null, quotation_id: form.quotation_id || null, user_id: user.id,
     };
-
-    if (editingId) {
-      await supabase.from("invoices").update(payload).eq("id", editingId);
-    } else {
-      await supabase.from("invoices").insert(payload);
-    }
+    if (editingId) { await supabase.from("invoices").update(payload).eq("id", editingId); }
+    else { await supabase.from("invoices").insert(payload); }
     resetForm();
     fetchAll();
   };
 
   const handleEdit = (inv: Invoice) => {
     setForm({
-      concept: inv.concept,
-      amount: String(inv.amount),
-      status: inv.status,
-      due_date: inv.due_date ?? "",
-      paid_date: inv.paid_date ?? "",
-      notes: inv.notes ?? "",
-      client_id: inv.client_id ?? "",
-      quotation_id: inv.quotation_id ?? "",
+      concept: inv.concept, amount: String(inv.amount), status: inv.status,
+      due_date: inv.due_date ?? "", paid_date: inv.paid_date ?? "", notes: inv.notes ?? "",
+      client_id: inv.client_id ?? "", quotation_id: inv.quotation_id ?? "",
     });
     setEditingId(inv.id);
     setShowForm(true);
@@ -127,53 +97,38 @@ const InvoicesView = () => {
   const totalPending = invoices.filter((i) => i.status === "pendiente").reduce((s, i) => s + Number(i.amount), 0);
   const totalPaid = invoices.filter((i) => i.status === "pagada").reduce((s, i) => s + Number(i.amount), 0);
 
+  const inputCls = "w-full dash-input rounded-lg px-4 py-2 text-sm";
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Cuentas por Cobrar</h1>
+        <h1 className="text-2xl font-bold text-[hsl(0,0%,15%)]">Cuentas por Cobrar</h1>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">
           <Plus size={14} /> Nueva
         </button>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="liquid-glass rounded-[var(--radius)] p-5">
-          <p className="text-xs text-muted-foreground">Pendiente por cobrar</p>
-          <p className="text-2xl font-bold text-yellow-400 mt-1">{formatCOP(totalPending)}</p>
+        <div className="dash-card p-5">
+          <p className="text-xs text-[hsl(0,0%,50%)]">Pendiente por cobrar</p>
+          <p className="text-2xl font-bold text-amber-600 mt-1">{formatCOP(totalPending)}</p>
         </div>
-        <div className="liquid-glass rounded-[var(--radius)] p-5">
-          <p className="text-xs text-muted-foreground">Total cobrado</p>
-          <p className="text-2xl font-bold text-green-400 mt-1">{formatCOP(totalPaid)}</p>
+        <div className="dash-card p-5">
+          <p className="text-xs text-[hsl(0,0%,50%)]">Total cobrado</p>
+          <p className="text-2xl font-bold text-emerald-600 mt-1">{formatCOP(totalPaid)}</p>
         </div>
       </div>
 
-      {/* Form */}
       {showForm && (
-        <div className="liquid-glass rounded-[var(--radius)] p-6 space-y-4">
+        <div className="dash-glass rounded-[var(--radius)] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
-            <button onClick={resetForm} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+            <h3 className="text-sm font-semibold text-[hsl(0,0%,15%)]">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
+            <button onClick={resetForm} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={16} /></button>
           </div>
-          <input
-            placeholder="Concepto *"
-            value={form.concept}
-            onChange={(e) => setForm({ ...form, concept: e.target.value })}
-            className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+          <input placeholder="Concepto *" value={form.concept} onChange={(e) => setForm({ ...form, concept: e.target.value })} className={inputCls} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="number"
-              placeholder="Monto (COP) *"
-              value={form.amount}
-              onChange={(e) => setForm({ ...form, amount: e.target.value })}
-              className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-            <select
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-              className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
+            <input type="number" placeholder="Monto (COP) *" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputCls} />
+            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputCls}>
               <option value="pendiente">Pendiente</option>
               <option value="pagada">Pagada</option>
               <option value="vencida">Vencida</option>
@@ -181,93 +136,55 @@ const InvoicesView = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Fecha de vencimiento</label>
-              <input
-                type="date"
-                value={form.due_date}
-                onChange={(e) => setForm({ ...form, due_date: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="text-xs text-[hsl(0,0%,50%)] mb-1 block">Fecha de vencimiento</label>
+              <input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} className={inputCls} />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Fecha de pago</label>
-              <input
-                type="date"
-                value={form.paid_date}
-                onChange={(e) => setForm({ ...form, paid_date: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+              <label className="text-xs text-[hsl(0,0%,50%)] mb-1 block">Fecha de pago</label>
+              <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <select
-              value={form.client_id}
-              onChange={(e) => setForm({ ...form, client_id: e.target.value })}
-              className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
+            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
               <option value="">Sin cliente</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <select
-              value={form.quotation_id}
-              onChange={(e) => setForm({ ...form, quotation_id: e.target.value })}
-              className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-            >
+            <select value={form.quotation_id} onChange={(e) => setForm({ ...form, quotation_id: e.target.value })} className={inputCls}>
               <option value="">Sin cotización</option>
               {quotations.map((q) => <option key={q.id} value={q.id}>{q.title}</option>)}
             </select>
           </div>
-          <textarea
-            placeholder="Notas (opcional)"
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            className="w-full bg-background border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-            rows={2}
-          />
+          <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
           <button onClick={handleSubmit} className="bg-primary text-primary-foreground text-xs font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity">
             {editingId ? "Guardar cambios" : "Crear cuenta"}
           </button>
         </div>
       )}
 
-      {/* List */}
       <div className="space-y-3">
         {invoices.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
+          <p className="text-[hsl(0,0%,50%)] text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
         )}
         {invoices.map((inv) => (
-          <div key={inv.id} className="liquid-glass rounded-[var(--radius)] p-4 flex items-center justify-between gap-4">
+          <div key={inv.id} className="dash-card p-4 flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm text-foreground truncate">{inv.concept}</span>
+                <span className="font-semibold text-sm text-[hsl(0,0%,15%)] truncate">{inv.concept}</span>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColors[inv.status]}`}>
                   {statusLabels[inv.status]}
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-                <span className="font-bold text-foreground">{formatCOP(Number(inv.amount))}</span>
+              <div className="flex items-center gap-3 mt-1 text-xs text-[hsl(0,0%,50%)] flex-wrap">
+                <span className="font-bold text-[hsl(0,0%,15%)]">{formatCOP(Number(inv.amount))}</span>
                 {inv.clients?.name && <span>• {inv.clients.name}</span>}
                 {inv.due_date && <span>• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
                 {inv.paid_date && <span>• Pagada: {new Date(inv.paid_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button
-                onClick={() => generateInvoicePDF({
-                  concept: inv.concept,
-                  amount: Number(inv.amount),
-                  clientName: inv.clients?.name ?? "Cliente",
-                  createdAt: inv.created_at,
-                  notes: inv.notes,
-                  due_date: inv.due_date,
-                })}
-                className="p-2 text-muted-foreground hover:text-primary transition-colors"
-                title="Descargar PDF"
-              >
-                <FileDown size={14} />
-              </button>
-              <button onClick={() => handleEdit(inv)} className="p-2 text-muted-foreground hover:text-foreground transition-colors"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(inv.id)} className="p-2 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={14} /></button>
+              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.clients?.name ?? "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(0,0%,55%)] hover:text-primary transition-colors" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,20%)] transition-colors"><Edit2 size={14} /></button>
+              <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(0,0%,55%)] hover:text-[hsl(0,84%,60%)] transition-colors"><Trash2 size={14} /></button>
             </div>
           </div>
         ))}

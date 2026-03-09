@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Trash2, Edit2, X, Upload, User, Building2, UtensilsCrossed, Scissors, Heart, Scale, Music, Sparkles, Leaf, ShoppingBag, Dumbbell, Coffee, Palette, Star, Briefcase, Store } from "lucide-react";
+import { Plus, Search, Trash2, Edit2, X, User, Building2, UtensilsCrossed, Scissors, Heart, Scale, Music, Sparkles, Leaf, ShoppingBag, Dumbbell, Coffee, Palette, Star, Briefcase, Store } from "lucide-react";
 import { toast } from "sonner";
 
 const BRAND_CLIENTS = [
@@ -12,7 +12,6 @@ const BRAND_CLIENTS = [
 "Vitane", "Shibumi", "Luminance", "Tanga", "Suarez Abogados", "Dermocorea",
 "Resonance", "Aromasense", "Greencode", "Deopies", "Muss", "Follies",
 "Recamier Corp", "Ruuts", "Whitman", "Sra Buenaventura"];
-
 
 interface Client {
   id: string;
@@ -44,13 +43,12 @@ const ICON_MAP: Record<string, typeof User> = {
 
 const COLORS = [
 "bg-primary/15 text-primary",
-"bg-amber-500/15 text-amber-600",
-"bg-emerald-500/15 text-emerald-600",
-"bg-rose-500/15 text-rose-600",
-"bg-violet-500/15 text-violet-600",
-"bg-sky-500/15 text-sky-600",
-"bg-orange-500/15 text-orange-600"];
-
+"bg-amber-500/15 text-amber-700",
+"bg-emerald-500/15 text-emerald-700",
+"bg-rose-500/15 text-rose-700",
+"bg-violet-500/15 text-violet-700",
+"bg-sky-500/15 text-sky-700",
+"bg-orange-500/15 text-orange-700"];
 
 const getClientIcon = (name: string) => ICON_MAP[name] || User;
 const getClientColor = (name: string) => {
@@ -71,21 +69,18 @@ const ClientsView = () => {
     if (data) setClients(data);
   };
 
-  useEffect(() => {fetchClients();}, []);
+  useEffect(() => { fetchClients(); }, []);
 
   const seedClients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const existing = clients.map((c) => c.name.toLowerCase());
-    const toInsert = BRAND_CLIENTS.
-    filter((name) => !existing.includes(name.toLowerCase())).
-    map((name) => ({ name, user_id: user.id }));
-    if (toInsert.length === 0) {
-      toast.info("Todos los clientes ya están agregados");
-      return;
-    }
+    const toInsert = BRAND_CLIENTS
+      .filter((name) => !existing.includes(name.toLowerCase()))
+      .map((name) => ({ name, user_id: user.id }));
+    if (toInsert.length === 0) { toast.info("Todos los clientes ya están agregados"); return; }
     const { error } = await supabase.from("clients").insert(toInsert);
-    if (error) {toast.error("Error al importar");return;}
+    if (error) { toast.error("Error al importar"); return; }
     toast.success(`${toInsert.length} clientes importados`);
     fetchClients();
   };
@@ -94,7 +89,6 @@ const ClientsView = () => {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
     if (editing) {
       await supabase.from("clients").update(form).eq("id", editing.id);
     } else {
@@ -118,52 +112,47 @@ const ClientsView = () => {
   };
 
   const filtered = clients.filter((c) =>
-  c.name.toLowerCase().includes(search.toLowerCase()) ||
-  c.company?.toLowerCase().includes(search.toLowerCase())
+    c.name.toLowerCase().includes(search.toLowerCase()) ||
+    c.company?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Clientes</h1>
-        <div className="flex items-center gap-2">
-          
-
-          
-          <button onClick={() => {setShowForm(true);setEditing(null);setForm({ name: "", email: "", phone: "", company: "", notes: "" });}} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-            <Plus size={16} /> Nuevo
-          </button>
-        </div>
+        <h1 className="text-2xl font-bold text-[hsl(0,0%,15%)]">Clientes</h1>
+        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+          <Plus size={16} /> Nuevo
+        </button>
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[hsl(0,0%,50%)]" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar cliente..."
-          className="w-full bg-muted/50 border border-border rounded-full pl-10 pr-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-        
+          className="w-full dash-input rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
       </div>
 
-      {showForm &&
-      <form onSubmit={handleSubmit} className="liquid-glass rounded-[var(--radius)] p-6 space-y-4">
+      {showForm && (
+        <form onSubmit={handleSubmit} className="dash-glass rounded-[var(--radius)] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-foreground">{editing ? "Editar cliente" : "Nuevo cliente"}</h3>
-            <button type="button" onClick={() => {setShowForm(false);setEditing(null);}} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
+            <h3 className="font-semibold text-[hsl(0,0%,15%)]">{editing ? "Editar cliente" : "Nuevo cliente"}</h3>
+            <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={16} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre *" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-            <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="Teléfono" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
-            <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Empresa" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre *" className="dash-input rounded-xl px-4 py-2.5 text-sm" />
+            <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="dash-input rounded-xl px-4 py-2.5 text-sm" />
+            <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="Teléfono" className="dash-input rounded-xl px-4 py-2.5 text-sm" />
+            <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Empresa" className="dash-input rounded-xl px-4 py-2.5 text-sm" />
           </div>
-          <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notas" className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 min-h-[60px]" />
+          <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notas" className="w-full dash-input rounded-xl px-4 py-2.5 text-sm min-h-[60px]" />
           <button type="submit" className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all">
             {editing ? "Guardar" : "Crear"}
           </button>
         </form>
-      }
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
         {filtered.map((c) => {
@@ -172,26 +161,26 @@ const ClientsView = () => {
           return (
             <div
               key={c.id}
-              className="liquid-glass rounded-[var(--radius)] aspect-square p-4 flex flex-col items-center justify-center text-center relative group hover:scale-[1.02] transition-transform">
-              
+              className="dash-card aspect-square p-4 flex flex-col items-center justify-center text-center relative group"
+            >
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleEdit(c)} className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted/50"><Edit2 size={12} /></button>
-                <button onClick={() => handleDelete(c.id)} className="text-muted-foreground hover:text-destructive p-1 rounded-lg hover:bg-destructive/10"><Trash2 size={12} /></button>
+                <button onClick={() => handleEdit(c)} className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,20%)] p-1 rounded-lg hover:bg-black/5"><Edit2 size={12} /></button>
+                <button onClick={() => handleDelete(c.id)} className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,84%,60%)] p-1 rounded-lg hover:bg-red-500/10"><Trash2 size={12} /></button>
               </div>
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 ${color}`}>
                 <Icon size={22} className="text-inherit" />
               </div>
-              <p className="font-semibold text-foreground text-xs leading-tight line-clamp-2">{c.name}</p>
-              {c.company && <p className="text-[10px] text-muted-foreground mt-1 truncate w-full">{c.company}</p>}
-            </div>);
-
+              <p className="font-semibold text-[hsl(0,0%,15%)] text-xs leading-tight line-clamp-2">{c.name}</p>
+              {c.company && <p className="text-[10px] text-[hsl(0,0%,50%)] mt-1 truncate w-full">{c.company}</p>}
+            </div>
+          );
         })}
-        {filtered.length === 0 &&
-        <div className="col-span-full text-center text-muted-foreground text-sm py-8">No hay clientes aún</div>
-        }
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center text-[hsl(0,0%,50%)] text-sm py-8">No hay clientes aún</div>
+        )}
       </div>
-    </div>);
-
+    </div>
+  );
 };
 
 export default ClientsView;
