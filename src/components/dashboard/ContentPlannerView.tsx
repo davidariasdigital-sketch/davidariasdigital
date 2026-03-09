@@ -286,36 +286,32 @@ const ContentColumn = ({
               className="w-full bg-transparent outline-none text-xs text-center font-medium"
             />
           ) : (
-            <div className="space-y-2">
-              {/* Title row */}
-              <div className="flex items-start justify-between gap-2">
-                <span
-                  className="flex-1 text-[11px] leading-relaxed font-medium cursor-text"
-                  onClick={() => onEditStart(item.id, item.title)}
+            <div className="flex flex-col items-center gap-1.5 relative">
+              {/* Action buttons - top right corner */}
+              <div className="absolute -top-1 -right-1 flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
+                  className={`rounded-full p-0.5 transition-all ${
+                    item.published ? "text-emerald-600 opacity-100" : "hover:bg-muted"
+                  }`}
                 >
-                  {item.title || "Sin título"}
-                </span>
-                <div className="flex items-center gap-0.5 shrink-0">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
-                    className={`rounded-full p-1 transition-all ${
-                      item.published
-                        ? "text-emerald-600 bg-emerald-500/20"
-                        : "opacity-0 group-hover:opacity-50 hover:!opacity-100 hover:bg-muted"
-                    }`}
-                    title={item.published ? "No publicado" : "Publicado"}
-                  >
-                    <Check className="h-3 w-3" />
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                    className="rounded-full p-1 opacity-0 group-hover:opacity-40 hover:!opacity-100 hover:bg-destructive/10 transition-all"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
+                  <Check className="h-2.5 w-2.5" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                  className="rounded-full p-0.5 hover:bg-destructive/10 transition-all"
+                >
+                  <X className="h-2.5 w-2.5" />
+                </button>
               </div>
-              {/* Format badge */}
+              {/* Title centered */}
+              <span
+                className="text-[11px] leading-snug font-medium cursor-text text-center w-full"
+                onClick={() => onEditStart(item.id, item.title)}
+              >
+                {item.title || "Sin título"}
+              </span>
+              {/* Format centered */}
               <FormatSelector
                 value={item.format}
                 onChange={(f) => onFormatChange(item.id, f)}
