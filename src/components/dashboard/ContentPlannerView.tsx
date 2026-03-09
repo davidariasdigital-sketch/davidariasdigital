@@ -331,7 +331,7 @@ const ContentColumn = ({
       ) : (
         <button
           onClick={onAdd}
-          className="opacity-0 group-hover/col:opacity-40 hover:!opacity-80 flex items-center justify-center text-muted-foreground py-1 transition-all"
+          className="opacity-20 hover:opacity-70 flex items-center justify-center text-muted-foreground py-1 transition-all"
         >
           <Plus className="h-3.5 w-3.5" />
         </button>
