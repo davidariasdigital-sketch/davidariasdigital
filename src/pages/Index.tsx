@@ -10,18 +10,16 @@ import ElevenLabsWidget from "@/components/ElevenLabsWidget";
 
 const Index = () => {
   return (
-    <div className="frame-outer">
-      <div className="frame-container bg-[hsl(0,0%,4%)] text-white">
-        <Navbar />
-        <HeroSection />
-        <ReelSection />
-        <BrandsShowcase />
-        <FramesCarousel />
-        <ServicesSection />
-        <BrandsSection />
-        <Footer />
-        <ElevenLabsWidget />
-      </div>
+    <div className="bg-background text-foreground min-h-screen">
+      <Navbar />
+      <HeroSection />
+      <ReelSection />
+      <BrandsShowcase />
+      <FramesCarousel />
+      <ServicesSection />
+      <BrandsSection />
+      <Footer />
+      <ElevenLabsWidget />
     </div>
   );
 };
