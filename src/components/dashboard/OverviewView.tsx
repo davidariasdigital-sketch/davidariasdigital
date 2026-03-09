@@ -37,7 +37,6 @@ const OverviewView = ({ onNavigate }: Props) => {
     { label: "Clientes", value: String(stats.clients), icon: Users, view: "clients" as View, color: "text-primary" },
     { label: "Cotizaciones pendientes", value: String(stats.quotations), icon: FileText, view: "quotations" as View, color: "text-primary" },
     { label: "Por cobrar", value: formatCOP(stats.pendingAmount), icon: DollarSign, view: "invoices" as View, color: "text-primary" },
-    { label: "Tareas pendientes", value: String(stats.tasks), icon: CheckSquare, view: "tasks" as View, color: "text-primary" },
   ];
 
   return (

@@ -62,7 +62,7 @@ const Dashboard = () => {
       case "overview": return <OverviewView onNavigate={setView} />;
       case "clients": return <ClientsView />;
       case "quotations": return <QuotationsView />;
-      case "tasks": return <TasksView />;
+      
       case "invoices": return <InvoicesView />;
       case "content-planner": return <ContentPlannerView />;
     }
