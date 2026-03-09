@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, GripVertical, Lightbulb, Instagram, Youtube, ChevronDown } from "lucide-react";
+import { Plus, X, GripVertical, Lightbulb, Instagram, Youtube, ChevronDown, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración"];
@@ -13,6 +13,7 @@ interface ContentItem {
   row_index: number;
   is_idea: boolean;
   format: string | null;
+  published: boolean;
 }
 
 type Section = "instagram" | "youtube" | "ideas";
@@ -92,6 +93,17 @@ const ContentPlannerView = () => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, format } : i)));
   };
 
+  const togglePublished = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const { error } = await supabase
+      .from("content_items")
+      .update({ published: !item.published })
+      .eq("id", id);
+    if (error) { toast.error("Error al actualizar"); return; }
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, published: !i.published } : i)));
+  };
+
   const handleDragStart = (item: ContentItem) => setDragItem(item);
 
   const handleDrop = async (section: Section, targetCol: number) => {
@@ -152,6 +164,7 @@ const ContentPlannerView = () => {
               onEditSave={saveEdit}
               onDelete={deleteItem}
               onFormatChange={updateFormat}
+              onTogglePublished={togglePublished}
               accentClass="bg-pink-500/10 border-pink-500/20"
               chipClass="bg-pink-500/15 text-pink-700 dark:text-pink-300 hover:bg-pink-500/25"
             />
@@ -179,6 +192,7 @@ const ContentPlannerView = () => {
           onEditSave={saveEdit}
           onDelete={deleteItem}
           onFormatChange={updateFormat}
+          onTogglePublished={togglePublished}
           accentClass="bg-red-500/10 border-red-500/20"
           chipClass="bg-red-500/15 text-red-700 dark:text-red-300 hover:bg-red-500/25"
         />
@@ -207,6 +221,7 @@ const ContentPlannerView = () => {
               onEditSave={saveEdit}
               onDelete={deleteItem}
               onFormatChange={updateFormat}
+              onTogglePublished={togglePublished}
               accentClass="bg-amber-500/5 border-amber-500/20"
               chipClass="bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25"
             />
@@ -231,6 +246,7 @@ interface ContentColumnProps {
   onEditSave: (id: string) => void;
   onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void;
+  onTogglePublished: (id: string) => void;
   accentClass: string;
   chipClass: string;
 }
@@ -238,7 +254,7 @@ interface ContentColumnProps {
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, accentClass, chipClass,
+  onFormatChange, onTogglePublished, accentClass, chipClass,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
 
@@ -256,7 +272,9 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          className={`group relative rounded-md px-3 py-2 text-xs cursor-grab active:cursor-grabbing transition-all ${chipClass}`}
+          className={`group relative rounded-md px-3 py-2 text-xs cursor-grab active:cursor-grabbing transition-all ${
+            item.published ? "bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border border-emerald-500/30" : chipClass
+          }`}
         >
           {editingId === item.id ? (
             <input
@@ -277,6 +295,15 @@ const ContentColumn = ({
                 <span className="flex-1 cursor-text leading-tight" onClick={() => onEditStart(item.id, item.title)}>
                   {item.title || "Sin título"}
                 </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
+                  className={`shrink-0 transition-all ${
+                    item.published ? "text-emerald-600 opacity-100" : "opacity-0 group-hover:opacity-60 hover:opacity-100"
+                  }`}
+                  title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
+                >
+                  <Check className="h-3 w-3" />
+                </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
                   className="opacity-0 group-hover:opacity-60 hover:opacity-100 shrink-0"

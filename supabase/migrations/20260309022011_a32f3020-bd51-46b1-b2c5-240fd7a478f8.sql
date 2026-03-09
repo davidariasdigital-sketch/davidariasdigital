@@ -1,0 +1,1 @@
+ALTER TABLE public.content_items ADD COLUMN published boolean NOT NULL DEFAULT false;
