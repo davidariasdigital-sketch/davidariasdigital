@@ -138,7 +138,7 @@ const ContentPlannerView = () => {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-xl font-bold text-foreground">Planeador de Contenido</h1>
+      
 
       {/* Instagram */}
       <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
