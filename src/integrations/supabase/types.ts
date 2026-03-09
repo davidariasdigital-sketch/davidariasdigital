@@ -55,6 +55,7 @@ export type Database = {
           id: string
           is_idea: boolean
           month: string
+          published: boolean
           row_index: number
           title: string
           user_id: string
@@ -66,6 +67,7 @@ export type Database = {
           id?: string
           is_idea?: boolean
           month: string
+          published?: boolean
           row_index?: number
           title?: string
           user_id: string
@@ -77,6 +79,7 @@ export type Database = {
           id?: string
           is_idea?: boolean
           month?: string
+          published?: boolean
           row_index?: number
           title?: string
           user_id?: string
