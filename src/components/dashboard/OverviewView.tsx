@@ -14,10 +14,9 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [c, q, t, inv] = await Promise.all([
+      const [c, q, inv] = await Promise.all([
         supabase.from("clients").select("id", { count: "exact", head: true }),
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "enviada"),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).eq("completed", false),
         supabase.from("invoices" as any).select("amount").eq("status", "pendiente"),
       ]);
       const invData = (inv.data ?? []) as any[];
@@ -25,7 +24,7 @@ const OverviewView = ({ onNavigate }: Props) => {
       setStats({
         clients: c.count ?? 0,
         quotations: q.count ?? 0,
-        tasks: t.count ?? 0,
+        tasks: 0,
         pendingAmount,
       });
     };
