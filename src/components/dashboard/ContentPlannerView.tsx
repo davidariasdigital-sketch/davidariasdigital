@@ -228,7 +228,7 @@ const ContentPlannerView = () => {
 };
 
 const SectionHeader = ({ icon, label, colorClass }: { icon: React.ReactNode; label: string; colorClass: string }) => (
-  <div className="flex items-center gap-2.5 mb--6">
+  <div className="flex items-center gap-2.5 mb-3">
     <span className={colorClass}>{icon}</span>
     <h2 className="text-sm font-bold uppercase tracking-widest text-foreground/70">{label}</h2>
   </div>
