@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, FileText, DollarSign, Plus } from "lucide-react";
+import { Users, FileText, DollarSign, Plus, TrendingUp } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices";
@@ -31,46 +31,52 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   return (
     <div className="space-y-8">
+      {/* Title */}
       <div>
-        <h1 className="text-3xl font-bold text-[hsl(0,0%,12%)]">Dashboard</h1>
-        <p className="text-sm text-[hsl(0,0%,50%)] mt-1">Bienvenido de vuelta, David</p>
+        <h1 className="text-3xl font-display font-extrabold text-white">Dashboard</h1>
+        <p className="text-sm text-[hsl(0,0%,45%)] mt-1">Bienvenido de vuelta, David</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {/* Yellow highlight card */}
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Primary tile — Por cobrar */}
         <button
           onClick={() => onNavigate("invoices")}
-          className="dash-card-highlight rounded-3xl p-7 text-left"
+          className="dash-tile-primary rounded-3xl p-7 text-left group"
         >
-          <DollarSign size={22} className="text-white/80" />
-          <p className="text-4xl font-bold mt-4 text-white">{formatCOP(stats.pendingAmount)}</p>
-          <p className="text-xs mt-2 text-white/70 font-medium">Por cobrar</p>
+          <div className="flex items-center justify-between">
+            <DollarSign size={20} className="opacity-70" />
+            <TrendingUp size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <p className="text-4xl font-display font-extrabold mt-5">{formatCOP(stats.pendingAmount)}</p>
+          <p className="text-xs mt-2 opacity-60 font-medium">Por cobrar</p>
         </button>
 
-        {/* White card */}
+        {/* Dark tile — Clientes */}
         <button
           onClick={() => onNavigate("clients")}
-          className="dash-card rounded-3xl p-7 text-left"
+          className="dash-tile rounded-3xl p-7 text-left"
         >
-          <Users size={22} className="text-primary" />
-          <p className="text-4xl font-bold mt-4 text-[hsl(0,0%,12%)]">{stats.clients}</p>
-          <p className="text-xs mt-2 text-[hsl(0,0%,50%)] font-medium">Clientes</p>
+          <Users size={20} className="text-primary" />
+          <p className="text-4xl font-display font-extrabold mt-5 text-white">{stats.clients}</p>
+          <p className="text-xs mt-2 text-[hsl(0,0%,45%)] font-medium">Clientes activos</p>
         </button>
 
-        {/* Dark card */}
+        {/* Dark tile — Cotizaciones */}
         <button
           onClick={() => onNavigate("quotations")}
-          className="dash-card-dark rounded-3xl p-7 text-left flex flex-col"
+          className="dash-tile rounded-3xl p-7 text-left group"
         >
           <div className="flex items-center justify-between w-full">
-            <FileText size={22} className="text-white/60" />
-            <Plus size={18} className="text-white/40" />
+            <FileText size={20} className="text-[hsl(0,0%,55%)]" />
+            <Plus size={16} className="text-[hsl(0,0%,30%)] group-hover:text-primary transition-colors" />
           </div>
-          <p className="text-4xl font-bold mt-4 text-white">{stats.quotations}</p>
-          <p className="text-xs mt-2 text-white/50 font-medium">Cotizaciones pendientes</p>
+          <p className="text-4xl font-display font-extrabold mt-5 text-white">{stats.quotations}</p>
+          <p className="text-xs mt-2 text-[hsl(0,0%,45%)] font-medium">Cotizaciones pendientes</p>
         </button>
       </div>
 
+      {/* Calendar */}
       <MonthlyCalendar />
     </div>
   );

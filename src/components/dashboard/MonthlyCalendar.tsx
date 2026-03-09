@@ -105,19 +105,19 @@ const MonthlyCalendar = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-[hsl(0,0%,15%)]">{MONTHS[month]} {year}</h2>
+          <h2 className="text-lg font-display font-bold text-white">{MONTHS[month]} {year}</h2>
           <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline">HOY</button>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="p-2 text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)] transition-colors"><ChevronLeft size={16} /></button>
-          <button onClick={nextMonth} className="p-2 text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)] transition-colors"><ChevronRight size={16} /></button>
+          <button onClick={prevMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronLeft size={16} /></button>
+          <button onClick={nextMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronRight size={16} /></button>
         </div>
       </div>
 
-      <div className="dash-glass rounded-[var(--radius)] overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-black/5">
+      <div className="dash-tile rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-7 border-b border-[hsl(0,0%,18%)]">
           {DAYS.map((d) => (
-            <div key={d} className="text-center text-[10px] font-bold text-[hsl(0,0%,50%)] py-2 uppercase tracking-wider">{d}</div>
+            <div key={d} className="text-center text-[10px] font-bold text-[hsl(0,0%,45%)] py-2 uppercase tracking-wider">{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7">
@@ -130,11 +130,11 @@ const MonthlyCalendar = () => {
                 key={i}
                 onClick={() => day && setSelectedDate(isSelected ? null : dateStr)}
                 disabled={!day}
-                className={`relative min-h-[72px] p-1.5 border-b border-r border-black/5 text-left transition-colors ${day ? "hover:bg-primary/5 cursor-pointer" : ""} ${isSelected ? "bg-primary/10" : ""}`}
+                className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(0,0%,15%)] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,15%)] cursor-pointer" : ""} ${isSelected ? "bg-primary/10" : ""}`}
               >
                 {day && (
                   <>
-                    <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-white font-bold" : "text-[hsl(0,0%,25%)]"}`}>{day}</span>
+                    <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(0,0%,65%)]"}`}>{day}</span>
                     <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
                       {dayEvents.slice(0, 2).map((ev) => (
                         <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
@@ -152,9 +152,9 @@ const MonthlyCalendar = () => {
       </div>
 
       {selectedDate && (
-        <div className="dash-glass rounded-[var(--radius)] p-4 space-y-3">
+        <div className="dash-tile rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[hsl(0,0%,15%)]">
+            <h3 className="text-sm font-semibold text-white">
               {new Date(selectedDate + "T00:00:00").toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}
             </h3>
             <button onClick={() => handleAddEvent(selectedDate)} className="flex items-center gap-1 text-primary text-xs font-bold hover:underline">
@@ -163,7 +163,7 @@ const MonthlyCalendar = () => {
           </div>
 
           {selectedDayEvents.length === 0 && !showForm && (
-            <p className="text-xs text-[hsl(0,0%,50%)] text-center py-4">Sin actividades</p>
+            <p className="text-xs text-[hsl(0,0%,45%)] text-center py-4">Sin actividades</p>
           )}
 
           {selectedDayEvents.map((ev) => (
@@ -181,10 +181,10 @@ const MonthlyCalendar = () => {
           ))}
 
           {showForm && (
-            <div className="space-y-3 border-t border-black/5 pt-3">
+            <div className="space-y-3 border-t border-[hsl(0,0%,18%)] pt-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[hsl(0,0%,15%)]">Nueva actividad</span>
-                <button onClick={() => setShowForm(false)} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={14} /></button>
+                <span className="text-xs font-semibold text-white">Nueva actividad</span>
+                <button onClick={() => setShowForm(false)} className="text-[hsl(0,0%,45%)] hover:text-white"><X size={14} /></button>
               </div>
               <input placeholder="Título *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputCls} />
               <div className="grid grid-cols-2 gap-3">
@@ -196,9 +196,9 @@ const MonthlyCalendar = () => {
               </div>
               <input placeholder="Descripción (opcional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={inputCls} />
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[hsl(0,0%,50%)]">Color:</span>
+                <span className="text-[10px] text-[hsl(0,0%,45%)]">Color:</span>
                 {COLORS.map((c) => (
-                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(0,0%,30%)] scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
+                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-5 h-5 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-white/50 scale-110" : "opacity-50 hover:opacity-75"}`} title={c.label} />
                 ))}
               </div>
               <button onClick={handleSubmit} className="bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">Agendar</button>
