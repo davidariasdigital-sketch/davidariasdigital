@@ -13,6 +13,7 @@ interface ContentItem {
   row_index: number;
   is_idea: boolean;
   format: string | null;
+  published: boolean;
 }
 
 type Section = "instagram" | "youtube" | "ideas";
