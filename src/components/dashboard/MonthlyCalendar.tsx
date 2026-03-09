@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, DragEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy } from "lucide-react";
 
@@ -111,12 +111,14 @@ const MonthlyCalendar = () => {
     fetchEvents();
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     await supabase.from("events").delete().eq("id", id);
     fetchEvents();
   };
 
-  const handleDuplicate = async (ev: CalendarEvent) => {
+  const handleDuplicate = async (ev: CalendarEvent, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("events").insert({
@@ -124,6 +126,27 @@ const MonthlyCalendar = () => {
       event_time: ev.event_time, color: ev.color, client_id: ev.client_id, user_id: user.id,
     } as any);
     fetchEvents();
+  };
+
+  const handleMoveEvent = async (eventId: string, newDate: string) => {
+    await supabase.from("events").update({ event_date: newDate } as any).eq("id", eventId);
+    fetchEvents();
+  };
+
+  const onDragStart = (e: DragEvent, eventId: string) => {
+    e.dataTransfer.setData("eventId", eventId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const onDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = (e: DragEvent, dateStr: string) => {
+    e.preventDefault();
+    const eventId = e.dataTransfer.getData("eventId");
+    if (eventId && dateStr) handleMoveEvent(eventId, dateStr);
   };
 
   const selectedDayEvents = selectedDate ? events.filter((e) => e.event_date === selectedDate) : [];
@@ -163,40 +186,60 @@ const MonthlyCalendar = () => {
               const style = firstEvent ? (tileStyles[firstEvent.color] ?? tileStyles.primary) : null;
 
               return (
-                <button
+                <div
                   key={i}
                   onClick={() => day && openDayPopup(dateStr)}
-                  disabled={!day}
-                  className="relative min-h-[110px] p-2 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors hover:bg-[hsl(0,0%,97%)] disabled:hover:bg-transparent"
+                  onDragOver={day ? onDragOver : undefined}
+                  onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
+                  className={`relative min-h-[110px] p-2 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
                 >
                   {day && (
                     <div className="h-full flex flex-col">
-                      {/* Day number — always visible */}
+                      {/* Day number */}
                       <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
                         {day}
                       </span>
 
-                      {/* Event tile — pastel card style */}
+                      {/* Event tile — draggable pastel card */}
                       {firstEvent && style && (
-                        <div className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2.5 flex flex-col justify-between`}>
-                          <div>
-                            <p className={`text-xs font-bold leading-tight ${style.text}`}>
-                              {firstEvent.title}
-                            </p>
+                        <div
+                          draggable
+                          onDragStart={(e) => { e.stopPropagation(); onDragStart(e, firstEvent.id); }}
+                          className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}
+                        >
+                          {/* Action buttons — visible on hover */}
+                          <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={(e) => handleDuplicate(firstEvent, e)}
+                              title="Duplicar"
+                              className="p-1 rounded-md bg-white/70 hover:bg-white shadow-sm transition-colors"
+                            >
+                              <Copy size={10} className="text-[hsl(var(--dash-text))]" />
+                            </button>
+                            <button
+                              onClick={(e) => handleDelete(firstEvent.id, e)}
+                              title="Eliminar"
+                              className="p-1 rounded-md bg-white/70 hover:bg-red-100 shadow-sm transition-colors"
+                            >
+                              <Trash2 size={10} className="text-red-500" />
+                            </button>
                           </div>
-                          <p className={`text-[9px] font-bold uppercase tracking-wider mt-2 ${style.label}`}>
+
+                          <p className={`text-[10px] font-bold leading-tight ${style.text} pr-10`}>
+                            {firstEvent.title}
+                          </p>
+                          <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
                             {firstEvent.event_time ? firstEvent.event_time.slice(0, 5) : "Producción"}
                           </p>
                         </div>
                       )}
 
-                      {/* Extra events indicator */}
                       {dayEvents.length > 1 && (
                         <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
                       )}
                     </div>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>
