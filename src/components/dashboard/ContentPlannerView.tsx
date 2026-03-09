@@ -93,6 +93,17 @@ const ContentPlannerView = () => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, format } : i)));
   };
 
+  const togglePublished = async (id: string) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const { error } = await supabase
+      .from("content_items")
+      .update({ published: !item.published })
+      .eq("id", id);
+    if (error) { toast.error("Error al actualizar"); return; }
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, published: !i.published } : i)));
+  };
+
   const handleDragStart = (item: ContentItem) => setDragItem(item);
 
   const handleDrop = async (section: Section, targetCol: number) => {
