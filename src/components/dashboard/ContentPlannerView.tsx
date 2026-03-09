@@ -272,7 +272,9 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          className={`group relative rounded-md px-3 py-2 text-xs cursor-grab active:cursor-grabbing transition-all ${chipClass}`}
+          className={`group relative rounded-md px-3 py-2 text-xs cursor-grab active:cursor-grabbing transition-all ${
+            item.published ? "bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border border-emerald-500/30" : chipClass
+          }`}
         >
           {editingId === item.id ? (
             <input
