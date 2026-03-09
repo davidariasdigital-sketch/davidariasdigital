@@ -149,25 +149,44 @@ const MonthlyCalendar = () => {
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
+              const firstEvent = dayEvents[0];
+              const style = firstEvent ? (tileStyles[firstEvent.color] ?? tileStyles.primary) : null;
+
               return (
                 <button
                   key={i}
                   onClick={() => day && openDayPopup(dateStr)}
                   disabled={!day}
-                  className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
+                  className="relative min-h-[110px] p-2 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors hover:bg-[hsl(0,0%,97%)] disabled:hover:bg-transparent"
                 >
                   {day && (
-                    <>
-                      <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>{day}</span>
-                      <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
-                        {dayEvents.slice(0, 2).map((ev) => (
-                          <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
-                            {ev.title}
+                    <div className="h-full flex flex-col">
+                      {/* Day number - top right when there's an event */}
+                      {!firstEvent && (
+                        <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                          {day}
+                        </span>
+                      )}
+
+                      {/* Event tile — pastel card style */}
+                      {firstEvent && style && (
+                        <div className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2.5 flex flex-col justify-between`}>
+                          <div>
+                            <p className={`text-xs font-bold leading-tight ${style.text}`}>
+                              {firstEvent.title}
+                            </p>
                           </div>
-                        ))}
-                        {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(var(--dash-text-muted))]">+{dayEvents.length - 2}</span>}
-                      </div>
-                    </>
+                          <p className={`text-[9px] font-bold uppercase tracking-wider mt-2 ${style.label}`}>
+                            {firstEvent.event_time ? firstEvent.event_time.slice(0, 5) : "Producción"}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Extra events indicator */}
+                      {dayEvents.length > 1 && (
+                        <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
+                      )}
+                    </div>
                   )}
                 </button>
               );
