@@ -254,7 +254,7 @@ interface ContentColumnProps {
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, accentClass, chipClass,
+  onFormatChange, onTogglePublished, accentClass, chipClass,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
 
