@@ -23,10 +23,10 @@ const DEFAULT_CONDITIONS = [
 interface Client { id: string; name: string; }
 
 const statusColors: Record<string, string> = {
-  borrador: "bg-gray-100 text-gray-600",
-  enviada: "bg-primary/20 text-primary",
-  aceptada: "bg-emerald-100 text-emerald-700",
-  rechazada: "bg-red-100 text-red-700",
+  borrador: "bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] border-[hsl(var(--dash-card-border))]",
+  enviada: "bg-amber-50 text-amber-700 border-amber-200",
+  aceptada: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  rechazada: "bg-red-50 text-red-700 border-red-200",
 };
 
 const QuotationsView = () => {
@@ -102,21 +102,21 @@ const QuotationsView = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[hsl(0,0%,15%)]">Cotizaciones</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-semibold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+        <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cotizaciones</h1>
+        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all">
           <Plus size={16} /> Nueva
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="dash-glass rounded-[var(--radius)] p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="dash-tile rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-[hsl(0,0%,15%)]">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
-            <button type="button" onClick={resetForm} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={16} /></button>
+            <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
+            <button type="button" onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={inputCls} />
-            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
+            <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={`w-full ${inputCls}`} />
+            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={`w-full ${inputCls}`}>
               <option value="">Sin cliente</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -124,36 +124,36 @@ const QuotationsView = () => {
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción" className={`w-full ${inputCls} min-h-[60px]`} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-[hsl(0,0%,50%)] uppercase tracking-wider mb-1 block">Fecha de realización / entrega</label>
+              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de realización / entrega</label>
               <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className={`w-full ${inputCls}`} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(0,0%,50%)] uppercase tracking-wider">Conceptos</p>
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Conceptos</p>
             {items.map((item, i) => (
               <div key={i} className="flex gap-2">
                 <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
                 <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
-                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,84%,60%)] p-2"><X size={14} /></button>}
+                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary hover:underline">+ Agregar concepto</button>
+            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(0,0%,50%)] uppercase tracking-wider">Condiciones del PDF</p>
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Condiciones del PDF</p>
             {DEFAULT_CONDITIONS.map((condition, i) => (
               <label key={i} className="flex items-start gap-2 cursor-pointer group">
                 <input type="checkbox" checked={selectedConditions[i]} onChange={() => { const n = [...selectedConditions]; n[i] = !n[i]; setSelectedConditions(n); }} className="mt-0.5 accent-primary" />
-                <span className="text-xs text-[hsl(0,0%,50%)] group-hover:text-[hsl(0,0%,20%)] transition-colors">{condition}</span>
+                <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{condition}</span>
               </label>
             ))}
           </div>
 
           <div className="flex items-center justify-between">
-            <p className="text-sm font-bold text-[hsl(0,0%,15%)]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
-            <button type="submit" className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all">
+            <p className="text-sm font-bold text-[hsl(var(--dash-text))]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
+            <button type="submit" className="btn-dark text-sm px-6 py-2.5">
               {editing ? "Guardar" : "Crear"}
             </button>
           </div>
@@ -162,28 +162,28 @@ const QuotationsView = () => {
 
       <div className="space-y-3">
         {quotations.map((q) => (
-          <div key={q.id} className="dash-card p-4 flex items-center justify-between">
+          <div key={q.id} className="dash-tile rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <p className="font-semibold text-[hsl(0,0%,15%)] text-sm">{q.title}</p>
-              <p className="text-xs text-[hsl(0,0%,50%)]">
+              <p className="font-semibold text-[hsl(var(--dash-text))] text-sm">{q.title}</p>
+              <p className="text-xs text-[hsl(var(--dash-text-muted))]">
                 {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
                 {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-semibold px-3 py-1 rounded-full border-0 focus:outline-none ${statusColors[q.status] ?? ""}`}>
+              <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-bold px-3 py-1 rounded-full border focus:outline-none ${statusColors[q.status] ?? ""}`}>
                 <option value="borrador">Borrador</option>
                 <option value="enviada">Enviada</option>
                 <option value="aceptada">Aceptada</option>
                 <option value="rechazada">Rechazada</option>
               </select>
-              <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,20%)] p-1.5 rounded-lg hover:bg-black/5" title="Descargar PDF"><FileDown size={14} /></button>
-              <button onClick={() => handleEdit(q)} className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,20%)] p-1.5 rounded-lg hover:bg-black/5"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(q.id)} className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,84%,60%)] p-1.5 rounded-lg hover:bg-red-500/10"><Trash2 size={14} /></button>
+              <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => handleEdit(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
+              <button onClick={() => handleDelete(q.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
           </div>
         ))}
-        {quotations.length === 0 && <p className="text-center text-[hsl(0,0%,50%)] text-sm py-8">No hay cotizaciones aún</p>}
+        {quotations.length === 0 && <p className="text-center text-[hsl(var(--dash-text-muted))] text-sm py-8">No hay cotizaciones aún</p>}
       </div>
     </div>
   );

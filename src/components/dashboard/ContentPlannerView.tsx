@@ -98,6 +98,8 @@ const ContentPlannerView = () => {
 
   return (
     <div className="space-y-8">
+      <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Planeador de Contenido</h1>
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5 items-start">
         <div>
           <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
@@ -128,7 +130,7 @@ const ContentPlannerView = () => {
 const SectionHeader = ({ icon, label, colorClass }: { icon: React.ReactNode; label: string; colorClass: string }) => (
   <div className="flex items-center gap-2 mb-3">
     <span className={colorClass}>{icon}</span>
-    <h2 className="text-xs font-bold uppercase tracking-widest text-[hsl(0,0%,40%)]">{label}</h2>
+    <h2 className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">{label}</h2>
   </div>
 );
 
@@ -150,7 +152,7 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`group/col dash-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""}`}
+      className={`group/col dash-tile rounded-2xl min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""}`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
@@ -163,7 +165,7 @@ const ContentColumn = ({
           className={`group relative rounded-xl px-3 py-3 text-xs cursor-grab active:cursor-grabbing transition-all border ${
             item.published
               ? `${publishedClass} text-emerald-800`
-              : "bg-white/70 border-black/5 text-[hsl(0,0%,15%)] hover:border-black/10"
+              : "bg-[hsl(var(--dash-bg))] border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] hover:border-primary/20"
           }`}
         >
           {editingId === item.id ? (
@@ -177,8 +179,8 @@ const ContentColumn = ({
           ) : (
             <div className="flex flex-col items-center gap-1.5 relative">
               <div className="absolute -top-1 -right-1 flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }} className={`rounded-full p-0.5 transition-all ${item.published ? "text-emerald-600 opacity-100" : "hover:bg-black/5"}`}><Check className="h-2.5 w-2.5" /></button>
-                <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-500/10 transition-all"><X className="h-2.5 w-2.5" /></button>
+                <button onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }} className={`rounded-full p-0.5 transition-all ${item.published ? "text-emerald-600 opacity-100" : "hover:bg-[hsl(0,0%,96%)]"}`}><Check className="h-2.5 w-2.5" /></button>
+                <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-50 transition-all"><X className="h-2.5 w-2.5" /></button>
               </div>
               <span className="text-[11px] leading-snug font-medium cursor-text text-center w-full" onClick={() => onEditStart(item.id, item.title)}>{item.title || "Sin título"}</span>
               {section !== "youtube" && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} />}
@@ -187,7 +189,7 @@ const ContentColumn = ({
         </div>
       ))}
       {items.length === 0 && (
-        <button onClick={onAdd} className="flex-1 flex items-center justify-center text-[hsl(0,0%,60%)] rounded-lg hover:bg-black/5 opacity-30 hover:opacity-80 transition-all">
+        <button onClick={onAdd} className="flex-1 flex items-center justify-center text-[hsl(var(--dash-text-muted))] rounded-xl hover:bg-[hsl(0,0%,96%)] opacity-30 hover:opacity-80 transition-all">
           <Plus className="h-5 w-5" />
         </button>
       )}
@@ -200,7 +202,7 @@ const FormatSelector = ({ value, onChange }: { value: string | null; onChange: (
     value={value ?? ""}
     onClick={(e) => e.stopPropagation()}
     onChange={(e) => onChange(e.target.value)}
-    className="text-[10px] opacity-80 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-white/60 border border-black/8 text-[hsl(0,0%,25%)] outline-none"
+    className="text-[10px] opacity-80 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] outline-none"
   >
     <option value="" disabled>Formato</option>
     {FORMATS.map((f) => <option key={f} value={f}>{f}</option>)}
