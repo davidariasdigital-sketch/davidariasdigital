@@ -246,6 +246,7 @@ interface ContentColumnProps {
   onEditSave: (id: string) => void;
   onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void;
+  onTogglePublished: (id: string) => void;
   accentClass: string;
   chipClass: string;
 }
