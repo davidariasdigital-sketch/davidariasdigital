@@ -138,18 +138,45 @@ const ContentPlannerView = () => {
 
   return (
     <div className="space-y-10">
-      
+      {/* Top row: Instagram 2x2 + YouTube */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
+        {/* Instagram 2x2 */}
+        <div>
+          <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
+          <div className="grid grid-cols-2 gap-4">
+            {[0, 1, 2, 3].map((colIdx) => (
+              <ContentColumn
+                key={colIdx}
+                section="instagram"
+                colIndex={colIdx}
+                items={getSlotItems("instagram", colIdx)}
+                onAdd={() => addItem("instagram", colIdx)}
+                onDrop={handleDrop}
+                onDragStart={handleDragStart}
+                editingId={editingId}
+                editValue={editValue}
+                onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+                onEditChange={setEditValue}
+                onEditSave={saveEdit}
+                onDelete={deleteItem}
+                onFormatChange={updateFormat}
+                onTogglePublished={togglePublished}
+                accentClass="border-pink-500/20"
+                publishedClass="bg-emerald-500/15 border-emerald-500/30"
+                chipClass="bg-pink-500/10 hover:bg-pink-500/15"
+              />
+            ))}
+          </div>
+        </div>
 
-      {/* Instagram */}
-      <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[0, 1, 2, 3].map((colIdx) => (
+        {/* YouTube - single module to the right */}
+        <div className="w-full lg:w-[200px]">
+          <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
           <ContentColumn
-            key={colIdx}
-            section="instagram"
-            colIndex={colIdx}
-            items={getSlotItems("instagram", colIdx)}
-            onAdd={() => addItem("instagram", colIdx)}
+            section="youtube"
+            colIndex={0}
+            items={getSlotItems("youtube", 0)}
+            onAdd={() => addItem("youtube", 0)}
             onDrop={handleDrop}
             onDragStart={handleDragStart}
             editingId={editingId}
@@ -160,60 +187,40 @@ const ContentPlannerView = () => {
             onDelete={deleteItem}
             onFormatChange={updateFormat}
             onTogglePublished={togglePublished}
-            accentClass="border-pink-500/20"
+            accentClass="border-red-500/20"
             publishedClass="bg-emerald-500/15 border-emerald-500/30"
-            chipClass="bg-pink-500/10 hover:bg-pink-500/15"
+            chipClass="bg-red-500/10 hover:bg-red-500/15"
           />
-        ))}
+        </div>
       </div>
 
-      {/* YouTube */}
-      <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
-      <ContentColumn
-        section="youtube"
-        colIndex={0}
-        items={getSlotItems("youtube", 0)}
-        onAdd={() => addItem("youtube", 0)}
-        onDrop={handleDrop}
-        onDragStart={handleDragStart}
-        editingId={editingId}
-        editValue={editValue}
-        onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
-        onEditChange={setEditValue}
-        onEditSave={saveEdit}
-        onDelete={deleteItem}
-        onFormatChange={updateFormat}
-        onTogglePublished={togglePublished}
-        accentClass="border-red-500/20"
-        publishedClass="bg-emerald-500/15 border-emerald-500/30"
-        chipClass="bg-red-500/10 hover:bg-red-500/15"
-      />
-
-      {/* Ideas */}
-      <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
-          <ContentColumn
-            key={`idea-${colIdx}`}
-            section="ideas"
-            colIndex={colIdx}
-            items={getSlotItems("ideas", colIdx)}
-            onAdd={() => addItem("ideas", colIdx)}
-            onDrop={handleDrop}
-            onDragStart={handleDragStart}
-            editingId={editingId}
-            editValue={editValue}
-            onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
-            onEditChange={setEditValue}
-            onEditSave={saveEdit}
-            onDelete={deleteItem}
-            onFormatChange={updateFormat}
-            onTogglePublished={togglePublished}
-            accentClass="border-amber-500/20"
-            publishedClass="bg-emerald-500/15 border-emerald-500/30"
-            chipClass="bg-amber-500/10 hover:bg-amber-500/15"
-          />
-        ))}
+      {/* Ideas Futuras - below */}
+      <div>
+        <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
+            <ContentColumn
+              key={`idea-${colIdx}`}
+              section="ideas"
+              colIndex={colIdx}
+              items={getSlotItems("ideas", colIdx)}
+              onAdd={() => addItem("ideas", colIdx)}
+              onDrop={handleDrop}
+              onDragStart={handleDragStart}
+              editingId={editingId}
+              editValue={editValue}
+              onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+              onEditChange={setEditValue}
+              onEditSave={saveEdit}
+              onDelete={deleteItem}
+              onFormatChange={updateFormat}
+              onTogglePublished={togglePublished}
+              accentClass="border-amber-500/20"
+              publishedClass="bg-emerald-500/15 border-emerald-500/30"
+              chipClass="bg-amber-500/10 hover:bg-amber-500/15"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
