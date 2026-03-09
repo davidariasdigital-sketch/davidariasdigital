@@ -18,11 +18,21 @@ const COLORS = [
   { value: "purple", label: "Morado", class: "bg-purple-500" },
 ];
 
+// Pastel tile styles matching reference image
+const tileStyles: Record<string, { bg: string; border: string; text: string; label: string }> = {
+  primary: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-900", label: "text-amber-500" },
+  blue:    { bg: "bg-blue-50",  border: "border-blue-200",  text: "text-blue-900",  label: "text-blue-400" },
+  green:   { bg: "bg-green-50", border: "border-green-200", text: "text-green-900", label: "text-green-500" },
+  red:     { bg: "bg-pink-100", border: "border-pink-200",  text: "text-pink-900",  label: "text-pink-400" },
+  purple:  { bg: "bg-purple-50",border: "border-purple-200",text: "text-purple-900",label: "text-purple-400" },
+};
+
+// For popup event list
 const colorClasses: Record<string, string> = {
-  primary: "bg-primary/15 text-[hsl(var(--dash-text))] border-primary/30",
+  primary: "bg-amber-50 text-amber-900 border-amber-200",
   blue: "bg-blue-50 text-blue-700 border-blue-200",
-  green: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  red: "bg-red-50 text-red-700 border-red-200",
+  green: "bg-green-50 text-green-700 border-green-200",
+  red: "bg-pink-100 text-pink-900 border-pink-200",
   purple: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
@@ -139,25 +149,44 @@ const MonthlyCalendar = () => {
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
+              const firstEvent = dayEvents[0];
+              const style = firstEvent ? (tileStyles[firstEvent.color] ?? tileStyles.primary) : null;
+
               return (
                 <button
                   key={i}
                   onClick={() => day && openDayPopup(dateStr)}
                   disabled={!day}
-                  className={`relative min-h-[72px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
+                  className="relative min-h-[110px] p-2 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors hover:bg-[hsl(0,0%,97%)] disabled:hover:bg-transparent"
                 >
                   {day && (
-                    <>
-                      <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>{day}</span>
-                      <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
-                        {dayEvents.slice(0, 2).map((ev) => (
-                          <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
-                            {ev.title}
+                    <div className="h-full flex flex-col">
+                      {/* Day number - top right when there's an event */}
+                      {!firstEvent && (
+                        <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                          {day}
+                        </span>
+                      )}
+
+                      {/* Event tile — pastel card style */}
+                      {firstEvent && style && (
+                        <div className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2.5 flex flex-col justify-between`}>
+                          <div>
+                            <p className={`text-xs font-bold leading-tight ${style.text}`}>
+                              {firstEvent.title}
+                            </p>
                           </div>
-                        ))}
-                        {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(var(--dash-text-muted))]">+{dayEvents.length - 2}</span>}
-                      </div>
-                    </>
+                          <p className={`text-[9px] font-bold uppercase tracking-wider mt-2 ${style.label}`}>
+                            {firstEvent.event_time ? firstEvent.event_time.slice(0, 5) : "Producción"}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Extra events indicator */}
+                      {dayEvents.length > 1 && (
+                        <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
+                      )}
+                    </div>
                   )}
                 </button>
               );
