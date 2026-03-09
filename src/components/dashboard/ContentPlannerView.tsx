@@ -311,11 +311,13 @@ const ContentColumn = ({
               >
                 {item.title || "Sin título"}
               </span>
-              {/* Format centered */}
-              <FormatSelector
-                value={item.format}
-                onChange={(f) => onFormatChange(item.id, f)}
-              />
+              {/* Format centered - hidden for YouTube */}
+              {section !== "youtube" && (
+                <FormatSelector
+                  value={item.format}
+                  onChange={(f) => onFormatChange(item.id, f)}
+                />
+              )}
             </div>
           )}
         </div>
