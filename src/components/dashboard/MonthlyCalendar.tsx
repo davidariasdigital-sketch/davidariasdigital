@@ -105,7 +105,7 @@ const MonthlyCalendar = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-[hsl(0,0%,15%)]">{MONTHS[month]} {year}</h2>
+          <h2 className="text-lg font-display font-bold text-white">{MONTHS[month]} {year}</h2>
           <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline">HOY</button>
         </div>
         <div className="flex items-center gap-1">
