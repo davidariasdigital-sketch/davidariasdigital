@@ -321,19 +321,12 @@ const ContentColumn = ({
         </div>
       ))}
 
-      {items.length === 0 ? (
+      {items.length === 0 && (
         <button
           onClick={onAdd}
           className="flex-1 flex items-center justify-center text-muted-foreground rounded-lg hover:bg-muted/50 opacity-30 hover:opacity-80 transition-all"
         >
           <Plus className="h-5 w-5" />
-        </button>
-      ) : (
-        <button
-          onClick={onAdd}
-          className="opacity-20 hover:opacity-70 flex items-center justify-center text-muted-foreground py-1 transition-all"
-        >
-          <Plus className="h-3.5 w-3.5" />
         </button>
       )}
     </div>
