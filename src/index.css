@@ -94,21 +94,6 @@
 
 @layer components {
   /* ===== Dashboard Cards (Bento) ===== */
-    background: hsl(var(--dash-bg));
-    border-radius: 2rem;
-    min-height: calc(100vh - 1.5rem);
-    box-shadow: 0 25px 50px -12px hsl(0 0% 0% / 0.2);
-    overflow: hidden;
-  }
-
-  @media (min-width: 768px) {
-    .frame-container-dash {
-      border-radius: 2.5rem;
-      min-height: calc(100vh - 2rem);
-    }
-  }
-
-  /* ===== Dashboard Cards (Bento) ===== */
   .dash-tile {
     background: hsl(var(--dash-card-bg));
     border: 1px solid hsl(var(--dash-card-border));
