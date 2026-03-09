@@ -12,13 +12,12 @@ import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import { motion } from "framer-motion";
 import { LogOut } from "lucide-react";
 
-type View = "overview" | "clients" | "quotations" | "tasks" | "invoices" | "content-planner";
+type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
 const viewLabels: Record<View, string> = {
   overview: "Resumen",
   clients: "Clientes",
   quotations: "Cotizaciones",
-  tasks: "Tareas",
   invoices: "Cuentas por Cobrar",
   "content-planner": "Planeador de Contenido",
 };
