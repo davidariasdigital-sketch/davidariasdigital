@@ -135,11 +135,13 @@ const MonthlyCalendar = () => {
                 {day && (
                   <>
                     <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(day) ? "bg-primary text-white font-bold" : "text-[hsl(0,0%,25%)]"}`}>{day}</span>
-                    <div className="flex flex-wrap gap-0.5 mt-0.5">
-                      {dayEvents.slice(0, 3).map((ev) => (
-                        <div key={ev.id} className={`w-1.5 h-1.5 rounded-full ${dotClasses[ev.color] ?? "bg-primary"}`} title={ev.title} />
+                    <div className="flex flex-col gap-0.5 mt-0.5 w-full overflow-hidden">
+                      {dayEvents.slice(0, 2).map((ev) => (
+                        <div key={ev.id} className={`text-[8px] leading-tight font-medium truncate rounded px-1 py-px ${colorClasses[ev.color] ?? colorClasses.primary}`}>
+                          {ev.title}
+                        </div>
                       ))}
-                      {dayEvents.length > 3 && <span className="text-[8px] text-[hsl(0,0%,50%)]">+{dayEvents.length - 3}</span>}
+                      {dayEvents.length > 2 && <span className="text-[8px] text-[hsl(0,0%,50%)]">+{dayEvents.length - 2} más</span>}
                     </div>
                   </>
                 )}
