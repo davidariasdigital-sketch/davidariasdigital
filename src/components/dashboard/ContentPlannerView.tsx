@@ -255,7 +255,7 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
+      className={`group/col liquid-glass rounded-[var(--radius)] min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${
         dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""
       }`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -321,12 +321,21 @@ const ContentColumn = ({
         </div>
       ))}
 
-      <button
-        onClick={onAdd}
-        className="mt-auto flex items-center justify-center text-muted-foreground py-2 rounded-lg hover:bg-muted/50 opacity-30 hover:opacity-80 transition-all"
-      >
-        <Plus className="h-4 w-4" />
-      </button>
+      {items.length === 0 ? (
+        <button
+          onClick={onAdd}
+          className="flex-1 flex items-center justify-center text-muted-foreground rounded-lg hover:bg-muted/50 opacity-30 hover:opacity-80 transition-all"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
+      ) : (
+        <button
+          onClick={onAdd}
+          className="opacity-0 group-hover/col:opacity-40 hover:!opacity-80 flex items-center justify-center text-muted-foreground py-1 transition-all"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      )}
     </div>
   );
 };
