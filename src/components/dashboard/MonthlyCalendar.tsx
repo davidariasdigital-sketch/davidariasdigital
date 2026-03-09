@@ -109,8 +109,8 @@ const MonthlyCalendar = () => {
           <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline">HOY</button>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="p-2 text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)] transition-colors"><ChevronLeft size={16} /></button>
-          <button onClick={nextMonth} className="p-2 text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)] transition-colors"><ChevronRight size={16} /></button>
+          <button onClick={prevMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronLeft size={16} /></button>
+          <button onClick={nextMonth} className="p-2 text-[hsl(0,0%,45%)] hover:text-white transition-colors"><ChevronRight size={16} /></button>
         </div>
       </div>
 
