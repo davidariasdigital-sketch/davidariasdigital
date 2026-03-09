@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Lightbulb, Instagram, Youtube, ChevronDown, Check } from "lucide-react";
+import { Plus, X, Lightbulb, Instagram, Youtube, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
@@ -336,50 +336,22 @@ const ContentColumn = ({
 };
 
 const FormatSelector = ({ value, onChange }: { value: string | null; onChange: (f: string) => void }) => {
-  const [open, setOpen] = useState(false);
-  const buttonRef = useState<HTMLButtonElement | null>(null);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
-
-  const handleOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (!open) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setPos({ top: rect.bottom + 4, left: rect.left + rect.width / 2 });
-    }
-    setOpen(!open);
-  };
-
   return (
-    <div className="relative">
-      <button
-        onClick={handleOpen}
-        className="flex items-center gap-1 text-[10px] opacity-60 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-background/60 border border-border/50"
-      >
-        {value || "Formato"}
-        <ChevronDown className="h-2.5 w-2.5" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-[99]" onClick={() => setOpen(false)} />
-          <div
-            className="fixed z-[100] -translate-x-1/2 bg-popover border border-border rounded-lg shadow-lg py-1 min-w-[120px] max-h-[200px] overflow-y-auto"
-            style={{ top: pos.top, left: pos.left }}
-          >
-            {FORMATS.map((f) => (
-              <button
-                key={f}
-                onClick={(e) => { e.stopPropagation(); onChange(f); setOpen(false); }}
-                className={`block w-full text-center px-3 py-1.5 text-[11px] hover:bg-muted/60 transition-colors ${
-                  value === f ? "font-semibold text-primary" : "text-foreground"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <select
+      value={value ?? ""}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => onChange(e.target.value)}
+      className="text-[10px] opacity-80 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-background/60 border border-border/50 text-foreground outline-none"
+    >
+      <option value="" disabled>
+        Formato
+      </option>
+      {FORMATS.map((f) => (
+        <option key={f} value={f}>
+          {f}
+        </option>
+      ))}
+    </select>
   );
 };
 
