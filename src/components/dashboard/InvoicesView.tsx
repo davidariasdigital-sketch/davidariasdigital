@@ -4,32 +4,20 @@ import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateInvoicePDF } from "@/lib/invoice-pdf";
 
 interface Invoice {
-  id: string;
-  concept: string;
-  amount: number;
-  status: string;
-  due_date: string | null;
-  paid_date: string | null;
-  notes: string | null;
-  client_id: string | null;
-  quotation_id: string | null;
-  created_at: string;
+  id: string; concept: string; amount: number; status: string;
+  due_date: string | null; paid_date: string | null; notes: string | null;
+  client_id: string | null; quotation_id: string | null; created_at: string;
   clients?: { name: string } | null;
 }
 
 interface Client { id: string; name: string; }
 interface Quotation { id: string; title: string; }
 
-const statusLabels: Record<string, string> = {
-  pendiente: "Pendiente",
-  pagada: "Pagada",
-  vencida: "Vencida",
-};
-
+const statusLabels: Record<string, string> = { pendiente: "Pendiente", pagada: "Pagada", vencida: "Vencida" };
 const statusColors: Record<string, string> = {
-  pendiente: "bg-amber-100 text-amber-700",
-  pagada: "bg-emerald-100 text-emerald-700",
-  vencida: "bg-red-100 text-red-700",
+  pendiente: "bg-amber-50 text-amber-700 border-amber-200",
+  pagada: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  vencida: "bg-red-50 text-red-700 border-red-200",
 };
 
 const InvoicesView = () => {
@@ -97,33 +85,35 @@ const InvoicesView = () => {
   const totalPending = invoices.filter((i) => i.status === "pendiente").reduce((s, i) => s + Number(i.amount), 0);
   const totalPaid = invoices.filter((i) => i.status === "pagada").reduce((s, i) => s + Number(i.amount), 0);
 
-  const inputCls = "w-full dash-input rounded-lg px-4 py-2 text-sm";
+  const inputCls = "w-full dash-input rounded-xl px-4 py-2.5 text-sm";
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[hsl(0,0%,15%)]">Cuentas por Cobrar</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-full hover:opacity-90 transition-opacity">
+        <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all">
           <Plus size={14} /> Nueva
         </button>
       </div>
 
+      {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="dash-card p-5">
-          <p className="text-xs text-[hsl(0,0%,50%)]">Pendiente por cobrar</p>
-          <p className="text-2xl font-bold text-amber-600 mt-1">{formatCOP(totalPending)}</p>
+        <div className="dash-tile-primary rounded-2xl p-5">
+          <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Pendiente por cobrar</p>
+          <p className="text-2xl font-display font-extrabold mt-2">{formatCOP(totalPending)}</p>
         </div>
-        <div className="dash-card p-5">
-          <p className="text-xs text-[hsl(0,0%,50%)]">Total cobrado</p>
-          <p className="text-2xl font-bold text-emerald-600 mt-1">{formatCOP(totalPaid)}</p>
+        <div className="dash-tile rounded-2xl p-5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Total cobrado</p>
+          <p className="text-2xl font-display font-extrabold mt-2 text-emerald-600">{formatCOP(totalPaid)}</p>
         </div>
       </div>
 
+      {/* Form */}
       {showForm && (
-        <div className="dash-glass rounded-[var(--radius)] p-6 space-y-4">
+        <div className="dash-tile rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[hsl(0,0%,15%)]">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
-            <button onClick={resetForm} className="text-[hsl(0,0%,50%)] hover:text-[hsl(0,0%,20%)]"><X size={16} /></button>
+            <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
+            <button onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
           </div>
           <input placeholder="Concepto *" value={form.concept} onChange={(e) => setForm({ ...form, concept: e.target.value })} className={inputCls} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -136,11 +126,11 @@ const InvoicesView = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[hsl(0,0%,50%)] mb-1 block">Fecha de vencimiento</label>
+              <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de vencimiento</label>
               <input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} className={inputCls} />
             </div>
             <div>
-              <label className="text-xs text-[hsl(0,0%,50%)] mb-1 block">Fecha de pago</label>
+              <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de pago</label>
               <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
             </div>
           </div>
@@ -155,36 +145,37 @@ const InvoicesView = () => {
             </select>
           </div>
           <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
-          <button onClick={handleSubmit} className="bg-primary text-primary-foreground text-xs font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity">
+          <button onClick={handleSubmit} className="btn-dark text-sm px-6 py-2.5">
             {editingId ? "Guardar cambios" : "Crear cuenta"}
           </button>
         </div>
       )}
 
+      {/* List */}
       <div className="space-y-3">
         {invoices.length === 0 && (
-          <p className="text-[hsl(0,0%,50%)] text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
+          <p className="text-[hsl(var(--dash-text-muted))] text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
         )}
         {invoices.map((inv) => (
-          <div key={inv.id} className="dash-card p-4 flex items-center justify-between gap-4">
+          <div key={inv.id} className="dash-tile rounded-2xl p-4 flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm text-[hsl(0,0%,15%)] truncate">{inv.concept}</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColors[inv.status]}`}>
+                <span className="font-semibold text-sm text-[hsl(var(--dash-text))] truncate">{inv.concept}</span>
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusColors[inv.status]}`}>
                   {statusLabels[inv.status]}
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-[hsl(0,0%,50%)] flex-wrap">
-                <span className="font-bold text-[hsl(0,0%,15%)]">{formatCOP(Number(inv.amount))}</span>
+              <div className="flex items-center gap-3 mt-1 text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
+                <span className="font-bold text-[hsl(var(--dash-text))]">{formatCOP(Number(inv.amount))}</span>
                 {inv.clients?.name && <span>• {inv.clients.name}</span>}
                 {inv.due_date && <span>• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
                 {inv.paid_date && <span>• Pagada: {new Date(inv.paid_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.clients?.name ?? "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(0,0%,55%)] hover:text-primary transition-colors" title="Descargar PDF"><FileDown size={14} /></button>
-              <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,20%)] transition-colors"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(0,0%,55%)] hover:text-[hsl(0,84%,60%)] transition-colors"><Trash2 size={14} /></button>
+              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.clients?.name ?? "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
+              <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
           </div>
         ))}
