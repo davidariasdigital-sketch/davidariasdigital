@@ -152,9 +152,9 @@ const MonthlyCalendar = () => {
       </div>
 
       {selectedDate && (
-        <div className="dash-glass rounded-[var(--radius)] p-4 space-y-3">
+        <div className="dash-tile rounded-2xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[hsl(0,0%,15%)]">
+            <h3 className="text-sm font-semibold text-white">
               {new Date(selectedDate + "T00:00:00").toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long" })}
             </h3>
             <button onClick={() => handleAddEvent(selectedDate)} className="flex items-center gap-1 text-primary text-xs font-bold hover:underline">
@@ -163,7 +163,7 @@ const MonthlyCalendar = () => {
           </div>
 
           {selectedDayEvents.length === 0 && !showForm && (
-            <p className="text-xs text-[hsl(0,0%,50%)] text-center py-4">Sin actividades</p>
+            <p className="text-xs text-[hsl(0,0%,45%)] text-center py-4">Sin actividades</p>
           )}
 
           {selectedDayEvents.map((ev) => (
