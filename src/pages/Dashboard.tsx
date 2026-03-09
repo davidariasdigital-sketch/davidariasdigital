@@ -6,7 +6,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import OverviewView from "@/components/dashboard/OverviewView";
 import ClientsView from "@/components/dashboard/ClientsView";
 import QuotationsView from "@/components/dashboard/QuotationsView";
-import TasksView from "@/components/dashboard/TasksView";
+
 import InvoicesView from "@/components/dashboard/InvoicesView";
 import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import { motion } from "framer-motion";
