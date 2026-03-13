@@ -57,12 +57,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.7 }}
-              className="flex flex-col gap-2">
+              className="flex flex-col gap-1.5 md:gap-2">
               
-              <a href="mailto:davidariasdigital@gmail.com" className="flex items-center gap-3 text-muted-foreground text-sm hover:text-primary transition-colors duration-300">
+              <a href="mailto:davidariasdigital@gmail.com" className="flex items-center gap-3 text-muted-foreground text-xs md:text-sm hover:text-primary transition-colors duration-300">
                 <Mail size={14} className="text-primary/60" /> davidariasdigital@gmail.com
               </a>
-              <a href="tel:+573108781633" className="flex items-center gap-3 text-muted-foreground text-sm hover:text-primary transition-colors duration-300">
+              <a href="tel:+573108781633" className="flex items-center gap-3 text-muted-foreground text-xs md:text-sm hover:text-primary transition-colors duration-300">
                 <Phone size={14} className="text-primary/60" /> +57 310 878 1633
               </a>
             </motion.div>
@@ -71,20 +71,20 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.7 }}
-              className="flex flex-wrap gap-3 pt-2">
+              className="flex flex-wrap gap-2.5 md:gap-3 pt-1 md:pt-2">
               
               <a
                 href="https://wa.me/573108781633"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 bg-primary text-primary-foreground font-bold text-[13px] px-7 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
+                className="group inline-flex items-center gap-2 bg-primary text-primary-foreground font-bold text-[12px] md:text-[13px] px-5 md:px-7 py-3 md:py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300">
                 
                 Chatea en WhatsApp
-                <MessageCircle size={15} className="group-hover:rotate-12 transition-transform duration-300" />
+                <MessageCircle size={14} className="group-hover:rotate-12 transition-transform duration-300" />
               </a>
               <a
                 href="#reel"
-                className="group inline-flex items-center gap-2.5 liquid-btn font-semibold text-[13px] text-muted-foreground hover:text-foreground px-7 py-3.5 rounded-full">
+                className="group inline-flex items-center gap-2 liquid-btn font-semibold text-[12px] md:text-[13px] text-muted-foreground hover:text-foreground px-5 md:px-7 py-3 md:py-3.5 rounded-full">
                 
                 Ver Reel
                 <Play size={13} className="group-hover:translate-x-0.5 transition-transform duration-300" />
