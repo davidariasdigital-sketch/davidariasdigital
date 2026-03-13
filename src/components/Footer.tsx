@@ -27,7 +27,7 @@ const Footer = () => {
             <br />
             <span className="text-primary">icónico.</span>
           </h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
+          <p className="text-muted-foreground text-xs md:text-sm max-w-md mx-auto mb-6 md:mb-8">
             ¿Tienes un proyecto en mente? Hablemos y hagamos realidad tu visión con contenido cinematográfico de alto nivel.
           </p>
           <a
