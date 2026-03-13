@@ -22,7 +22,7 @@ const Footer = () => {
           transition={{ duration: 0.8 }}
           className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft"
         >
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-4">
+          <h2 className="text-3xl md:text-6xl font-black tracking-tight text-foreground mb-3 md:mb-4">
             Creemos algo
             <br />
             <span className="text-primary">icónico.</span>
