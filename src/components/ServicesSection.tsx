@@ -80,10 +80,10 @@ const ServicesSection = () => {
                   onClick={() => setSelectedService(i)}
                   className="liquid-glass rounded-[var(--radius)] p-4 md:p-5 flex flex-col items-center text-center hover:scale-[1.03] transition-transform duration-300 group cursor-pointer"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                    <Icon size={20} className="text-primary" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-2.5 md:mb-3 group-hover:bg-primary/20 transition-colors">
+                    <Icon size={18} className="text-primary md:w-5 md:h-5" />
                   </div>
-                  <h3 className="font-bold text-[13px] text-foreground leading-tight">
+                  <h3 className="font-bold text-[11px] md:text-[13px] text-foreground leading-tight">
                     {service.title}
                   </h3>
                 </motion.button>

@@ -57,7 +57,7 @@ const Footer = () => {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="liquid-btn rounded-full px-5 py-3 flex items-center gap-3 text-muted-foreground hover:text-primary text-[12px] font-medium"
+                className="liquid-btn rounded-full px-4 py-2.5 md:px-5 md:py-3 flex items-center gap-2 md:gap-3 text-muted-foreground hover:text-primary text-[11px] md:text-[12px] font-medium"
               >
                 <Icon size={14} />
                 {link.label}
