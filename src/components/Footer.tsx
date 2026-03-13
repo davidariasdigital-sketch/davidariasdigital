@@ -47,7 +47,7 @@ const Footer = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="flex flex-wrap justify-center gap-3 mb-16"
+          className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-16"
         >
           {links.map((link) => {
             const Icon = link.icon;
