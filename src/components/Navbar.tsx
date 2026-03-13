@@ -25,7 +25,8 @@ const Navbar = () => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="w-full max-w-4xl rounded-full liquid-glass-rainbow"
       >
-        <div className="px-4 md:px-6 py-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+        <div className="px-4 md:px-6 py-2 flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4">
+          {/* Desktop left nav */}
           <div className="hidden md:flex items-center gap-1">
             {navItemsBefore.map((item) => (
               <a
@@ -38,10 +39,12 @@ const Navbar = () => {
             ))}
           </div>
 
+          {/* Avatar — always visible */}
           <div className="w-10 h-10 rounded-full overflow-hidden ring-[2.5px] ring-primary flex-shrink-0 pointer-events-none shadow-[0_4px_15px_-2px_rgba(0,0,0,0.3)]">
             <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
           </div>
 
+          {/* Desktop right nav */}
           <div className="hidden md:flex items-center justify-end gap-1">
             {navItemsAfter.map((item) => (
               <a
@@ -59,14 +62,16 @@ const Navbar = () => {
             >
               <User size={16} />
             </Link>
-            <button
-              onClick={() => setOpen(!open)}
-              className="md:hidden text-foreground/60 p-2"
-              aria-label="Menú"
-            >
-              {open ? <X size={20} /> : <Menu size={20} />}
-            </button>
           </div>
+
+          {/* Mobile hamburger — visible only on mobile */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-foreground/60 p-2"
+            aria-label="Menú"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
 
         <AnimatePresence>
@@ -88,6 +93,13 @@ const Navbar = () => {
                     {item.label}
                   </a>
                 ))}
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="text-[13px] font-medium text-foreground/50 hover:text-foreground px-4 py-3 rounded-2xl hover:bg-foreground/5 transition-all flex items-center gap-2"
+                >
+                  <User size={14} /> Iniciar sesión
+                </Link>
                 <a
                   href="#contacto"
                   onClick={() => setOpen(false)}

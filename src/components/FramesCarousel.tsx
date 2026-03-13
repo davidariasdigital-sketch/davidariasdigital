@@ -34,7 +34,7 @@ const FramesCarousel = () => {
 
       <div className="animate-marquee flex gap-5 w-max px-4">
         {doubled.map((src, i) => (
-          <div key={i} className="w-[340px] md:w-[480px] shrink-0 group">
+          <div key={i} className="w-[260px] sm:w-[340px] md:w-[480px] shrink-0 group">
             <div className="liquid-glass rounded-[var(--radius)] p-2 overflow-hidden hover:scale-[1.02] transition-transform duration-500">
               <div className="aspect-video rounded-[calc(var(--radius)-8px)] overflow-hidden">
                 <img

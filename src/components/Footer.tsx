@@ -10,7 +10,7 @@ const links = [
 
 const Footer = () => {
   return (
-    <footer id="contacto" className="pt-28 md:pt-40 pb-10 px-6 md:px-12 relative">
+    <footer id="contacto" className="pt-20 md:pt-40 pb-8 md:pb-10 px-5 md:px-12 relative">
       <div className="blob w-[600px] h-[600px] bg-primary/10 bottom-20 left-1/2 -translate-x-1/2 float-slow" />
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -20,14 +20,14 @@ const Footer = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="liquid-glass-rainbow rounded-[var(--radius)] p-10 md:p-16 text-center mb-20 glow-soft"
+          className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft"
         >
-          <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-4">
+          <h2 className="text-3xl md:text-6xl font-black tracking-tight text-foreground mb-3 md:mb-4">
             Creemos algo
             <br />
             <span className="text-primary">icónico.</span>
           </h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
+          <p className="text-muted-foreground text-xs md:text-sm max-w-md mx-auto mb-6 md:mb-8">
             ¿Tienes un proyecto en mente? Hablemos y hagamos realidad tu visión con contenido cinematográfico de alto nivel.
           </p>
           <a
@@ -47,7 +47,7 @@ const Footer = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="flex flex-wrap justify-center gap-3 mb-16"
+          className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-16"
         >
           {links.map((link) => {
             const Icon = link.icon;
@@ -57,7 +57,7 @@ const Footer = () => {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="liquid-btn rounded-full px-5 py-3 flex items-center gap-3 text-muted-foreground hover:text-primary text-[12px] font-medium"
+                className="liquid-btn rounded-full px-4 py-2.5 md:px-5 md:py-3 flex items-center gap-2 md:gap-3 text-muted-foreground hover:text-primary text-[11px] md:text-[12px] font-medium"
               >
                 <Icon size={14} />
                 {link.label}
