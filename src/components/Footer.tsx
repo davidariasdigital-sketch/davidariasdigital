@@ -20,7 +20,7 @@ const Footer = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="liquid-glass-rainbow rounded-[var(--radius)] p-10 md:p-16 text-center mb-20 glow-soft"
+          className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft"
         >
           <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-4">
             Creemos algo
