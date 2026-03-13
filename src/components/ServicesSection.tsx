@@ -78,7 +78,7 @@ const ServicesSection = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.05 }}
                   onClick={() => setSelectedService(i)}
-                  className="liquid-glass rounded-[var(--radius)] p-5 flex flex-col items-center text-center hover:scale-[1.03] transition-transform duration-300 group cursor-pointer"
+                  className="liquid-glass rounded-[var(--radius)] p-4 md:p-5 flex flex-col items-center text-center hover:scale-[1.03] transition-transform duration-300 group cursor-pointer"
                 >
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                     <Icon size={20} className="text-primary" />
