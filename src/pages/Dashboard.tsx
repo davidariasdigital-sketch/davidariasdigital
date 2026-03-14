@@ -58,7 +58,8 @@ const Dashboard = () => {
         <div className="flex-1 flex flex-col min-h-screen">
           {/* Header */}
           <header className="h-16 flex items-center justify-between px-8">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]" />
               <h2 className="text-xl font-display font-extrabold text-[hsl(var(--dash-text))]">
                 Dashboard
               </h2>
