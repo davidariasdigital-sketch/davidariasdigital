@@ -21,8 +21,8 @@ const HeroSection = () => {
       <div className="blob w-[400px] h-[400px] bg-blue-300/30 top-1/3 -right-32 float-slower" />
       <div className="blob w-[350px] h-[350px] bg-pink-300/20 bottom-10 left-1/4 float-slow" />
 
-      <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-24 md:pt-28 pb-16 md:pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8 items-center">
+      <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
           {/* Left content */}
           <div className="lg:col-span-3 space-y-6 md:space-y-8">
             <motion.div
