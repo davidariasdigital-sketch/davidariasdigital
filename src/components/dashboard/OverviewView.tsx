@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, CheckCircle2, Circle } from "lucide-react";
+import { DollarSign, CheckCircle2, Circle, Plus } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
