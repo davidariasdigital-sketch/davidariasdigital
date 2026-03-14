@@ -55,7 +55,7 @@ const Dashboard = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-[hsl(var(--dash-bg))]">
         <DashboardSidebar currentView={view} onViewChange={setView} />
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen min-w-0">
           {/* Header */}
           <header className="h-16 flex items-center justify-between px-8">
             <div className="flex items-center gap-3">
