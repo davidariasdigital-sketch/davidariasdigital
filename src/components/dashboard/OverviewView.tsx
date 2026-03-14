@@ -97,9 +97,14 @@ const OverviewView = ({ onNavigate }: Props) => {
 
         {/* Actividades pendientes */}
         <div className="dash-tile rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
+           <div className="flex items-center justify-between mb-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
-            <span className="text-xs font-bold text-primary">{tasks.length}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-primary">{tasks.length}</span>
+              <button onClick={() => setShowAddTask(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+                <Plus size={14} />
+              </button>
+            </div>
           </div>
           <div className="space-y-2.5">
             {tasks.length === 0 && (
