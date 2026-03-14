@@ -261,8 +261,9 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.text("TOTAL", totalBoxX + 6, y + 22);
 
   // ─── COSTOS SECTION ───
+  y += totalBoxH + 10;
+
   if (q.costos && q.costos.length > 0) {
-    y += 10;
     if (y > ph - 60) { doc.addPage(); y = 25; }
 
     doc.setFontSize(9);
@@ -282,10 +283,11 @@ export async function generateQuotationPDF(q: Quotation) {
       doc.text(costo, margin + 6, y);
       y += 5;
     });
+    y += 4;
   }
 
   // ─── TERMS & CONDITIONS ───
-  y += totalBoxH + 12;
+  y += 8;
 
   if (y > ph - 70) {
     doc.addPage();
