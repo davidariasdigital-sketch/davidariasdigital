@@ -21,6 +21,13 @@ const OverviewView = ({ onNavigate }: Props) => {
   const [pendingAmount, setPendingAmount] = useState(0);
   const [pendingInvoices, setPendingInvoices] = useState(0);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [showAddTask, setShowAddTask] = useState(false);
+
+  const fetchTasks = async () => {
+    const t = await supabase.from("tasks").select("*").eq("completed", false).order("due_date", { ascending: true }).limit(8);
+    if (t.data) setTasks(t.data as Task[]);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +46,21 @@ const OverviewView = ({ onNavigate }: Props) => {
   const toggleTask = async (id: string) => {
     await supabase.from("tasks").update({ completed: true } as any).eq("id", id);
     setTasks(prev => prev.filter(t => t.id !== id));
+  };
+
+  const addTask = async () => {
+    if (!newTaskTitle.trim()) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("tasks").insert({ title: newTaskTitle.trim(), user_id: user.id } as any);
+    setNewTaskTitle("");
+    setShowAddTask(false);
+    fetchTasks();
+  };
+
+  const handleAddKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") addTask();
+    if (e.key === "Escape") { setShowAddTask(false); setNewTaskTitle(""); }
   };
 
   const formatCOP = (v: number) =>
