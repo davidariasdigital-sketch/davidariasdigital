@@ -84,6 +84,7 @@ const QuotationsView = () => {
     setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0 }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
+    setSelectedCostos(COSTOS_OPTIONS.map(() => false));
     setShowForm(false);
     setEditing(null);
   };
