@@ -191,11 +191,11 @@ const MonthlyCalendar = () => {
                 className={`relative min-h-[80px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
               >
                   {day && (
-                    <div className="h-full flex flex-col">
-                      {/* Day number */}
-                      <span className={`text-xs font-medium inline-flex items-center justify-center w-6 h-6 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
-                        {day}
-                      </span>
+                  <div className="h-full flex flex-col">
+                    {/* Day number */}
+                    <span className={`text-[10px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                      {day}
+                    </span>
 
                       {/* Event tile — draggable pastel card */}
                       {firstEvent && style && (
