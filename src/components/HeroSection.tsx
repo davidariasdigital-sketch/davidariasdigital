@@ -103,7 +103,7 @@ const HeroSection = () => {
               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative">
               
-              <div className="liquid-glass-rainbow rounded-[var(--radius)] p-2.5 md:p-3 w-[220px] sm:w-[280px] md:w-[340px] lg:w-[380px]">
+              <div className="liquid-glass-rainbow rounded-[var(--radius)] p-2 md:p-3 w-[180px] sm:w-[240px] md:w-[340px] lg:w-[380px]">
                 <div className="rounded-[calc(var(--radius)-8px)] overflow-hidden">
                   <img
                     src={davidPortrait}
