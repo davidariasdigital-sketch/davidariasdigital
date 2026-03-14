@@ -186,6 +186,22 @@ const QuotationsView = () => {
             ))}
           </div>
 
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Requisitos</p>
+            <div className="space-y-1">
+              {requisitos.map((req, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {req}</span>
+                  <button type="button" onClick={() => setRequisitos(requisitos.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1"><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input value={newRequisito} onChange={(e) => setNewRequisito(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } } }} placeholder="Ej: Acceso al lugar de grabación" className={`flex-1 ${inputCls}`} />
+              <button type="button" onClick={() => { if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } }} className="text-xs text-primary font-bold hover:underline">+ Agregar</button>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-[hsl(var(--dash-text))]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
             <button type="submit" className="btn-dark text-sm px-6 py-2.5">

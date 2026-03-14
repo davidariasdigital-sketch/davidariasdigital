@@ -274,6 +274,30 @@ export async function generateQuotationPDF(q: Quotation) {
     y += 4;
   }
 
+  // ─── REQUISITOS SECTION ───
+  if (q.requisitos && q.requisitos.length > 0) {
+    if (y > ph - 60) { doc.addPage(); y = 25; }
+
+    doc.setFontSize(9);
+    useFont("bold");
+    doc.setTextColor(...DARK);
+    doc.text("REQUISITOS", margin, y);
+    y += 6;
+
+    doc.setFontSize(8);
+    useFont("normal");
+    doc.setTextColor(...MID_GRAY);
+
+    q.requisitos.forEach((req) => {
+      if (y > ph - 20) { doc.addPage(); y = 25; }
+      doc.setFillColor(...MUSTARD);
+      doc.circle(margin + 2, y - 1.2, 1.2, "F");
+      doc.text(req, margin + 6, y);
+      y += 5;
+    });
+    y += 4;
+  }
+
   // ─── TERMS & CONDITIONS ───
   y += 8;
   if (y > ph - 70) { doc.addPage(); y = 25; }
