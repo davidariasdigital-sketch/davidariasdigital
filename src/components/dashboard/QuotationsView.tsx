@@ -103,6 +103,7 @@ const QuotationsView = () => {
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     const savedCostos = (q.costos as string[]) ?? [];
     setSelectedCostos(COSTOS_OPTIONS.map(c => savedCostos.includes(c)));
+    setRequisitos((q.requisitos as string[]) ?? []);
     setShowForm(true);
   };
 
