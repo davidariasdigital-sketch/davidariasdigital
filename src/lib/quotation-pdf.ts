@@ -104,7 +104,15 @@ export async function generateQuotationPDF(q: Quotation) {
   const fontFamily = "Serotiva";
   const fallback = "helvetica";
   const useFont = (style: string) => {
-    try { doc.setFont(fontFamily, style); } catch { doc.setFont(fallback, style === "light" ? "normal" : style); }
+    try {
+      if (style === "light") {
+        doc.setFont("SerotivaLight", "normal");
+      } else {
+        doc.setFont(fontFamily, style);
+      }
+    } catch {
+      doc.setFont(fallback, style === "light" ? "normal" : style);
+    }
   };
 
   // ─── HEADER BAND ───
