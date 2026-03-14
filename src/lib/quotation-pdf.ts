@@ -148,17 +148,12 @@ export async function generateQuotationPDF(q: Quotation) {
       year: "numeric", month: "long", day: "numeric",
     });
     doc.setFontSize(8);
-    useFont("light");
+    useFont("normal");
     doc.setTextColor(...MID_GRAY);
     doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
     y += 5;
   }
 
-  // Validity
-  doc.setFontSize(8);
-  useFont("light");
-  doc.setTextColor(...MID_GRAY);
-  doc.text(`Válida hasta: ${getExpirationDate(q.created_at)}`, margin, y);
   y += 8;
 
   // ─── TITLE & DESCRIPTION ───
@@ -310,7 +305,7 @@ export async function generateQuotationPDF(q: Quotation) {
     y += lines.length * 4 + 2;
   });
 
-  // ─── CONTACT INFO (at the end) ───
+  // ─── CONTACT INFO ───
   y += 10;
   if (y > ph - 40) { doc.addPage(); y = 25; }
 
@@ -330,6 +325,13 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.text(BUSINESS_EMAIL, margin, y);
   y += 4;
   doc.text(BUSINESS_PHONE, margin, y);
+
+  // ─── VALIDITY DATE ───
+  y += 10;
+  doc.setFontSize(9);
+  useFont("normal");
+  doc.setTextColor(...DARK);
+  doc.text(`Cotización válida hasta ${getExpirationDate(q.created_at)}`, margin, y);
 
   // ─── FOOTER ───
   const footerY = ph - 12;
