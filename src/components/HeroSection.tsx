@@ -30,15 +30,15 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
               
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.7 }}
-                className="liquid-glass rounded-full px-4 py-1.5 md:px-5 md:py-2 mb-6 md:mb-8 inline-flex items-center gap-2">
-                
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-[10px] md:text-[11px] font-semibold tracking-wider text-foreground/70">Disponible para proyectos</span>
-              </motion.div>
+              
+
+
+
+
+
+
+
+              
 
               <h1 className="leading-[0.9] tracking-[-0.03em]">
                 <span className="block text-foreground font-medium text-xl md:text-2xl">David Arias</span>
