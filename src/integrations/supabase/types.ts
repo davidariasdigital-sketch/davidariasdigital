@@ -248,6 +248,7 @@ export type Database = {
         Row: {
           client_id: string | null
           conditions: Json
+          costos: Json
           created_at: string
           delivery_date: string | null
           description: string | null
@@ -261,6 +262,7 @@ export type Database = {
         Insert: {
           client_id?: string | null
           conditions?: Json
+          costos?: Json
           created_at?: string
           delivery_date?: string | null
           description?: string | null
@@ -274,6 +276,7 @@ export type Database = {
         Update: {
           client_id?: string | null
           conditions?: Json
+          costos?: Json
           created_at?: string
           delivery_date?: string | null
           description?: string | null

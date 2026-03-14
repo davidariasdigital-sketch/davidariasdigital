@@ -1,0 +1,1 @@
+ALTER TABLE public.quotations ADD COLUMN IF NOT EXISTS costos jsonb NOT NULL DEFAULT '[]'::jsonb;

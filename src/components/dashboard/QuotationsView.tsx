@@ -8,7 +8,7 @@ interface QuotationItem { description: string; amount: number; }
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
   total: number; status: string; client_id: string | null; created_at: string;
-  clients?: { name: string } | null; conditions?: string[];
+  clients?: { name: string } | null; conditions?: string[]; costos?: string[];
 }
 
 const DEFAULT_CONDITIONS = [
@@ -18,6 +18,14 @@ const DEFAULT_CONDITIONS = [
   "Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.",
   "Todos los precios están expresados en pesos colombianos (COP) e incluyen retención en la fuente.",
   "Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.",
+];
+
+const COSTOS_OPTIONS = [
+  "Mano de obra",
+  "Equipo técnico",
+  "Viáticos",
+  "Alquiler de equipos",
+  "Seguro de riesgo",
 ];
 
 interface Client { id: string; name: string; }
@@ -37,6 +45,7 @@ const QuotationsView = () => {
   const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
+  const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -55,10 +64,11 @@ const QuotationsView = () => {
     if (!user) return;
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
     const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
+    const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
     const payload = {
       title: form.title, description: form.description || null, client_id: form.client_id || null,
       status: form.status as any, items: items as any, total, conditions: conditions as any,
-      delivery_date: form.delivery_date || null, user_id: user.id,
+      costos: costos as any, delivery_date: form.delivery_date || null, user_id: user.id,
     };
     if (editing) {
       const { user_id, ...updatePayload } = payload;
@@ -74,6 +84,7 @@ const QuotationsView = () => {
     setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0 }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
+    setSelectedCostos(COSTOS_OPTIONS.map(() => false));
     setShowForm(false);
     setEditing(null);
   };
@@ -84,6 +95,8 @@ const QuotationsView = () => {
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
+    const savedCostos = (q.costos as string[]) ?? [];
+    setSelectedCostos(COSTOS_OPTIONS.map(c => savedCostos.includes(c)));
     setShowForm(true);
   };
 
@@ -147,6 +160,16 @@ const QuotationsView = () => {
               <label key={i} className="flex items-start gap-2 cursor-pointer group">
                 <input type="checkbox" checked={selectedConditions[i]} onChange={() => { const n = [...selectedConditions]; n[i] = !n[i]; setSelectedConditions(n); }} className="mt-0.5 accent-primary" />
                 <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{condition}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Costos incluidos en el PDF</p>
+            {COSTOS_OPTIONS.map((costo, i) => (
+              <label key={i} className="flex items-start gap-2 cursor-pointer group">
+                <input type="checkbox" checked={selectedCostos[i]} onChange={() => { const n = [...selectedCostos]; n[i] = !n[i]; setSelectedCostos(n); }} className="mt-0.5 accent-primary" />
+                <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{costo}</span>
               </label>
             ))}
           </div>

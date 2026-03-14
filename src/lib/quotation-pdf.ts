@@ -15,6 +15,7 @@ interface Quotation {
   clients?: { name: string } | null;
   conditions?: string[];
   delivery_date?: string | null;
+  costos?: string[];
 }
 
 // Brand colors
@@ -50,7 +51,17 @@ function getExpirationDate(createdAt: string): string {
   return d.toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" });
 }
 
-export function generateQuotationPDF(q: Quotation) {
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+export async function generateQuotationPDF(q: Quotation) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
   const ph = doc.internal.pageSize.getHeight();
@@ -66,11 +77,16 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setFillColor(...MUSTARD);
   doc.rect(0, 42, pw, 2, "F");
 
-  // Title
-  doc.setFontSize(28);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...MUSTARD);
-  doc.text("COTIZACIÓN", margin, 27);
+  // Logo image instead of "COTIZACIÓN" text
+  try {
+    const logoImg = await loadImage("/images/digital-logo.png");
+    doc.addImage(logoImg, "PNG", margin, 8, 55, 26);
+  } catch {
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...MUSTARD);
+    doc.text("COTIZACIÓN", margin, 27);
+  }
 
   // Quotation number & date
   doc.setFontSize(9);
@@ -244,8 +260,34 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setTextColor(...WHITE);
   doc.text("TOTAL", totalBoxX + 6, y + 22);
 
+  // ─── COSTOS SECTION ───
+  y += totalBoxH + 10;
+
+  if (q.costos && q.costos.length > 0) {
+    if (y > ph - 60) { doc.addPage(); y = 25; }
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...DARK);
+    doc.text("COSTOS INCLUIDOS", margin, y);
+    y += 6;
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...MID_GRAY);
+
+    q.costos.forEach((costo) => {
+      if (y > ph - 20) { doc.addPage(); y = 25; }
+      doc.setFillColor(...MUSTARD);
+      doc.circle(margin + 2, y - 1.2, 1.2, "F");
+      doc.text(costo, margin + 6, y);
+      y += 5;
+    });
+    y += 4;
+  }
+
   // ─── TERMS & CONDITIONS ───
-  y += totalBoxH + 12;
+  y += 8;
 
   if (y > ph - 70) {
     doc.addPage();
