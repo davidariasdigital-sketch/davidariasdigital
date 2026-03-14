@@ -20,6 +20,14 @@ const DEFAULT_CONDITIONS = [
   "Esta cotización tiene una validez de 30 días a partir de la fecha de emisión.",
 ];
 
+const COSTOS_OPTIONS = [
+  "Mano de obra",
+  "Equipo técnico",
+  "Viáticos",
+  "Alquiler de equipos",
+  "Seguro de riesgo",
+];
+
 interface Client { id: string; name: string; }
 
 const statusColors: Record<string, string> = {
