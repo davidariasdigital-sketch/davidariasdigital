@@ -148,17 +148,12 @@ export async function generateQuotationPDF(q: Quotation) {
       year: "numeric", month: "long", day: "numeric",
     });
     doc.setFontSize(8);
-    useFont("light");
+    useFont("normal");
     doc.setTextColor(...MID_GRAY);
     doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
     y += 5;
   }
 
-  // Validity
-  doc.setFontSize(8);
-  useFont("light");
-  doc.setTextColor(...MID_GRAY);
-  doc.text(`Válida hasta: ${getExpirationDate(q.created_at)}`, margin, y);
   y += 8;
 
   // ─── TITLE & DESCRIPTION ───
