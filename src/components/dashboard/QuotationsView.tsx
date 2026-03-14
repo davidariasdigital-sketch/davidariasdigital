@@ -8,7 +8,7 @@ interface QuotationItem { description: string; amount: number; }
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
   total: number; status: string; client_id: string | null; created_at: string;
-  clients?: { name: string } | null; conditions?: string[];
+  clients?: { name: string } | null; conditions?: string[]; costos?: string[];
 }
 
 const DEFAULT_CONDITIONS = [

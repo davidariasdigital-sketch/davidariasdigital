@@ -252,6 +252,30 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setTextColor(...WHITE);
   doc.text("TOTAL", totalBoxX + 6, y + 22);
 
+  // ─── COSTOS SECTION ───
+  if (q.costos && q.costos.length > 0) {
+    y += 10;
+    if (y > ph - 60) { doc.addPage(); y = 25; }
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...DARK);
+    doc.text("COSTOS INCLUIDOS", margin, y);
+    y += 6;
+
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...MID_GRAY);
+
+    q.costos.forEach((costo) => {
+      if (y > ph - 20) { doc.addPage(); y = 25; }
+      doc.setFillColor(...MUSTARD);
+      doc.circle(margin + 2, y - 1.2, 1.2, "F");
+      doc.text(costo, margin + 6, y);
+      y += 5;
+    });
+  }
+
   // ─── TERMS & CONDITIONS ───
   y += totalBoxH + 12;
 
