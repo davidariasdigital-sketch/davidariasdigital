@@ -51,7 +51,17 @@ function getExpirationDate(createdAt: string): string {
   return d.toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" });
 }
 
-export function generateQuotationPDF(q: Quotation) {
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+export async function generateQuotationPDF(q: Quotation) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
   const ph = doc.internal.pageSize.getHeight();
@@ -69,11 +79,9 @@ export function generateQuotationPDF(q: Quotation) {
 
   // Logo image instead of "COTIZACIÓN" text
   try {
-    const logoImg = new Image();
-    logoImg.src = "/images/digital-logo.png";
+    const logoImg = await loadImage("/images/digital-logo.png");
     doc.addImage(logoImg, "PNG", margin, 8, 55, 26);
   } catch {
-    // Fallback to text if image fails
     doc.setFontSize(28);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...MUSTARD);
