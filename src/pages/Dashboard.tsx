@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import OverviewView from "@/components/dashboard/OverviewView";
 import ClientsView from "@/components/dashboard/ClientsView";
@@ -58,7 +58,8 @@ const Dashboard = () => {
         <div className="flex-1 flex flex-col min-h-screen">
           {/* Header */}
           <header className="h-16 flex items-center justify-between px-8">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]" />
               <h2 className="text-xl font-display font-extrabold text-[hsl(var(--dash-text))]">
                 Dashboard
               </h2>

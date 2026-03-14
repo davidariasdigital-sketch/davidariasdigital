@@ -67,7 +67,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">DA</AvatarFallback>
               </Avatar>
             )}
-            {!collapsed && <SidebarTrigger className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] ml-auto" />}
+            
           </div>
 
           {/* Nav */}
