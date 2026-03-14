@@ -95,6 +95,8 @@ const QuotationsView = () => {
     setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
+    const savedCostos = (q.costos as string[]) ?? [];
+    setSelectedCostos(COSTOS_OPTIONS.map(c => savedCostos.includes(c)));
     setShowForm(true);
   };
 
