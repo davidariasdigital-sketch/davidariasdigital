@@ -67,11 +67,18 @@ export function generateQuotationPDF(q: Quotation) {
   doc.setFillColor(...MUSTARD);
   doc.rect(0, 42, pw, 2, "F");
 
-  // Title
-  doc.setFontSize(28);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...MUSTARD);
-  doc.text("COTIZACIÓN", margin, 27);
+  // Logo image instead of "COTIZACIÓN" text
+  try {
+    const logoImg = new Image();
+    logoImg.src = "/images/digital-logo.png";
+    doc.addImage(logoImg, "PNG", margin, 8, 55, 26);
+  } catch {
+    // Fallback to text if image fails
+    doc.setFontSize(28);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...MUSTARD);
+    doc.text("COTIZACIÓN", margin, 27);
+  }
 
   // Quotation number & date
   doc.setFontSize(9);
