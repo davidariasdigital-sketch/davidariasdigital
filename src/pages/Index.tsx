@@ -1,9 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ReelSection from "@/components/ReelSection";
-import FramesCarousel from "@/components/FramesCarousel";
 import ServicesSection from "@/components/ServicesSection";
-import BrandsSection from "@/components/BrandsSection";
 import BrandsShowcase from "@/components/BrandsShowcase";
 import Footer from "@/components/Footer";
 import ElevenLabsWidget from "@/components/ElevenLabsWidget";
@@ -15,9 +13,7 @@ const Index = () => {
       <HeroSection />
       <ReelSection />
       <BrandsShowcase />
-      <FramesCarousel />
       <ServicesSection />
-      <BrandsSection />
       <Footer />
       <ElevenLabsWidget />
     </div>
