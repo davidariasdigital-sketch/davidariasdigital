@@ -15,6 +15,7 @@ interface Quotation {
   clients?: { name: string } | null;
   conditions?: string[];
   delivery_date?: string | null;
+  costos?: string[];
 }
 
 // Brand colors
