@@ -25,28 +25,10 @@ const Navbar = () => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="w-full max-w-4xl rounded-full liquid-glass-rainbow"
       >
-        <div className="px-4 md:px-6 py-2 flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4">
-          {/* Desktop left nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItemsBefore.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-[12px] font-medium tracking-wide text-foreground/50 hover:text-foreground px-4 py-2 rounded-full hover:bg-foreground/5 transition-all duration-300"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-
-          {/* Avatar — always visible */}
-          <div className="w-10 h-10 rounded-full overflow-hidden ring-[2.5px] ring-primary flex-shrink-0 pointer-events-none shadow-[0_4px_15px_-2px_rgba(0,0,0,0.3)]">
-            <img src={davidNavbar} alt="David Arias" className="w-full h-full object-cover" />
-          </div>
-
-          {/* Desktop right nav */}
-          <div className="hidden md:flex items-center justify-end gap-1">
-            {navItemsAfter.map((item) => (
+        <div className="px-4 md:px-6 py-2 flex items-center justify-between">
+          {/* Desktop center nav */}
+          <div className="hidden md:flex items-center justify-center gap-1 w-full">
+            {[...navItemsBefore, ...navItemsAfter].map((item) => (
               <a
                 key={item.label}
                 href={item.href}

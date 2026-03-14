@@ -24,7 +24,7 @@ const ReelSection = () => {
     if (isInView && !hasAutoPlayed.current && iframeContainerRef.current) {
       hasAutoPlayed.current = true;
       iframeContainerRef.current.innerHTML = `<iframe 
-        src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=0&rel=0&modestbranding=1" 
+        src="https://www.youtube.com/embed/D3ZueneGbbA?autoplay=1&mute=1&rel=0&modestbranding=1" 
         title="Reel David Arias"
         class="w-full h-full absolute inset-0"
         frameborder="0" 
