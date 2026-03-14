@@ -61,6 +61,11 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+async function loadFont(url: string): Promise<ArrayBuffer> {
+  const resp = await fetch(url);
+  return resp.arrayBuffer();
+}
+
 export async function generateQuotationPDF(q: Quotation) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
@@ -68,6 +73,39 @@ export async function generateQuotationPDF(q: Quotation) {
   const margin = 20;
   const contentWidth = pw - margin * 2;
   const quotationNum = generateQuotationNumber(q.created_at);
+
+  // ─── LOAD & REGISTER SEROTIVA FONTS ───
+  try {
+    const [regularBuf, boldBuf, lightBuf] = await Promise.all([
+      loadFont("/fonts/Serotiva-Regular.otf"),
+      loadFont("/fonts/Serotiva-ExtraBold.otf"),
+      loadFont("/fonts/Serotiva-Light.otf"),
+    ]);
+
+    const toBase64 = (buf: ArrayBuffer) => {
+      const bytes = new Uint8Array(buf);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    };
+
+    doc.addFileToVFS("Serotiva-Regular.otf", toBase64(regularBuf));
+    doc.addFont("Serotiva-Regular.otf", "Serotiva", "normal");
+
+    doc.addFileToVFS("Serotiva-ExtraBold.otf", toBase64(boldBuf));
+    doc.addFont("Serotiva-ExtraBold.otf", "Serotiva", "bold");
+
+    doc.addFileToVFS("Serotiva-Light.otf", toBase64(lightBuf));
+    doc.addFont("Serotiva-Light.otf", "Serotiva", "light");
+  } catch (e) {
+    console.warn("Could not load Serotiva fonts, falling back to helvetica", e);
+  }
+
+  const fontFamily = "Serotiva";
+  const fallback = "helvetica";
+  const useFont = (style: string) => {
+    try { doc.setFont(fontFamily, style); } catch { doc.setFont(fallback, style === "light" ? "normal" : style); }
+  };
 
   // ─── HEADER BAND ───
   doc.setFillColor(...DARK);
@@ -77,20 +115,20 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.setFillColor(...MUSTARD);
   doc.rect(0, 42, pw, 2, "F");
 
-  // Logo image instead of "COTIZACIÓN" text
+  // Logo
   try {
     const logoImg = await loadImage("/images/digital-logo.png");
     doc.addImage(logoImg, "PNG", margin, 8, 55, 26);
   } catch {
     doc.setFontSize(28);
-    doc.setFont("helvetica", "bold");
+    useFont("bold");
     doc.setTextColor(...MUSTARD);
     doc.text("COTIZACIÓN", margin, 27);
   }
 
   // Quotation number & date
   doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
+  useFont("normal");
   doc.setTextColor(...WHITE);
   const dateStr = new Date(q.created_at).toLocaleDateString("es-CO", {
     year: "numeric", month: "long", day: "numeric",
@@ -104,31 +142,15 @@ export async function generateQuotationPDF(q: Quotation) {
     borrador: "BORRADOR", enviada: "ENVIADA", aceptada: "ACEPTADA", rechazada: "RECHAZADA",
   };
   doc.setFontSize(7);
-  doc.setFont("helvetica", "bold");
+  useFont("bold");
   doc.setTextColor(...MUSTARD);
   doc.text(statusLabels[q.status] ?? q.status.toUpperCase(), pw - margin, 37, { align: "right" });
 
   let y = 54;
 
-  // ─── BUSINESS INFO (left) & CLIENT INFO (right) ───
-  const colMid = pw / 2;
-
-  // Business info
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...DARK);
-  doc.text(BUSINESS_NAME, margin, y);
-  y += 5;
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...MID_GRAY);
-  doc.text(BUSINESS_EMAIL, margin, y);
-  y += 4;
-  doc.text(BUSINESS_PHONE, margin, y);
-
-  // Client box (right side)
+  // ─── CLIENT INFO (right) ───
   if (q.clients?.name) {
-    const boxX = colMid + 10;
+    const boxX = pw / 2 + 10;
     const boxW = pw - margin - boxX;
     const boxY = 50;
     doc.setFillColor(...MUSTARD);
@@ -137,46 +159,46 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.rect(boxX + 2, boxY, boxW - 2, 18, "F");
 
     doc.setFontSize(7);
-    doc.setFont("helvetica", "normal");
+    useFont("light");
     doc.setTextColor(...MID_GRAY);
     doc.text("CLIENTE", boxX + 6, boxY + 5);
     doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
+    useFont("bold");
     doc.setTextColor(...DARK);
     doc.text(q.clients.name, boxX + 6, boxY + 13);
   }
 
   y += 6;
 
-  // Delivery date (if present)
+  // Delivery date
   if (q.delivery_date) {
     const deliveryStr = new Date(q.delivery_date).toLocaleDateString("es-CO", {
       year: "numeric", month: "long", day: "numeric",
     });
     doc.setFontSize(8);
-    doc.setFont("helvetica", "normal");
+    useFont("light");
     doc.setTextColor(...MID_GRAY);
     doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
     y += 5;
   }
 
-  // Expiration date
+  // Validity
   doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
+  useFont("light");
   doc.setTextColor(...MID_GRAY);
   doc.text(`Válida hasta: ${getExpirationDate(q.created_at)}`, margin, y);
   y += 8;
 
   // ─── TITLE & DESCRIPTION ───
   doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
+  useFont("bold");
   doc.setTextColor(...DARK);
   doc.text(q.title, margin, y);
   y += 7;
 
   if (q.description) {
     doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
+    useFont("normal");
     doc.setTextColor(...MID_GRAY);
     const descLines = doc.splitTextToSize(q.description, contentWidth);
     doc.text(descLines, margin, y);
@@ -194,7 +216,7 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.setFillColor(...DARK);
   doc.rect(margin, y - 5, contentWidth, rowH + 2, "F");
   doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
+  useFont("bold");
   doc.setTextColor(...MUSTARD);
   doc.text("#", colNum + 4, y + 1);
   doc.text("CONCEPTO", colDesc, y + 1);
@@ -202,12 +224,9 @@ export async function generateQuotationPDF(q: Quotation) {
   y += rowH + 2;
 
   // ─── TABLE ROWS ───
-  doc.setFont("helvetica", "normal");
+  useFont("normal");
   q.items.forEach((item, i) => {
-    if (y > ph - 80) {
-      doc.addPage();
-      y = 25;
-    }
+    if (y > ph - 80) { doc.addPage(); y = 25; }
 
     const isAlt = i % 2 === 0;
     const bg = isAlt ? ROW_ALT : ROW_WHITE;
@@ -222,12 +241,13 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.text(String(i + 1), colNum + 4, y + 1);
 
     doc.setTextColor(...DARK);
+    useFont("normal");
     doc.text(descLines, colDesc, y + 1);
 
     doc.setTextColor(...DARK);
-    doc.setFont("helvetica", "bold");
+    useFont("bold");
     doc.text(formatCOP(item.amount), colAmt - 4, y + 1, { align: "right" });
-    doc.setFont("helvetica", "normal");
+    useFont("normal");
 
     y += cellH;
   });
@@ -247,12 +267,12 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.roundedRect(totalBoxX, y, totalBoxW, totalBoxH, 3, 3, "F");
 
   doc.setFontSize(7);
-  doc.setFont("helvetica", "normal");
+  useFont("light");
   doc.setTextColor(...LIGHT_GRAY);
   doc.text(`${q.items.length} concepto${q.items.length !== 1 ? "s" : ""} · Precio incluye retención en la fuente`, totalBoxX + 6, y + 8);
 
   doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
+  useFont("bold");
   doc.setTextColor(...MUSTARD);
   doc.text(formatCOP(q.total), totalBoxX + totalBoxW - 6, y + 22, { align: "right" });
 
@@ -267,13 +287,13 @@ export async function generateQuotationPDF(q: Quotation) {
     if (y > ph - 60) { doc.addPage(); y = 25; }
 
     doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
+    useFont("bold");
     doc.setTextColor(...DARK);
     doc.text("COSTOS INCLUIDOS", margin, y);
     y += 6;
 
     doc.setFontSize(8);
-    doc.setFont("helvetica", "normal");
+    useFont("normal");
     doc.setTextColor(...MID_GRAY);
 
     q.costos.forEach((costo) => {
@@ -288,20 +308,16 @@ export async function generateQuotationPDF(q: Quotation) {
 
   // ─── TERMS & CONDITIONS ───
   y += 8;
-
-  if (y > ph - 70) {
-    doc.addPage();
-    y = 25;
-  }
+  if (y > ph - 70) { doc.addPage(); y = 25; }
 
   doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
+  useFont("bold");
   doc.setTextColor(...DARK);
   doc.text("CONDICIONES", margin, y);
   y += 6;
 
   doc.setFontSize(7.5);
-  doc.setFont("helvetica", "normal");
+  useFont("light");
   doc.setTextColor(...MID_GRAY);
 
   const defaultTerms = [
@@ -317,13 +333,31 @@ export async function generateQuotationPDF(q: Quotation) {
 
   terms.forEach((term) => {
     const lines = doc.splitTextToSize(term, contentWidth);
-    if (y + lines.length * 4 > ph - 20) {
-      doc.addPage();
-      y = 25;
-    }
+    if (y + lines.length * 4 > ph - 20) { doc.addPage(); y = 25; }
     doc.text(lines, margin, y);
     y += lines.length * 4 + 2;
   });
+
+  // ─── CONTACT INFO (at the end) ───
+  y += 10;
+  if (y > ph - 40) { doc.addPage(); y = 25; }
+
+  doc.setDrawColor(...MUSTARD);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, pw - margin, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  useFont("bold");
+  doc.setTextColor(...DARK);
+  doc.text(BUSINESS_NAME, margin, y);
+  y += 5;
+  doc.setFontSize(8);
+  useFont("normal");
+  doc.setTextColor(...MID_GRAY);
+  doc.text(BUSINESS_EMAIL, margin, y);
+  y += 4;
+  doc.text(BUSINESS_PHONE, margin, y);
 
   // ─── FOOTER ───
   const footerY = ph - 12;
@@ -332,6 +366,7 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.line(margin, footerY - 4, pw - margin, footerY - 4);
 
   doc.setFontSize(6);
+  useFont("light");
   doc.setTextColor(200, 200, 200);
   doc.text("Documento generado automáticamente", pw / 2, footerY, { align: "center" });
 
