@@ -72,7 +72,7 @@ const QuotationsView = () => {
     const payload = {
       title: form.title, description: form.description || null, client_id: form.client_id || null,
       status: form.status as any, items: items as any, total, conditions: conditions as any,
-      costos: costos as any, delivery_date: form.delivery_date || null, user_id: user.id,
+      costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
     };
     if (editing) {
       const { user_id, ...updatePayload } = payload;
