@@ -51,7 +51,7 @@ const OverviewView = ({ onNavigate }: Props) => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_280px] gap-4 items-start">
       {/* Calendar left */}
       <MonthlyCalendar />
 
