@@ -18,7 +18,7 @@ const BrandsShowcase = () => {
   const duplicatedBrands = [...brandNames, ...brandNames];
 
   return (
-    <section id="marcas" className="py-16 md:py-24 px-6 md:px-12 relative">
+    <section id="marcas" className="py-10 md:py-24 px-4 md:px-12 relative">
       <div className="blob w-[450px] h-[450px] bg-primary/15 top-1/3 -left-20 float-slower" />
 
       <div className="max-w-5xl mx-auto relative z-10">
