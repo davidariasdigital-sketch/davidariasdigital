@@ -3,28 +3,28 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy } from "lucide-react";
 
 interface CalendarEvent {
-  id: string; title: string; description: string | null; event_date: string;
-  event_time: string | null; color: string; client_id: string | null;
-  clients?: { name: string } | null;
+  id: string;title: string;description: string | null;event_date: string;
+  event_time: string | null;color: string;client_id: string | null;
+  clients?: {name: string;} | null;
 }
 
-interface Client { id: string; name: string; }
+interface Client {id: string;name: string;}
 
 const COLORS = [
-  { value: "primary", label: "Mostaza", class: "bg-primary" },
-  { value: "blue", label: "Azul", class: "bg-blue-500" },
-  { value: "green", label: "Verde", class: "bg-green-500" },
-  { value: "red", label: "Rojo", class: "bg-red-500" },
-  { value: "purple", label: "Morado", class: "bg-purple-500" },
-];
+{ value: "primary", label: "Mostaza", class: "bg-primary" },
+{ value: "blue", label: "Azul", class: "bg-blue-500" },
+{ value: "green", label: "Verde", class: "bg-green-500" },
+{ value: "red", label: "Rojo", class: "bg-red-500" },
+{ value: "purple", label: "Morado", class: "bg-purple-500" }];
+
 
 // Pastel tile styles matching reference image
-const tileStyles: Record<string, { bg: string; border: string; text: string; label: string }> = {
+const tileStyles: Record<string, {bg: string;border: string;text: string;label: string;}> = {
   primary: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-900", label: "text-amber-500" },
-  blue:    { bg: "bg-blue-50",  border: "border-blue-200",  text: "text-blue-900",  label: "text-blue-400" },
-  green:   { bg: "bg-green-50", border: "border-green-200", text: "text-green-900", label: "text-green-500" },
-  red:     { bg: "bg-pink-100", border: "border-pink-200",  text: "text-pink-900",  label: "text-pink-400" },
-  purple:  { bg: "bg-purple-50",border: "border-purple-200",text: "text-purple-900",label: "text-purple-400" },
+  blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-900", label: "text-blue-400" },
+  green: { bg: "bg-green-50", border: "border-green-200", text: "text-green-900", label: "text-green-500" },
+  red: { bg: "bg-pink-100", border: "border-pink-200", text: "text-pink-900", label: "text-pink-400" },
+  purple: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-900", label: "text-purple-400" }
 };
 
 // For popup event list
@@ -33,7 +33,7 @@ const colorClasses: Record<string, string> = {
   blue: "bg-blue-50 text-blue-700 border-blue-200",
   green: "bg-green-50 text-green-700 border-green-200",
   red: "bg-pink-100 text-pink-900 border-pink-200",
-  purple: "bg-purple-50 text-purple-700 border-purple-200",
+  purple: "bg-purple-50 text-purple-700 border-purple-200"
 };
 
 const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -55,14 +55,14 @@ const MonthlyCalendar = () => {
     const endDate = new Date(year, month + 1, 0);
     const endStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
     const [ev, cl] = await Promise.all([
-      supabase.from("events").select("*, clients(name)").gte("event_date", startDate).lte("event_date", endStr).order("event_date"),
-      supabase.from("clients").select("id, name").order("name"),
-    ]);
-    setEvents((ev.data as any) ?? []);
+    supabase.from("events").select("*, clients(name)").gte("event_date", startDate).lte("event_date", endStr).order("event_date"),
+    supabase.from("clients").select("id, name").order("name")]
+    );
+    setEvents(ev.data as any ?? []);
     setClients(cl.data ?? []);
   };
 
-  useEffect(() => { fetchEvents(); }, [year, month]);
+  useEffect(() => {fetchEvents();}, [year, month]);
 
   // Close popup on outside click
   useEffect(() => {
@@ -75,9 +75,9 @@ const MonthlyCalendar = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, [showPopup]);
 
-  const prevMonth = () => { if (month === 0) { setMonth(11); setYear(year - 1); } else setMonth(month - 1); };
-  const nextMonth = () => { if (month === 11) { setMonth(0); setYear(year + 1); } else setMonth(month + 1); };
-  const goToday = () => { setYear(today.getFullYear()); setMonth(today.getMonth()); };
+  const prevMonth = () => {if (month === 0) {setMonth(11);setYear(year - 1);} else setMonth(month - 1);};
+  const nextMonth = () => {if (month === 11) {setMonth(0);setYear(year + 1);} else setMonth(month + 1);};
+  const goToday = () => {setYear(today.getFullYear());setMonth(today.getMonth());};
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -105,7 +105,7 @@ const MonthlyCalendar = () => {
     if (!user) return;
     await supabase.from("events").insert({
       title: form.title, description: form.description || null, event_date: selectedDate,
-      event_time: form.event_time || null, color: form.color, client_id: form.client_id || null, user_id: user.id,
+      event_time: form.event_time || null, color: form.color, client_id: form.client_id || null, user_id: user.id
     } as any);
     setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
     fetchEvents();
@@ -123,7 +123,7 @@ const MonthlyCalendar = () => {
     if (!user) return;
     await supabase.from("events").insert({
       title: ev.title, description: ev.description, event_date: ev.event_date,
-      event_time: ev.event_time, color: ev.color, client_id: ev.client_id, user_id: user.id,
+      event_time: ev.event_time, color: ev.color, client_id: ev.client_id, user_id: user.id
     } as any);
     fetchEvents();
   };
@@ -162,7 +162,7 @@ const MonthlyCalendar = () => {
             <span className="text-sm font-display font-bold text-[hsl(var(--dash-text))]">{MONTHS[month]} {year}</span>
           </div>
           <div className="flex items-center gap-1">
-            <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline mr-1">HOY</button>
+            
             <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronLeft size={14} /></button>
             <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronRight size={14} /></button>
           </div>
@@ -171,26 +171,26 @@ const MonthlyCalendar = () => {
         {/* Grid */}
         <div className="border border-[hsl(var(--dash-card-border))] rounded-xl overflow-hidden">
           <div className="grid grid-cols-7 border-b border-[hsl(var(--dash-card-border))]">
-            {DAYS.map((d) => (
-              <div key={d} className="text-center text-[9px] font-bold text-[hsl(var(--dash-text-muted))] py-2 uppercase tracking-wider">{d}</div>
-            ))}
+            {DAYS.map((d) =>
+            <div key={d} className="text-center text-[9px] font-bold text-[hsl(var(--dash-text-muted))] py-2 uppercase tracking-wider">{d}</div>
+            )}
           </div>
           <div className="grid grid-cols-7">
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
               const firstEvent = dayEvents[0];
-              const style = firstEvent ? (tileStyles[firstEvent.color] ?? tileStyles.primary) : null;
+              const style = firstEvent ? tileStyles[firstEvent.color] ?? tileStyles.primary : null;
 
               return (
-              <div
-                key={i}
-                onClick={() => day && openDayPopup(dateStr)}
-                onDragOver={day ? onDragOver : undefined}
-                onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
-                className={`relative min-h-[80px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
-              >
-                  {day && (
+                <div
+                  key={i}
+                  onClick={() => day && openDayPopup(dateStr)}
+                  onDragOver={day ? onDragOver : undefined}
+                  onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
+                  className={`relative min-h-[80px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
+                  
+                  {day &&
                   <div className="h-full flex flex-col">
                     {/* Day number */}
                     <span className={`text-[10px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
@@ -198,26 +198,26 @@ const MonthlyCalendar = () => {
                     </span>
 
                       {/* Event tile — draggable pastel card */}
-                      {firstEvent && style && (
-                        <div
-                          draggable
-                          onDragStart={(e) => { e.stopPropagation(); onDragStart(e, firstEvent.id); }}
-                          className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}
-                        >
+                      {firstEvent && style &&
+                    <div
+                      draggable
+                      onDragStart={(e) => {e.stopPropagation();onDragStart(e, firstEvent.id);}}
+                      className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
+                      
                           {/* Action buttons — visible on hover */}
                           <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
-                              onClick={(e) => handleDuplicate(firstEvent, e)}
-                              title="Duplicar"
-                              className="p-1 rounded-md bg-white/70 hover:bg-white shadow-sm transition-colors"
-                            >
+                          onClick={(e) => handleDuplicate(firstEvent, e)}
+                          title="Duplicar"
+                          className="p-1 rounded-md bg-white/70 hover:bg-white shadow-sm transition-colors">
+                          
                               <Copy size={10} className="text-[hsl(var(--dash-text))]" />
                             </button>
                             <button
-                              onClick={(e) => handleDelete(firstEvent.id, e)}
-                              title="Eliminar"
-                              className="p-1 rounded-md bg-white/70 hover:bg-red-100 shadow-sm transition-colors"
-                            >
+                          onClick={(e) => handleDelete(firstEvent.id, e)}
+                          title="Eliminar"
+                          className="p-1 rounded-md bg-white/70 hover:bg-red-100 shadow-sm transition-colors">
+                          
                               <Trash2 size={10} className="text-red-500" />
                             </button>
                           </div>
@@ -225,29 +225,29 @@ const MonthlyCalendar = () => {
                           <p className={`text-[10px] font-bold leading-tight ${style.text} pr-10`}>
                             {firstEvent.title}
                           </p>
-                          {firstEvent.event_time && (
-                            <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
+                          {firstEvent.event_time &&
+                      <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
                               {firstEvent.event_time.slice(0, 5)}
                             </p>
-                          )}
+                      }
                         </div>
-                      )}
+                    }
 
-                      {dayEvents.length > 1 && (
-                        <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
-                      )}
+                      {dayEvents.length > 1 &&
+                    <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
+                    }
                     </div>
-                  )}
-                </div>
-              );
+                  }
+                </div>);
+
             })}
           </div>
         </div>
       </div>
 
       {/* ===== Popup Modal ===== */}
-      {showPopup && selectedDate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      {showPopup && selectedDate &&
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Popup header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
@@ -261,11 +261,11 @@ const MonthlyCalendar = () => {
 
             {/* Events list */}
             <div className="px-6 py-4 space-y-2 max-h-48 overflow-auto">
-              {selectedDayEvents.length === 0 && (
-                <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-3">Sin actividades este día</p>
-              )}
-              {selectedDayEvents.map((ev) => (
-                <div key={ev.id} className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
+              {selectedDayEvents.length === 0 &&
+            <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-3">Sin actividades este día</p>
+            }
+              {selectedDayEvents.map((ev) =>
+            <div key={ev.id} className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 ${colorClasses[ev.color] ?? colorClasses.primary}`}>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold truncate">{ev.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -283,19 +283,19 @@ const MonthlyCalendar = () => {
                     </button>
                   </div>
                 </div>
-              ))}
+            )}
             </div>
 
             {/* Add event form */}
             <div className="px-6 py-4 border-t border-[hsl(var(--dash-card-border))] space-y-3">
               <p className="text-xs font-bold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Añadir actividad</p>
               <input
-                placeholder="Título *"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className={inputCls}
-                autoFocus
-              />
+              placeholder="Título *"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className={inputCls}
+              autoFocus />
+            
               <div className="grid grid-cols-2 gap-3">
                 <input type="time" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className={inputCls} />
                 <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
@@ -304,16 +304,16 @@ const MonthlyCalendar = () => {
                 </select>
               </div>
               <input
-                placeholder="Descripción (opcional)"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className={inputCls}
-              />
+              placeholder="Descripción (opcional)"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className={inputCls} />
+            
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[hsl(var(--dash-text-muted))]">Color:</span>
-                {COLORS.map((c) => (
-                  <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-6 h-6 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-40 hover:opacity-70"}`} title={c.label} />
-                ))}
+                {COLORS.map((c) =>
+              <button key={c.value} onClick={() => setForm({ ...form, color: c.value })} className={`w-6 h-6 rounded-full ${c.class} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-40 hover:opacity-70"}`} title={c.label} />
+              )}
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={handleSubmit} disabled={!form.title} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
@@ -326,9 +326,9 @@ const MonthlyCalendar = () => {
             </div>
           </div>
         </div>
-      )}
-    </>
-  );
+      }
+    </>);
+
 };
 
 export default MonthlyCalendar;
