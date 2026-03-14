@@ -69,10 +69,10 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <div className="relative hidden sm:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--dash-text-muted))]" />
-                <input
-                  type="text"
-                  placeholder="Buscar archivo..."
-                  className="dash-input pl-9 pr-4 py-2 rounded-full text-sm w-48 focus:w-60 transition-all" />
+                
+
+
+                
                 
               </div>
               <button className="relative p-2.5 rounded-full hover:bg-[hsl(0,0%,92%)] transition-colors">
