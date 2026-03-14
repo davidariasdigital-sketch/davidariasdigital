@@ -154,20 +154,17 @@ const MonthlyCalendar = () => {
 
   return (
     <>
-      <div className="dash-tile rounded-2xl p-6">
+      <div className="dash-tile rounded-2xl p-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Calendar size={20} className="text-[hsl(var(--dash-text))]" />
-            <div>
-              <h2 className="text-lg font-display font-bold text-[hsl(var(--dash-text))]">{MONTHS[month]} {year}</h2>
-              <p className="text-xs text-[hsl(var(--dash-text-muted))]">Calendario de actividades</p>
-            </div>
-          </div>
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline mr-2">HOY</button>
-            <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronLeft size={16} /></button>
-            <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronRight size={16} /></button>
+            <Calendar size={16} className="text-[hsl(var(--dash-text))]" />
+            <span className="text-sm font-display font-bold text-[hsl(var(--dash-text))]">{MONTHS[month]} {year}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={goToday} className="text-[10px] font-bold text-primary hover:underline mr-1">HOY</button>
+            <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronLeft size={14} /></button>
+            <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"><ChevronRight size={14} /></button>
           </div>
         </div>
 
