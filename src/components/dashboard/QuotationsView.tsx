@@ -48,6 +48,8 @@ const QuotationsView = () => {
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
+  const [requisitos, setRequisitos] = useState<string[]>([]);
+  const [newRequisito, setNewRequisito] = useState("");
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
