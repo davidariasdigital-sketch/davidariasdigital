@@ -147,6 +147,7 @@ const OverviewView = ({ onNavigate }: Props) => {
                 />
               </div>
             )}
+          </div>
         </div>
       </div>
     </div>
