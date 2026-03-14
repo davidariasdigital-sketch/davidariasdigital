@@ -64,10 +64,11 @@ const QuotationsView = () => {
     if (!user) return;
     const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
     const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
+    const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
     const payload = {
       title: form.title, description: form.description || null, client_id: form.client_id || null,
       status: form.status as any, items: items as any, total, conditions: conditions as any,
-      delivery_date: form.delivery_date || null, user_id: user.id,
+      costos: costos as any, delivery_date: form.delivery_date || null, user_id: user.id,
     };
     if (editing) {
       const { user_id, ...updatePayload } = payload;
