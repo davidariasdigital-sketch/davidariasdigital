@@ -15,7 +15,7 @@ const HeroSection = () => {
   const imgY = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
   return (
-    <section id="inicio" ref={ref} className="relative min-h-screen overflow-hidden flex items-center">
+    <section id="inicio" ref={ref} className="relative min-h-[90vh] overflow-hidden flex items-center">
       {/* Soft ambient blobs */}
       <div className="blob w-[500px] h-[500px] bg-primary/40 -top-32 -left-32 float-slow" />
       <div className="blob w-[400px] h-[400px] bg-blue-300/30 top-1/3 -right-32 float-slower" />
