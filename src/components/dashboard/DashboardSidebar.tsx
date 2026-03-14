@@ -57,7 +57,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
                     David Arias
                   </span>
                   <p className="text-[10px] text-[hsl(var(--dash-text-muted))] font-medium uppercase tracking-wider">
-                    Productor
+                    Creativo Audiovisual
                   </p>
                 </div>
               </div>

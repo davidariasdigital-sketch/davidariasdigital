@@ -48,7 +48,7 @@ const HeroSection = () => {
               </h1>
 
               <p className="mt-4 md:mt-6 text-muted-foreground text-sm md:text-lg max-w-md leading-relaxed font-light">
-                Productor Audiovisual y Director de Fotografía radicado en Colombia.
+                Creativo Audiovisual y Director de Fotografía radicado en Colombia.
                 Creando contenido publicitario digital cinematográfico.
               </p>
             </motion.div>
