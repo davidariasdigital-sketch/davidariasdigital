@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, CheckCircle2, Circle } from "lucide-react";
+import { DollarSign, CheckCircle2, Circle, Plus } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
@@ -21,6 +21,13 @@ const OverviewView = ({ onNavigate }: Props) => {
   const [pendingAmount, setPendingAmount] = useState(0);
   const [pendingInvoices, setPendingInvoices] = useState(0);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [showAddTask, setShowAddTask] = useState(false);
+
+  const fetchTasks = async () => {
+    const t = await supabase.from("tasks").select("*").eq("completed", false).order("due_date", { ascending: true }).limit(8);
+    if (t.data) setTasks(t.data as Task[]);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +46,21 @@ const OverviewView = ({ onNavigate }: Props) => {
   const toggleTask = async (id: string) => {
     await supabase.from("tasks").update({ completed: true } as any).eq("id", id);
     setTasks(prev => prev.filter(t => t.id !== id));
+  };
+
+  const addTask = async () => {
+    if (!newTaskTitle.trim()) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("tasks").insert({ title: newTaskTitle.trim(), user_id: user.id } as any);
+    setNewTaskTitle("");
+    setShowAddTask(false);
+    fetchTasks();
+  };
+
+  const handleAddKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") addTask();
+    if (e.key === "Escape") { setShowAddTask(false); setNewTaskTitle(""); }
   };
 
   const formatCOP = (v: number) =>
@@ -75,9 +97,14 @@ const OverviewView = ({ onNavigate }: Props) => {
 
         {/* Actividades pendientes */}
         <div className="dash-tile rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
+           <div className="flex items-center justify-between mb-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
-            <span className="text-xs font-bold text-primary">{tasks.length}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-primary">{tasks.length}</span>
+              <button onClick={() => setShowAddTask(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+                <Plus size={14} />
+              </button>
+            </div>
           </div>
           <div className="space-y-2.5">
             {tasks.length === 0 && (
@@ -106,6 +133,20 @@ const OverviewView = ({ onNavigate }: Props) => {
                 </div>
               </div>
             ))}
+            {showAddTask && (
+              <div className="flex items-center gap-2.5">
+                <Circle size={16} className="text-[hsl(var(--dash-text-muted))] shrink-0 mt-0.5" />
+                <input
+                  autoFocus
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  onKeyDown={handleAddKeyDown}
+                  onBlur={() => { if (!newTaskTitle.trim()) { setShowAddTask(false); } }}
+                  placeholder="Nueva actividad..."
+                  className="flex-1 text-sm dash-input rounded-lg px-2 py-1"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
