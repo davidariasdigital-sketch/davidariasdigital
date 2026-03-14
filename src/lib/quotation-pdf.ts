@@ -61,11 +61,6 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function loadFont(url: string): Promise<ArrayBuffer> {
-  const resp = await fetch(url);
-  return resp.arrayBuffer();
-}
-
 export async function generateQuotationPDF(q: Quotation) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
@@ -74,44 +69,13 @@ export async function generateQuotationPDF(q: Quotation) {
   const contentWidth = pw - margin * 2;
   const quotationNum = generateQuotationNumber(q.created_at);
 
-  // ─── LOAD & REGISTER SEROTIVA FONTS ───
-  try {
-    const [regularBuf, boldBuf, lightBuf] = await Promise.all([
-      loadFont("/fonts/Serotiva-Regular.otf"),
-      loadFont("/fonts/Serotiva-ExtraBold.otf"),
-      loadFont("/fonts/Serotiva-Light.otf"),
-    ]);
-
-    const toBase64 = (buf: ArrayBuffer) => {
-      const bytes = new Uint8Array(buf);
-      let binary = "";
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-      return btoa(binary);
-    };
-
-    doc.addFileToVFS("Serotiva-Regular.otf", toBase64(regularBuf));
-    doc.addFont("Serotiva-Regular.otf", "Serotiva", "normal");
-
-    doc.addFileToVFS("Serotiva-ExtraBold.otf", toBase64(boldBuf));
-    doc.addFont("Serotiva-ExtraBold.otf", "Serotiva", "bold");
-
-    doc.addFileToVFS("Serotiva-Light.otf", toBase64(lightBuf));
-    doc.addFont("Serotiva-Light.otf", "SerotivaLight", "normal");
-  } catch (e) {
-    console.warn("Could not load Serotiva fonts, falling back to helvetica", e);
-  }
-
-  const fontFamily = "Serotiva";
-  const fallback = "helvetica";
   const useFont = (style: string) => {
-    try {
-      if (style === "light") {
-        doc.setFont("SerotivaLight", "normal");
-      } else {
-        doc.setFont(fontFamily, style);
-      }
-    } catch {
-      doc.setFont(fallback, style === "light" ? "normal" : style);
+    if (style === "bold") {
+      doc.setFont("helvetica", "bold");
+    } else if (style === "light") {
+      doc.setFont("helvetica", "normal");
+    } else {
+      doc.setFont("helvetica", "normal");
     }
   };
 
