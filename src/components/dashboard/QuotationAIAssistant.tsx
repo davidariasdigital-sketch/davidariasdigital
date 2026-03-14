@@ -25,7 +25,7 @@ const QuotationAIAssistant = ({ currentDescription, quotationTitle, onApply }: Q
     const messages = [
       {
         role: "user" as const,
-        content: `Redacta un objetivo/descripción profesional para esta cotización. ${prompt}\n\nContexto:\n${context}`,
+        content: `Redacta un objetivo/descripción profesional y MUY BREVE (máximo 2-3 líneas, un solo párrafo corto) para esta cotización. ${prompt}\n\nContexto:\n${context}`,
       },
     ];
 
