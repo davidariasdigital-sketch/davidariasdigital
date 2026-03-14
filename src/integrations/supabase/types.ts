@@ -254,6 +254,7 @@ export type Database = {
           description: string | null
           id: string
           items: Json
+          requisitos: Json
           status: Database["public"]["Enums"]["quotation_status"]
           title: string
           total: number
@@ -268,6 +269,7 @@ export type Database = {
           description?: string | null
           id?: string
           items?: Json
+          requisitos?: Json
           status?: Database["public"]["Enums"]["quotation_status"]
           title: string
           total?: number
@@ -282,6 +284,7 @@ export type Database = {
           description?: string | null
           id?: string
           items?: Json
+          requisitos?: Json
           status?: Database["public"]["Enums"]["quotation_status"]
           title?: string
           total?: number
