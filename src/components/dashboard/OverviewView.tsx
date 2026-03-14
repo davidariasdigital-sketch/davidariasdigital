@@ -133,7 +133,20 @@ const OverviewView = ({ onNavigate }: Props) => {
                 </div>
               </div>
             ))}
-          </div>
+            {showAddTask && (
+              <div className="flex items-center gap-2.5">
+                <Circle size={16} className="text-[hsl(var(--dash-text-muted))] shrink-0 mt-0.5" />
+                <input
+                  autoFocus
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  onKeyDown={handleAddKeyDown}
+                  onBlur={() => { if (!newTaskTitle.trim()) { setShowAddTask(false); } }}
+                  placeholder="Nueva actividad..."
+                  className="flex-1 text-sm dash-input rounded-lg px-2 py-1"
+                />
+              </div>
+            )}
         </div>
       </div>
     </div>
