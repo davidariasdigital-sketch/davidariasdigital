@@ -10,6 +10,7 @@ interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
   total: number; status: string; client_id: string | null; created_at: string;
   clients?: { name: string } | null; conditions?: string[]; costos?: string[];
+  requisitos?: string[];
 }
 
 const DEFAULT_CONDITIONS = [
@@ -47,6 +48,8 @@ const QuotationsView = () => {
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
+  const [requisitos, setRequisitos] = useState<string[]>([]);
+  const [newRequisito, setNewRequisito] = useState("");
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -69,7 +72,7 @@ const QuotationsView = () => {
     const payload = {
       title: form.title, description: form.description || null, client_id: form.client_id || null,
       status: form.status as any, items: items as any, total, conditions: conditions as any,
-      costos: costos as any, delivery_date: form.delivery_date || null, user_id: user.id,
+      costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
     };
     if (editing) {
       const { user_id, ...updatePayload } = payload;
@@ -86,6 +89,8 @@ const QuotationsView = () => {
     setItems([{ description: "", amount: 0 }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
+    setRequisitos([]);
+    setNewRequisito("");
     setShowForm(false);
     setEditing(null);
   };
@@ -98,6 +103,7 @@ const QuotationsView = () => {
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     const savedCostos = (q.costos as string[]) ?? [];
     setSelectedCostos(COSTOS_OPTIONS.map(c => savedCostos.includes(c)));
+    setRequisitos((q.requisitos as string[]) ?? []);
     setShowForm(true);
   };
 
@@ -178,6 +184,22 @@ const QuotationsView = () => {
                 <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{costo}</span>
               </label>
             ))}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Requisitos</p>
+            <div className="space-y-1">
+              {requisitos.map((req, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {req}</span>
+                  <button type="button" onClick={() => setRequisitos(requisitos.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1"><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input value={newRequisito} onChange={(e) => setNewRequisito(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } } }} placeholder="Ej: Acceso al lugar de grabación" className={`flex-1 ${inputCls}`} />
+              <button type="button" onClick={() => { if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } }} className="text-xs text-primary font-bold hover:underline">+ Agregar</button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
