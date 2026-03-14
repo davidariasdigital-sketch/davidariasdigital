@@ -135,7 +135,12 @@ const QuotationsView = () => {
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
-          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción" className={`w-full ${inputCls} min-h-[60px]`} />
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo de la cotización" className={`w-full ${inputCls} min-h-[60px]`} />
+          <QuotationAIAssistant
+            currentDescription={form.description}
+            quotationTitle={form.title}
+            onApply={(text) => setForm({ ...form, description: text })}
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de realización / entrega</label>
