@@ -18,7 +18,7 @@ const BrandsShowcase = () => {
   const duplicatedBrands = [...brandNames, ...brandNames];
 
   return (
-    <section id="marcas" className="py-16 md:py-24 px-6 md:px-12 relative">
+    <section id="marcas" className="py-10 md:py-24 px-4 md:px-12 relative">
       <div className="blob w-[450px] h-[450px] bg-primary/15 top-1/3 -left-20 float-slower" />
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -27,7 +27,7 @@ const BrandsShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
           <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
             Portafolio

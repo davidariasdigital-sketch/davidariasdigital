@@ -15,14 +15,14 @@ const HeroSection = () => {
   const imgY = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
   return (
-    <section id="inicio" ref={ref} className="relative min-h-[90vh] overflow-hidden flex items-center">
+    <section id="inicio" ref={ref} className="relative min-h-[85vh] md:min-h-[90vh] overflow-hidden flex items-center">
       {/* Soft ambient blobs */}
       <div className="blob w-[500px] h-[500px] bg-primary/40 -top-32 -left-32 float-slow" />
       <div className="blob w-[400px] h-[400px] bg-blue-300/30 top-1/3 -right-32 float-slower" />
       <div className="blob w-[350px] h-[350px] bg-pink-300/20 bottom-10 left-1/4 float-slow" />
 
-      <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-24 md:pt-28 pb-16 md:pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8 items-center">
+      <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
           {/* Left content */}
           <div className="lg:col-span-3 space-y-6 md:space-y-8">
             <motion.div
@@ -41,8 +41,8 @@ const HeroSection = () => {
               
 
               <h1 className="leading-[0.9] tracking-[-0.03em]">
-                <span className="block text-foreground font-medium text-xl md:text-2xl">David Arias</span>
-                <span className="block font-normal text-primary drop-shadow-sm text-8xl sm:text-9xl md:text-[14rem]" style={{ fontFamily: "'Maderon', sans-serif" }}>
+                <span className="block text-foreground font-medium text-lg md:text-2xl">David Arias</span>
+                <span className="block font-normal text-primary drop-shadow-sm text-7xl sm:text-8xl md:text-[14rem]" style={{ fontFamily: "'Maderon', sans-serif" }}>
                   DIGITAL
                 </span>
               </h1>
@@ -103,7 +103,7 @@ const HeroSection = () => {
               transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative">
               
-              <div className="liquid-glass-rainbow rounded-[var(--radius)] p-2.5 md:p-3 w-[220px] sm:w-[280px] md:w-[340px] lg:w-[380px]">
+              <div className="liquid-glass-rainbow rounded-[var(--radius)] p-2 md:p-3 w-[180px] sm:w-[240px] md:w-[340px] lg:w-[380px]">
                 <div className="rounded-[calc(var(--radius)-8px)] overflow-hidden">
                   <img
                     src={davidPortrait}
