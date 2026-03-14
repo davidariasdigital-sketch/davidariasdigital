@@ -183,13 +183,13 @@ const MonthlyCalendar = () => {
               const style = firstEvent ? (tileStyles[firstEvent.color] ?? tileStyles.primary) : null;
 
               return (
-                <div
-                  key={i}
-                  onClick={() => day && openDayPopup(dateStr)}
-                  onDragOver={day ? onDragOver : undefined}
-                  onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
-                  className={`relative min-h-[110px] p-2 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
-                >
+              <div
+                key={i}
+                onClick={() => day && openDayPopup(dateStr)}
+                onDragOver={day ? onDragOver : undefined}
+                onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
+                className={`relative min-h-[80px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}
+              >
                   {day && (
                     <div className="h-full flex flex-col">
                       {/* Day number */}
