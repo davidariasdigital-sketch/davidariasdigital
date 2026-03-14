@@ -13,9 +13,7 @@ const Index = () => {
       <HeroSection />
       <ReelSection />
       <BrandsShowcase />
-      <FramesCarousel />
       <ServicesSection />
-      <BrandsSection />
       <Footer />
       <ElevenLabsWidget />
     </div>
