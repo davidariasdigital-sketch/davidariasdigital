@@ -51,16 +51,16 @@ const OverviewView = ({ onNavigate }: Props) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Calendar first */}
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4 items-start">
+      {/* Calendar left */}
       <MonthlyCalendar />
 
-      {/* Bottom row: Por cobrar + Actividades pendientes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Right column */}
+      <div className="space-y-4">
         {/* Por cobrar */}
         <button
           onClick={() => onNavigate("invoices")}
-          className="dash-tile-primary rounded-2xl p-6 text-left"
+          className="dash-tile-primary rounded-2xl p-6 text-left w-full"
         >
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Por Cobrar</p>
