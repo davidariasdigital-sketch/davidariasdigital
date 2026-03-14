@@ -164,6 +164,16 @@ const QuotationsView = () => {
             ))}
           </div>
 
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Costos incluidos en el PDF</p>
+            {COSTOS_OPTIONS.map((costo, i) => (
+              <label key={i} className="flex items-start gap-2 cursor-pointer group">
+                <input type="checkbox" checked={selectedCostos[i]} onChange={() => { const n = [...selectedCostos]; n[i] = !n[i]; setSelectedCostos(n); }} className="mt-0.5 accent-primary" />
+                <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{costo}</span>
+              </label>
+            ))}
+          </div>
+
           <div className="flex items-center justify-between">
             <p className="text-sm font-bold text-[hsl(var(--dash-text))]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
             <button type="submit" className="btn-dark text-sm px-6 py-2.5">
