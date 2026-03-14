@@ -172,7 +172,7 @@ const MonthlyCalendar = () => {
         <div className="border border-[hsl(var(--dash-card-border))] rounded-xl overflow-hidden">
           <div className="grid grid-cols-7 border-b border-[hsl(var(--dash-card-border))]">
             {DAYS.map((d) => (
-              <div key={d} className="text-center text-[10px] font-bold text-[hsl(var(--dash-text-muted))] py-2.5 uppercase tracking-wider">{d}</div>
+              <div key={d} className="text-center text-[9px] font-bold text-[hsl(var(--dash-text-muted))] py-2 uppercase tracking-wider">{d}</div>
             ))}
           </div>
           <div className="grid grid-cols-7">
