@@ -96,7 +96,7 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.addFont("Serotiva-ExtraBold.otf", "Serotiva", "bold");
 
     doc.addFileToVFS("Serotiva-Light.otf", toBase64(lightBuf));
-    doc.addFont("Serotiva-Light.otf", "Serotiva", "light");
+    doc.addFont("Serotiva-Light.otf", "SerotivaLight", "normal");
   } catch (e) {
     console.warn("Could not load Serotiva fonts, falling back to helvetica", e);
   }
