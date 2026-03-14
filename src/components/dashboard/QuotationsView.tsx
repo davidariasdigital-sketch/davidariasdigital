@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
+import QuotationAIAssistant from "./QuotationAIAssistant";
 
 interface QuotationItem { description: string; amount: number; }
 
