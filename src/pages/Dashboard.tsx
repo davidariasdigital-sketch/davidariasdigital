@@ -9,9 +9,6 @@ import QuotationsView from "@/components/dashboard/QuotationsView";
 import InvoicesView from "@/components/dashboard/InvoicesView";
 import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import davidImg from "@/assets/david-navbar.jpg";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
