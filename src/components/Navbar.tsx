@@ -23,9 +23,9 @@ const Navbar = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="w-full max-w-4xl rounded-full liquid-glass-rainbow"
+        className="w-full max-w-4xl md:rounded-full rounded-2xl liquid-glass-rainbow"
       >
-        <div className="px-4 md:px-6 py-2 flex items-center justify-between">
+        <div className="px-4 md:px-6 py-2 flex items-center justify-center md:justify-between">
           {/* Desktop center nav */}
           <div className="hidden md:flex items-center justify-center gap-1 w-full">
             {[...navItemsBefore, ...navItemsAfter].map((item) => (
@@ -46,7 +46,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile hamburger — visible only on mobile */}
+          {/* Mobile hamburger — centered */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-foreground/60 p-2"
