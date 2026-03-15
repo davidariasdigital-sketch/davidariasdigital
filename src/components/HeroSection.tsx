@@ -43,7 +43,7 @@ const HeroSection = () => {
 
               <h1 className="leading-none tracking-[-0.03em]">
                 <span className="block text-foreground font-medium text-lg md:text-2xl leading-none">David Arias</span>
-                <img alt="DIGITAL" className="block w-full max-w-[280px] sm:max-w-[380px] md:max-w-[700px] h-auto my-0" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" />
+                <img alt="DIGITAL" className="block w-full max-w-[280px] sm:max-w-[380px] md:max-w-[700px] h-auto my-0 mx-auto lg:mx-0" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" />
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-lg max-w-md leading-relaxed font-light -mt-2 md:-mt-4">Creativo Audiovisual</p>
