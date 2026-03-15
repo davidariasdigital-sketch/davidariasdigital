@@ -27,8 +27,11 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
 
-            <h1 className="leading-none tracking-[-0.03em]">
-              <span className="block text-foreground font-medium text-lg md:text-2xl leading-none">David Arias</span>
+             <h1 className="leading-none tracking-[-0.03em] flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <img src={davidAvatar} alt="David Arias" className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover ring-2 ring-primary/30" />
+                <span className="text-foreground font-medium text-lg md:text-2xl leading-none">David Arias</span>
+              </div>
               <img alt="DIGITAL" className="block w-full max-w-[280px] sm:max-w-[380px] md:max-w-[700px] h-auto my-0 mx-auto" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" />
             </h1>
 
