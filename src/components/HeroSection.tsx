@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Mail, Phone, MessageCircle, Play } from "lucide-react";
 import { useRef } from "react";
+import davidAvatar from "@/assets/david-avatar.jpg";
 
 const HeroSection = () => {
   const ref = useRef<HTMLDivElement>(null);
