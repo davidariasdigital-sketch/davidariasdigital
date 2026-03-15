@@ -133,7 +133,6 @@ const ServicesSection = () => {
                       </div>
                       <div>
                         <h3 className="font-bold text-lg text-foreground">{service.title}</h3>
-                        <p className="text-primary font-black text-sm">{service.price}</p>
                       </div>
                     </div>
 
