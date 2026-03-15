@@ -40,8 +40,8 @@ const HeroSection = () => {
 
               
 
-              <h1 className="leading-[0.9] tracking-[-0.03em]">
-                <span className="block text-foreground font-medium text-lg md:text-2xl">David Arias</span>
+              <h1 className="leading-[0.65] tracking-[-0.03em]">
+                <span className="block text-foreground font-medium text-lg md:text-2xl mb-[-2px]">David Arias</span>
                 <span className="block font-normal text-primary drop-shadow-sm text-7xl sm:text-8xl md:text-[14rem]" style={{ fontFamily: "'Maderon', sans-serif" }}>
                   DIGITAL
                 </span>
