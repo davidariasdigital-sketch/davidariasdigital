@@ -38,7 +38,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
-            className="flex flex-col gap-1.5 md:gap-2 items-center lg:items-start">
+            className="flex flex-col gap-1.5 md:gap-2 items-center">
             <a href="mailto:davidariasdigital@gmail.com" className="flex items-center gap-3 text-muted-foreground text-xs md:text-sm hover:text-primary transition-colors duration-300">
               <Mail size={14} className="text-primary/60" /> davidariasdigital@gmail.com
             </a>
