@@ -25,7 +25,7 @@ const HeroSection = () => {
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
           {/* Left content */}
-          <div className="lg:col-span-3 space-y-6 md:space-y-8">
+          <div className="lg:col-span-3 space-y-6 md:space-y-8 text-center lg:text-left items-center lg:items-start flex flex-col">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
