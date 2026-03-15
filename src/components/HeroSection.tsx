@@ -20,7 +20,7 @@ const HeroSection = () => {
       <div className="blob w-[350px] h-[350px] bg-pink-300/20 bottom-10 left-1/4 float-slow" />
 
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
-        <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8">
+        <div className="flex flex-col items-center text-center space-y-6 md:space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
