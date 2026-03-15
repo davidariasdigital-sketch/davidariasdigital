@@ -40,14 +40,14 @@ const HeroSection = () => {
 
               
 
-              <h1 className="leading-[0.5] tracking-[-0.03em]">
-                <span className="block text-foreground font-medium text-lg md:text-2xl mb-[-6px]">David Arias</span>
+<h1 className="leading-[0.35] tracking-[-0.03em]">
+                <span className="block text-foreground font-medium text-lg md:text-2xl mb-[-10px]">David Arias</span>
                 <span className="block font-normal text-primary drop-shadow-sm text-7xl sm:text-8xl md:text-[14rem]" style={{ fontFamily: "'Maderon', sans-serif" }}>
                   DIGITAL
                 </span>
               </h1>
 
-              <p className="mt-4 md:mt-6 text-muted-foreground text-sm md:text-lg max-w-md leading-relaxed font-light">Creativo Audiovisual
+              <p className="mt-1 md:mt-2 text-muted-foreground text-sm md:text-lg max-w-md leading-relaxed font-light">Creativo Audiovisual
 
 
               </p>
