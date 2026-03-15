@@ -7,37 +7,37 @@ import {
 
 const services = [
   {
-    icon: Tv, title: "Producción Comercial", price: "Desde $2.5M COP",
+    icon: Tv, title: "Producción Comercial",
     description: "Producción integral de comerciales publicitarios con calidad cinematográfica para marcas que buscan destacar.",
     steps: ["Briefing y concepto creativo", "Pre-producción y planning", "Rodaje con equipo profesional", "Post-producción y entrega final"],
   },
   {
-    icon: Music, title: "Videos Musicales", price: "Desde $3M COP",
+    icon: Music, title: "Videos Musicales",
     description: "Creación de universos visuales únicos que potencian la identidad artística de cada proyecto musical.",
     steps: ["Escucha del track y propuesta visual", "Diseño de arte y locaciones", "Rodaje cinematográfico", "Edición, color y VFX"],
   },
   {
-    icon: CalendarDays, title: "Cubrimiento de Eventos", price: "Desde $1.5M COP",
+    icon: CalendarDays, title: "Cubrimiento de Eventos",
     description: "Cobertura audiovisual profesional de eventos corporativos, conciertos y activaciones de marca.",
     steps: ["Reunión de necesidades", "Planificación de cobertura", "Grabación multicámara en vivo", "Edición y entrega express"],
   },
   {
-    icon: Palette, title: "Color Grading", price: "Desde $800K COP",
+    icon: Palette, title: "Color Grading",
     description: "Corrección y etalonaje de color profesional para darle la estética cinematográfica a tu proyecto.",
     steps: ["Análisis del material", "Corrección primaria", "Look cinematográfico personalizado", "Revisiones y entrega"],
   },
   {
-    icon: Aperture, title: "Sesión Fotográfica", price: "Desde $1.2M COP",
+    icon: Aperture, title: "Sesión Fotográfica",
     description: "Fotografía publicitaria y editorial con dirección de arte e iluminación profesional.",
     steps: ["Concepto y moodboard", "Dirección de arte", "Sesión con iluminación profesional", "Retoque y entrega digital"],
   },
   {
-    icon: Smartphone, title: "Pack Redes Sociales", price: "Desde $2M COP",
+    icon: Smartphone, title: "Pack Redes Sociales",
     description: "Creación de contenido audiovisual optimizado para redes sociales con estrategia visual.",
     steps: ["Estrategia de contenido", "Producción de piezas", "Edición optimizada por plataforma", "Entrega con calendario"],
   },
   {
-    icon: Handshake, title: "Colaboración / Alianzas", price: "A convenir",
+    icon: Handshake, title: "Colaboración / Alianzas",
     description: "Proyectos colaborativos y alianzas estratégicas con marcas y creadores afines.",
     steps: ["Propuesta de colaboración", "Alineación de objetivos", "Desarrollo conjunto", "Lanzamiento y difusión"],
   },
