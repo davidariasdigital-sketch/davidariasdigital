@@ -25,7 +25,7 @@ const HeroSection = () => {
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 items-center">
           {/* Left content */}
-          <div className="lg:col-span-3 space-y-6 md:space-y-8">
+          <div className="lg:col-span-3 space-y-6 md:space-y-8 text-center lg:text-left items-center lg:items-start flex flex-col">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ const HeroSection = () => {
 
               <h1 className="leading-none tracking-[-0.03em]">
                 <span className="block text-foreground font-medium text-lg md:text-2xl leading-none">David Arias</span>
-                <img alt="DIGITAL" className="block w-full max-w-[280px] sm:max-w-[380px] md:max-w-[700px] h-auto my-0" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" />
+                <img alt="DIGITAL" className="block w-full max-w-[280px] sm:max-w-[380px] md:max-w-[700px] h-auto my-0 mx-auto lg:mx-0" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" />
               </h1>
 
               <p className="text-muted-foreground text-sm md:text-lg max-w-md leading-relaxed font-light -mt-2 md:-mt-4">Creativo Audiovisual</p>
@@ -53,7 +53,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.7 }}
-              className="flex flex-col gap-1.5 md:gap-2">
+              className="flex flex-col gap-1.5 md:gap-2 items-center lg:items-start">
               
               <a href="mailto:davidariasdigital@gmail.com" className="flex items-center gap-3 text-muted-foreground text-xs md:text-sm hover:text-primary transition-colors duration-300">
                 <Mail size={14} className="text-primary/60" /> davidariasdigital@gmail.com
@@ -67,7 +67,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.7 }}
-              className="flex flex-wrap gap-2.5 md:gap-3 pt-1 md:pt-2">
+              className="flex flex-wrap gap-2.5 md:gap-3 pt-1 md:pt-2 justify-center lg:justify-start">
               
               <a
                 href="https://wa.me/573108781633"
