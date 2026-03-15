@@ -31,11 +31,14 @@ const Navbar = () => {
     >
       <div className="max-w-6xl mx-auto px-5 md:px-12">
         <div className="flex items-center justify-between h-14 md:h-16">
-          {/* Logo / Brand */}
-          <a href="#inicio" className="flex items-center gap-2">
-            <span className="text-sm md:text-base font-bold text-foreground tracking-tight">
-              David<span className="text-primary">.</span>
-            </span>
+          {/* Left: Hablemos CTA */}
+          <a
+            href="https://wa.me/573108781633"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline-flex text-[11px] font-bold bg-primary text-primary-foreground px-5 py-2 rounded-full hover:scale-[1.03] transition-all duration-300"
+          >
+            Hablemos
           </a>
 
           {/* Desktop links */}
