@@ -67,7 +67,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.7 }}
-              className="flex flex-wrap gap-2.5 md:gap-3 pt-1 md:pt-2">
+              className="flex flex-wrap gap-2.5 md:gap-3 pt-1 md:pt-2 justify-center lg:justify-start">
               
               <a
                 href="https://wa.me/573108781633"
