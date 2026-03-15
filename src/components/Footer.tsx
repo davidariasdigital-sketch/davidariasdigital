@@ -10,7 +10,7 @@ const links = [
 
 const Footer = () => {
   return (
-    <footer id="contacto" className="pt-10 md:pt-40 pb-8 md:pb-10 px-4 md:px-12 relative">
+    <footer id="contacto" className="pt-6 md:pt-16 pb-8 md:pb-10 px-4 md:px-12 relative">
       <div className="blob w-[600px] h-[600px] bg-primary/10 bottom-20 left-1/2 -translate-x-1/2 float-slow" />
 
       <div className="max-w-5xl mx-auto relative z-10">

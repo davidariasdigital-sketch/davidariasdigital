@@ -21,7 +21,18 @@ const HeroSection = () => {
       <div className="blob w-[350px] h-[350px] bg-pink-300/20 bottom-10 left-1/4 float-slow" />
 
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-6xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-10 md:pb-20">
-        <div className="flex flex-col md:flex-row items-center md:items-center gap-8 md:gap-12">
+        <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-12">
+          {/* Mobile only: Avatar on top */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="flex-shrink-0 md:hidden">
+            <div className="w-40 h-40 rounded-full overflow-hidden ring-4 ring-primary/20 shadow-2xl">
+              <img src={davidAvatar} alt="David Arias" className="w-full h-full object-cover" />
+            </div>
+          </motion.div>
+
           {/* Left: Text content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -71,13 +82,13 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right: Large avatar */}
+          {/* Right: Large avatar (desktop only) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="flex-shrink-0">
-            <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden ring-4 ring-primary/20 shadow-2xl">
+            className="flex-shrink-0 hidden md:block">
+            <div className="w-72 h-72 lg:w-80 lg:h-80 rounded-full overflow-hidden ring-4 ring-primary/20 shadow-2xl">
               <img src={davidAvatar} alt="David Arias" className="w-full h-full object-cover" />
             </div>
           </motion.div>

@@ -63,14 +63,6 @@ const Navbar = () => {
             >
               <User size={16} />
             </Link>
-            <a
-              href="https://wa.me/573108781633"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] font-bold bg-primary text-primary-foreground px-5 py-2 rounded-full hover:scale-[1.03] transition-all duration-300"
-            >
-              Hablemos
-            </a>
           </div>
 
           {/* Mobile hamburger */}
