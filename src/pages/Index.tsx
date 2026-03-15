@@ -8,7 +8,7 @@ import ElevenLabsWidget from "@/components/ElevenLabsWidget";
 
 const Index = () => {
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="bg-background text-foreground min-h-screen overflow-x-hidden">
       <Navbar />
       <HeroSection />
       <ReelSection />
