@@ -253,15 +253,6 @@
   background: hsl(0 0% 60%);
 }
 
-/* Blobs */
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  pointer-events: none;
-  opacity: 0.35;
-}
-
 /* Marquee */
 @keyframes marquee {
   0% { transform: translateX(0); }
