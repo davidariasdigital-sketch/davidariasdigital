@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Mail, Phone, Instagram, Globe, Heart } from "lucide-react";
 
 const links = [
@@ -11,17 +10,9 @@ const links = [
 const Footer = () => {
   return (
     <footer id="contacto" className="pt-6 md:pt-16 pb-8 md:pb-10 px-4 md:px-12 relative">
-      <div className="blob w-[600px] h-[600px] bg-primary/10 bottom-20 left-1/2 -translate-x-1/2 float-slow" />
-
       <div className="max-w-5xl mx-auto relative z-10">
         {/* CTA Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft"
-        >
+        <div className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft">
           <h2 className="text-3xl md:text-6xl font-black tracking-tight text-foreground mb-3 md:mb-4">
             Creemos algo
             <br />
@@ -39,16 +30,10 @@ const Footer = () => {
             Iniciar conversación
             <Mail size={15} />
           </a>
-        </motion.div>
+        </div>
 
         {/* Contact links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-16"
-        >
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10 md:mb-16">
           {links.map((link) => {
             const Icon = link.icon;
             return (
@@ -64,7 +49,7 @@ const Footer = () => {
               </a>
             );
           })}
-        </motion.div>
+        </div>
 
         {/* Copyright */}
         <div className="pt-6 border-t border-border text-center">
