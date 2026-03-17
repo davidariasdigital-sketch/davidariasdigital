@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Tv, Music, CalendarDays, Palette, Aperture, Smartphone, Handshake,
   ArrowUpRight, X,
@@ -49,34 +49,22 @@ const ServicesSection = () => {
   return (
     <>
       <section id="servicios" className="py-10 md:py-24 px-4 md:px-12 relative">
-        <div className="blob w-[500px] h-[500px] bg-pink-300/15 bottom-0 left-0 float-slower" />
-
         <div className="max-w-5xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12">
             <span className="liquid-glass rounded-full px-5 py-2 text-[11px] font-semibold text-primary inline-flex items-center gap-2 mb-6">
               ¿Qué necesitas?
             </span>
             <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground text-balance">
               Menú de Servicios
             </h2>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {services.map((service, i) => {
               const Icon = service.icon;
               return (
-                <motion.button
+                <button
                   key={service.title}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
                   onClick={() => setSelectedService(i)}
                   className="liquid-glass rounded-[var(--radius)] p-4 md:p-5 flex flex-col items-center text-center hover:scale-[1.03] transition-transform duration-300 group cursor-pointer"
                 >
@@ -86,30 +74,30 @@ const ServicesSection = () => {
                   <h3 className="font-bold text-[11px] md:text-[13px] text-foreground leading-tight">
                     {service.title}
                   </h3>
-                </motion.button>
+                </button>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* Modal / Pop-up */}
+      {/* Modal */}
       <AnimatePresence>
         {selectedService !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-6"
             onClick={() => setSelectedService(null)}
           >
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
               className="relative w-full max-w-md liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-8 glow-soft"
             >
