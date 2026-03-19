@@ -223,6 +223,7 @@ export async function generateQuotationPDF(q: Quotation) {
     // Entregables under concept
     if (entregables.length > 0) {
       let ey = y + descLines.length * 4.5 + 2;
+      const entMaxW = colAmt - colDesc - 50;
       doc.setFontSize(7);
       useFont("bold");
       doc.setTextColor(...MUSTARD);
@@ -232,8 +233,9 @@ export async function generateQuotationPDF(q: Quotation) {
       doc.setFontSize(7);
       doc.setTextColor(...MID_GRAY);
       entregables.forEach((ent) => {
-        doc.text(`• ${ent}`, colDesc + 2, ey);
-        ey += 4;
+        const entLines = doc.splitTextToSize(`• ${ent}`, entMaxW);
+        doc.text(entLines, colDesc + 2, ey);
+        ey += entLines.length * 3.5;
       });
     }
 
