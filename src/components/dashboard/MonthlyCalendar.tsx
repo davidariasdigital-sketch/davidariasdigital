@@ -206,7 +206,7 @@ const MonthlyCalendar = () => {
                     <div
                       draggable
                       onDragStart={(e) => {e.stopPropagation();onDragStart(e, firstEvent.id);}}
-                      className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
+                      className={`flex-1 ${style.bg} ${style.border} border sm:border-2 rounded-lg sm:rounded-xl p-1 sm:p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
                       
                           {/* Action buttons — visible on hover */}
                           <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
