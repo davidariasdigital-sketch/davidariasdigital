@@ -88,10 +88,10 @@ const InvoicesView = () => {
   const inputCls = "w-full dash-input rounded-xl px-4 py-2.5 text-sm";
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
           <Plus size={14} /> Nueva
         </button>
       </div>
@@ -157,19 +157,18 @@ const InvoicesView = () => {
           <p className="text-[hsl(var(--dash-text-muted))] text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
         )}
         {invoices.map((inv) => (
-          <div key={inv.id} className="dash-tile rounded-2xl p-4 flex items-center justify-between gap-4">
+          <div key={inv.id} className="dash-tile rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm text-[hsl(var(--dash-text))] truncate">{inv.concept}</span>
+                <span className="font-semibold text-xs sm:text-sm text-[hsl(var(--dash-text))] truncate">{inv.concept}</span>
                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusColors[inv.status]}`}>
                   {statusLabels[inv.status]}
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">{formatCOP(Number(inv.amount))}</span>
                 {inv.clients?.name && <span>• {inv.clients.name}</span>}
-                {inv.due_date && <span>• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
-                {inv.paid_date && <span>• Pagada: {new Date(inv.paid_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
+                {inv.due_date && <span className="hidden sm:inline">• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">

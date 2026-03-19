@@ -97,13 +97,13 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Planeador de Contenido</h1>
+    <div className="space-y-6 sm:space-y-8">
+      <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Planeador de Contenido</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-4 sm:gap-5 items-start">
         <div>
           <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {[0, 1, 2, 3].map((colIdx) => (
               <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-pink-50 hover:bg-pink-100" />
             ))}
@@ -117,7 +117,7 @@ const ContentPlannerView = () => {
 
       <div>
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
             <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-amber-50 hover:bg-amber-100" />
           ))}

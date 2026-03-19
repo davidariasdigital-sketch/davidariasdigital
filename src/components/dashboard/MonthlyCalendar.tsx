@@ -36,7 +36,8 @@ const colorClasses: Record<string, string> = {
   purple: "bg-purple-50 text-purple-700 border-purple-200"
 };
 
-const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
+const DAYS_FULL = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 const MonthlyCalendar = () => {
@@ -154,7 +155,7 @@ const MonthlyCalendar = () => {
 
   return (
     <>
-      <div className="dash-tile rounded-2xl p-4">
+      <div className="dash-tile rounded-2xl p-2 sm:p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -171,8 +172,11 @@ const MonthlyCalendar = () => {
         {/* Grid */}
         <div className="border border-[hsl(var(--dash-card-border))] rounded-xl overflow-hidden">
           <div className="grid grid-cols-7 border-b border-[hsl(var(--dash-card-border))]">
-            {DAYS.map((d) =>
-            <div key={d} className="text-center text-[9px] font-bold text-[hsl(var(--dash-text-muted))] py-2 uppercase tracking-wider">{d}</div>
+            {DAYS.map((d, idx) =>
+            <div key={d} className="text-center text-[9px] font-bold text-[hsl(var(--dash-text-muted))] py-2 uppercase tracking-wider">
+              <span className="sm:hidden">{d}</span>
+              <span className="hidden sm:inline">{DAYS_FULL[idx]}</span>
+            </div>
             )}
           </div>
           <div className="grid grid-cols-7">
@@ -188,12 +192,12 @@ const MonthlyCalendar = () => {
                   onClick={() => day && openDayPopup(dateStr)}
                   onDragOver={day ? onDragOver : undefined}
                   onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
-                  className={`relative min-h-[100px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
+                  className={`relative min-h-[60px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
                   
                   {day &&
                   <div className="h-full flex flex-col">
                     {/* Day number */}
-                    <span className={`text-[10px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                    <span className={`text-[9px] sm:text-[10px] font-medium inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full mb-0.5 sm:mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
                       {day}
                     </span>
 
@@ -202,7 +206,7 @@ const MonthlyCalendar = () => {
                     <div
                       draggable
                       onDragStart={(e) => {e.stopPropagation();onDragStart(e, firstEvent.id);}}
-                      className={`flex-1 ${style.bg} ${style.border} border-2 rounded-xl p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
+                      className={`flex-1 ${style.bg} ${style.border} border sm:border-2 rounded-lg sm:rounded-xl p-1 sm:p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
                       
                           {/* Action buttons — visible on hover */}
                           <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -222,11 +226,11 @@ const MonthlyCalendar = () => {
                             </button>
                           </div>
 
-                          <p className={`text-[10px] font-bold leading-tight ${style.text} pr-10`}>
+                          <p className={`text-[8px] sm:text-[10px] font-bold leading-tight ${style.text} pr-6 sm:pr-10 line-clamp-2`}>
                             {firstEvent.title}
                           </p>
                           {firstEvent.event_time &&
-                      <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
+                      <p className={`text-[7px] sm:text-[9px] font-bold uppercase tracking-wider mt-0.5 sm:mt-1.5 ${style.label}`}>
                               {firstEvent.event_time.slice(0, 5)}
                             </p>
                       }

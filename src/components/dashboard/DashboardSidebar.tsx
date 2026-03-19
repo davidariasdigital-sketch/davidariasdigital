@@ -41,7 +41,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-none">
+    <Sidebar collapsible="offcanvas" className="border-none md:[&[data-collapsible]]:collapsible-icon">
       <SidebarContent className="dash-sidebar flex flex-col justify-between py-2 border-r border-[hsl(var(--dash-card-border))]">
         <div>
           {/* Brand */}
