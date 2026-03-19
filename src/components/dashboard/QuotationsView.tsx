@@ -101,6 +101,7 @@ const QuotationsView = () => {
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
     setRequisitos([]);
     setNewRequisito("");
+    setEntregableInputs([""]);
     setShowForm(false);
     setEditing(null);
   };
