@@ -109,7 +109,9 @@ const QuotationsView = () => {
   const handleEdit = (q: Quotation) => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
-    setItems(q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }]);
+    const parsedItems = q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }];
+    setItems(parsedItems);
+    setEntregableInputs(parsedItems.map(() => ""));
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     const savedCostos = (q.costos as string[]) ?? [];
