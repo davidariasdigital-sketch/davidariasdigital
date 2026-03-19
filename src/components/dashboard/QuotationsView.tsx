@@ -45,7 +45,7 @@ const QuotationsView = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
   const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
-  const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
+  const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0, entregables: [] }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
   const [requisitos, setRequisitos] = useState<string[]>([]);
