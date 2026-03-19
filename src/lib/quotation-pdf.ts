@@ -144,7 +144,7 @@ export async function generateQuotationPDF(q: Quotation) {
 
   y += 6;
 
-  // Delivery date
+  // Generation date
   if (q.delivery_date) {
     const deliveryStr = new Date(q.delivery_date).toLocaleDateString("es-CO", {
       year: "numeric", month: "long", day: "numeric",
@@ -152,7 +152,7 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.setFontSize(8);
     useFont("normal");
     doc.setTextColor(...MID_GRAY);
-    doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
+    doc.text(`Fecha de generación: ${deliveryStr}`, margin, y);
     y += 5;
   }
 
