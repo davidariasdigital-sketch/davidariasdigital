@@ -88,10 +88,10 @@ const InvoicesView = () => {
   const inputCls = "w-full dash-input rounded-xl px-4 py-2.5 text-sm";
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
           <Plus size={14} /> Nueva
         </button>
       </div>
