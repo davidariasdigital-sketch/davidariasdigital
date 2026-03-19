@@ -159,17 +159,18 @@ const ClientsView = () => {
           return (
             <div
               key={c.id}
-              className="dash-tile aspect-square p-4 flex flex-col items-center justify-center text-center relative group rounded-2xl"
+              className="dash-tile aspect-square p-2 sm:p-4 flex flex-col items-center justify-center text-center relative group rounded-xl sm:rounded-2xl"
             >
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleEdit(c)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={12} /></button>
-                <button onClick={() => handleDelete(c.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1 rounded-lg hover:bg-red-50"><Trash2 size={12} /></button>
+              <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleEdit(c)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={10} /></button>
+                <button onClick={() => handleDelete(c.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1 rounded-lg hover:bg-red-50"><Trash2 size={10} /></button>
               </div>
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-3 ${color}`}>
-                <Icon size={22} className="text-inherit" />
+              <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-3 ${color}`}>
+                <Icon size={18} className="text-inherit sm:hidden" />
+                <Icon size={22} className="text-inherit hidden sm:block" />
               </div>
-              <p className="font-semibold text-[hsl(var(--dash-text))] text-xs leading-tight line-clamp-2">{c.name}</p>
-              {c.company && <p className="text-[10px] text-[hsl(var(--dash-text-muted))] mt-1 truncate w-full">{c.company}</p>}
+              <p className="font-semibold text-[hsl(var(--dash-text))] text-[10px] sm:text-xs leading-tight line-clamp-2">{c.name}</p>
+              {c.company && <p className="text-[9px] sm:text-[10px] text-[hsl(var(--dash-text-muted))] mt-0.5 sm:mt-1 truncate w-full">{c.company}</p>}
             </div>
           );
         })}

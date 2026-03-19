@@ -226,11 +226,11 @@ const MonthlyCalendar = () => {
                             </button>
                           </div>
 
-                          <p className={`text-[10px] font-bold leading-tight ${style.text} pr-10`}>
+                          <p className={`text-[8px] sm:text-[10px] font-bold leading-tight ${style.text} pr-6 sm:pr-10 line-clamp-2`}>
                             {firstEvent.title}
                           </p>
                           {firstEvent.event_time &&
-                      <p className={`text-[9px] font-bold uppercase tracking-wider mt-1.5 ${style.label}`}>
+                      <p className={`text-[7px] sm:text-[9px] font-bold uppercase tracking-wider mt-0.5 sm:mt-1.5 ${style.label}`}>
                               {firstEvent.event_time.slice(0, 5)}
                             </p>
                       }

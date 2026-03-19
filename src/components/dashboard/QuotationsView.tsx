@@ -262,15 +262,15 @@ const QuotationsView = () => {
 
       <div className="space-y-3">
         {quotations.map((q) => (
-          <div key={q.id} className="dash-tile rounded-2xl p-4 flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-[hsl(var(--dash-text))] text-sm">{q.title}</p>
-              <p className="text-xs text-[hsl(var(--dash-text-muted))]">
+          <div key={q.id} className="dash-tile rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-[hsl(var(--dash-text))] text-xs sm:text-sm truncate">{q.title}</p>
+              <p className="text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] truncate">
                 {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
                 {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>

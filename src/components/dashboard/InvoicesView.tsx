@@ -157,19 +157,18 @@ const InvoicesView = () => {
           <p className="text-[hsl(var(--dash-text-muted))] text-sm text-center py-10">No hay cuentas por cobrar aún.</p>
         )}
         {invoices.map((inv) => (
-          <div key={inv.id} className="dash-tile rounded-2xl p-4 flex items-center justify-between gap-4">
+          <div key={inv.id} className="dash-tile rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm text-[hsl(var(--dash-text))] truncate">{inv.concept}</span>
+                <span className="font-semibold text-xs sm:text-sm text-[hsl(var(--dash-text))] truncate">{inv.concept}</span>
                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusColors[inv.status]}`}>
                   {statusLabels[inv.status]}
                 </span>
               </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
+              <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">{formatCOP(Number(inv.amount))}</span>
                 {inv.clients?.name && <span>• {inv.clients.name}</span>}
-                {inv.due_date && <span>• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
-                {inv.paid_date && <span>• Pagada: {new Date(inv.paid_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
+                {inv.due_date && <span className="hidden sm:inline">• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">
