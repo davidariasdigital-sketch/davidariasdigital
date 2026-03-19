@@ -4,7 +4,7 @@ import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 import QuotationAIAssistant from "./QuotationAIAssistant";
 
-interface QuotationItem { description: string; amount: number; }
+interface QuotationItem { description: string; amount: number; entregables?: string[]; }
 
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
