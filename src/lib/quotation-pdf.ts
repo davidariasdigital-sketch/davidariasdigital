@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 interface QuotationItem {
   description: string;
   amount: number;
+  entregables?: string[];
 }
 
 interface Quotation {
