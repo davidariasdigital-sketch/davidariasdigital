@@ -201,7 +201,13 @@ export async function generateQuotationPDF(q: Quotation) {
     const bg = isAlt ? ROW_ALT : ROW_WHITE;
     const descLines = doc.splitTextToSize(item.description || "—", contentWidth - 55);
     const entregables = item.entregables ?? [];
-    const entregablesH = entregables.length > 0 ? (entregables.length * 4 + 6) : 0;
+    const entMaxW = colAmt - colDesc - 50;
+    const entregablesH = entregables.length > 0
+      ? entregables.reduce((sum, ent) => {
+          const lines = doc.splitTextToSize(`• ${ent}`, entMaxW);
+          return sum + lines.length * 3.5;
+        }, 6)
+      : 0;
     const cellH = Math.max(rowH, descLines.length * 4.5 + 4 + entregablesH);
 
     doc.setFillColor(...bg);
