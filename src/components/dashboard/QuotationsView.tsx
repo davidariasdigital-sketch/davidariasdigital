@@ -157,13 +157,35 @@ const QuotationsView = () => {
           <div className="space-y-2">
             <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Conceptos</p>
             {items.map((item, i) => (
-              <div key={i} className="flex gap-2">
-                <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
-                <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
-                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
+              <div key={i} className="space-y-2 p-3 rounded-xl bg-[hsl(0,0%,97%)] border border-[hsl(var(--dash-card-border))]">
+                <div className="flex gap-2">
+                  <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
+                  <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
+                  {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
+                </div>
+                <div className="pl-1 space-y-1">
+                  <p className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Entregables</p>
+                  {(item.entregables ?? []).map((ent, ei) => (
+                    <div key={ei} className="flex items-center gap-2">
+                      <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {ent}</span>
+                      <button type="button" onClick={() => { const n = [...items]; n[i].entregables = (n[i].entregables ?? []).filter((_, j) => j !== ei); setItems(n); }} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-0.5"><X size={10} /></button>
+                    </div>
+                  ))}
+                  <input
+                    placeholder="Ej: 10 fotos editadas en alta resolución"
+                    className={`w-full ${inputCls} text-xs`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); (e.target as HTMLInputElement).value = ""; }
+                      }
+                    }}
+                  />
+                </div>
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0, entregables: [] }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
           </div>
 
           <div className="space-y-2">
