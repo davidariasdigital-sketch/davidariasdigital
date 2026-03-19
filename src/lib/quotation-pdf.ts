@@ -201,7 +201,13 @@ export async function generateQuotationPDF(q: Quotation) {
     const bg = isAlt ? ROW_ALT : ROW_WHITE;
     const descLines = doc.splitTextToSize(item.description || "—", contentWidth - 55);
     const entregables = item.entregables ?? [];
-    const entregablesH = entregables.length > 0 ? (entregables.length * 4 + 6) : 0;
+    const entMaxW = colAmt - colDesc - 50;
+    const entregablesH = entregables.length > 0
+      ? entregables.reduce((sum, ent) => {
+          const lines = doc.splitTextToSize(`• ${ent}`, entMaxW);
+          return sum + lines.length * 3.5;
+        }, 6)
+      : 0;
     const cellH = Math.max(rowH, descLines.length * 4.5 + 4 + entregablesH);
 
     doc.setFillColor(...bg);
@@ -223,6 +229,7 @@ export async function generateQuotationPDF(q: Quotation) {
     // Entregables under concept
     if (entregables.length > 0) {
       let ey = y + descLines.length * 4.5 + 2;
+      const entMaxW = colAmt - colDesc - 50;
       doc.setFontSize(7);
       useFont("bold");
       doc.setTextColor(...MUSTARD);
@@ -232,8 +239,9 @@ export async function generateQuotationPDF(q: Quotation) {
       doc.setFontSize(7);
       doc.setTextColor(...MID_GRAY);
       entregables.forEach((ent) => {
-        doc.text(`• ${ent}`, colDesc + 2, ey);
-        ey += 4;
+        const entLines = doc.splitTextToSize(`• ${ent}`, entMaxW);
+        doc.text(entLines, colDesc + 2, ey);
+        ey += entLines.length * 3.5;
       });
     }
 
