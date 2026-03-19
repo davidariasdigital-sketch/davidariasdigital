@@ -186,21 +186,27 @@ const QuotationsView = () => {
                   ))}
                   <div className="flex gap-2">
                     <input
-                      id={`entregable-input-${i}`}
+                      value={entregableInputs[i] ?? ""}
+                      onChange={(e) => { const n = [...entregableInputs]; n[i] = e.target.value; setEntregableInputs(n); }}
                       placeholder="Ej: 10 fotos editadas en alta resolución"
                       className={`flex-1 ${inputCls} text-xs`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          const val = (e.target as HTMLInputElement).value.trim();
-                          if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); (e.target as HTMLInputElement).value = ""; }
+                          const val = (entregableInputs[i] ?? "").trim();
+                          if (val) {
+                            const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
+                            const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
+                          }
                         }
                       }}
                     />
                     <button type="button" onClick={() => {
-                      const input = document.getElementById(`entregable-input-${i}`) as HTMLInputElement;
-                      const val = input?.value.trim();
-                      if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); input.value = ""; }
+                      const val = (entregableInputs[i] ?? "").trim();
+                      if (val) {
+                        const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
+                        const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
+                      }
                     }} className="text-xs text-primary font-bold hover:underline whitespace-nowrap">+ Agregar</button>
                   </div>
                 </div>
