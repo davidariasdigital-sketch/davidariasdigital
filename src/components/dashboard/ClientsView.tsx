@@ -116,10 +116,10 @@ const ClientsView = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Clientes</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-sm font-bold px-4 py-2 rounded-full hover:shadow-lg transition-all">
-          <Plus size={16} /> Nuevo
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Clientes</h1>
+        <button onClick={() => { setShowForm(true); setEditing(null); setForm({ name: "", email: "", phone: "", company: "", notes: "" }); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
+          <Plus size={14} /> Nuevo
         </button>
       </div>
 
