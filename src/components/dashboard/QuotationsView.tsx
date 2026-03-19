@@ -4,7 +4,7 @@ import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 import QuotationAIAssistant from "./QuotationAIAssistant";
 
-interface QuotationItem { description: string; amount: number; }
+interface QuotationItem { description: string; amount: number; entregables?: string[]; }
 
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
@@ -45,7 +45,7 @@ const QuotationsView = () => {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
   const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
-  const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0 }]);
+  const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0, entregables: [] }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
   const [requisitos, setRequisitos] = useState<string[]>([]);
@@ -86,7 +86,7 @@ const QuotationsView = () => {
 
   const resetForm = () => {
     setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
-    setItems([{ description: "", amount: 0 }]);
+    setItems([{ description: "", amount: 0, entregables: [] }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
     setRequisitos([]);
@@ -98,7 +98,7 @@ const QuotationsView = () => {
   const handleEdit = (q: Quotation) => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
-    setItems(q.items.length > 0 ? q.items : [{ description: "", amount: 0 }]);
+    setItems(q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }]);
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     const savedCostos = (q.costos as string[]) ?? [];
@@ -149,7 +149,7 @@ const QuotationsView = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de realización / entrega</label>
+              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de generación</label>
               <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className={`w-full ${inputCls}`} />
             </div>
           </div>
@@ -157,13 +157,35 @@ const QuotationsView = () => {
           <div className="space-y-2">
             <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Conceptos</p>
             {items.map((item, i) => (
-              <div key={i} className="flex gap-2">
-                <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
-                <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
-                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
+              <div key={i} className="space-y-2 p-3 rounded-xl bg-[hsl(0,0%,97%)] border border-[hsl(var(--dash-card-border))]">
+                <div className="flex gap-2">
+                  <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
+                  <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
+                  {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
+                </div>
+                <div className="pl-1 space-y-1">
+                  <p className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Entregables</p>
+                  {(item.entregables ?? []).map((ent, ei) => (
+                    <div key={ei} className="flex items-center gap-2">
+                      <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {ent}</span>
+                      <button type="button" onClick={() => { const n = [...items]; n[i].entregables = (n[i].entregables ?? []).filter((_, j) => j !== ei); setItems(n); }} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-0.5"><X size={10} /></button>
+                    </div>
+                  ))}
+                  <input
+                    placeholder="Ej: 10 fotos editadas en alta resolución"
+                    className={`w-full ${inputCls} text-xs`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); (e.target as HTMLInputElement).value = ""; }
+                      }
+                    }}
+                  />
+                </div>
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0 }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0, entregables: [] }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
           </div>
 
           <div className="space-y-2">
@@ -222,12 +244,6 @@ const QuotationsView = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <select value={q.status} onChange={(e) => updateStatus(q.id, e.target.value)} className={`text-[11px] font-bold px-3 py-1 rounded-full border focus:outline-none ${statusColors[q.status] ?? ""}`}>
-                <option value="borrador">Borrador</option>
-                <option value="enviada">Enviada</option>
-                <option value="aceptada">Aceptada</option>
-                <option value="rechazada">Rechazada</option>
-              </select>
               <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>

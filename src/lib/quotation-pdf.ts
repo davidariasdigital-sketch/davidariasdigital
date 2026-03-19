@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 interface QuotationItem {
   description: string;
   amount: number;
+  entregables?: string[];
 }
 
 interface Quotation {
@@ -143,7 +144,7 @@ export async function generateQuotationPDF(q: Quotation) {
 
   y += 6;
 
-  // Delivery date
+  // Generation date
   if (q.delivery_date) {
     const deliveryStr = new Date(q.delivery_date).toLocaleDateString("es-CO", {
       year: "numeric", month: "long", day: "numeric",
@@ -151,7 +152,7 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.setFontSize(8);
     useFont("normal");
     doc.setTextColor(...MID_GRAY);
-    doc.text(`Fecha de realización / entrega: ${deliveryStr}`, margin, y);
+    doc.text(`Fecha de generación: ${deliveryStr}`, margin, y);
     y += 5;
   }
 
@@ -199,7 +200,9 @@ export async function generateQuotationPDF(q: Quotation) {
     const isAlt = i % 2 === 0;
     const bg = isAlt ? ROW_ALT : ROW_WHITE;
     const descLines = doc.splitTextToSize(item.description || "—", contentWidth - 55);
-    const cellH = Math.max(rowH, descLines.length * 4.5 + 4);
+    const entregables = item.entregables ?? [];
+    const entregablesH = entregables.length > 0 ? (entregables.length * 4 + 6) : 0;
+    const cellH = Math.max(rowH, descLines.length * 4.5 + 4 + entregablesH);
 
     doc.setFillColor(...bg);
     doc.rect(margin, y - 4, contentWidth, cellH, "F");
@@ -216,6 +219,23 @@ export async function generateQuotationPDF(q: Quotation) {
     useFont("bold");
     doc.text(formatCOP(item.amount), colAmt - 4, y + 1, { align: "right" });
     useFont("normal");
+
+    // Entregables under concept
+    if (entregables.length > 0) {
+      let ey = y + descLines.length * 4.5 + 2;
+      doc.setFontSize(7);
+      useFont("bold");
+      doc.setTextColor(...MUSTARD);
+      doc.text("Entregables:", colDesc, ey);
+      ey += 4;
+      useFont("normal");
+      doc.setFontSize(7);
+      doc.setTextColor(...MID_GRAY);
+      entregables.forEach((ent) => {
+        doc.text(`• ${ent}`, colDesc + 2, ey);
+        ey += 4;
+      });
+    }
 
     y += cellH;
   });
