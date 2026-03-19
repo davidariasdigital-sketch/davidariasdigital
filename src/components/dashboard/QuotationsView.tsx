@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
+import { toast } from "sonner";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 import QuotationAIAssistant from "./QuotationAIAssistant";
 
@@ -50,6 +51,7 @@ const QuotationsView = () => {
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
   const [requisitos, setRequisitos] = useState<string[]>([]);
   const [newRequisito, setNewRequisito] = useState("");
+  const [entregableInputs, setEntregableInputs] = useState<string[]>([""]);
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -64,24 +66,32 @@ const QuotationsView = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
-    const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
-    const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
-    const payload = {
-      title: form.title, description: form.description || null, client_id: form.client_id || null,
-      status: form.status as any, items: items as any, total, conditions: conditions as any,
-      costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
-    };
-    if (editing) {
-      const { user_id, ...updatePayload } = payload;
-      await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
-    } else {
-      await supabase.from("quotations").insert(payload);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { toast.error("Debes iniciar sesión"); return; }
+      const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+      const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
+      const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
+      const payload = {
+        title: form.title, description: form.description || null, client_id: form.client_id || null,
+        status: form.status as any, items: items as any, total, conditions: conditions as any,
+        costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
+      };
+      if (editing) {
+        const { user_id, ...updatePayload } = payload;
+        const { error } = await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
+        if (error) { toast.error("Error al guardar: " + error.message); return; }
+        toast.success("Cotización actualizada");
+      } else {
+        const { error } = await supabase.from("quotations").insert(payload);
+        if (error) { toast.error("Error al crear: " + error.message); return; }
+        toast.success("Cotización creada");
+      }
+      resetForm();
+      fetchData();
+    } catch (err: any) {
+      toast.error("Error inesperado: " + err.message);
     }
-    resetForm();
-    fetchData();
   };
 
   const resetForm = () => {
@@ -91,6 +101,7 @@ const QuotationsView = () => {
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
     setRequisitos([]);
     setNewRequisito("");
+    setEntregableInputs([""]);
     setShowForm(false);
     setEditing(null);
   };
@@ -98,7 +109,9 @@ const QuotationsView = () => {
   const handleEdit = (q: Quotation) => {
     setEditing(q);
     setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
-    setItems(q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }]);
+    const parsedItems = q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }];
+    setItems(parsedItems);
+    setEntregableInputs(parsedItems.map(() => ""));
     const savedConditions = (q.conditions as string[]) ?? [];
     setSelectedConditions(DEFAULT_CONDITIONS.map(c => savedConditions.length === 0 || savedConditions.includes(c)));
     const savedCostos = (q.costos as string[]) ?? [];
@@ -173,27 +186,33 @@ const QuotationsView = () => {
                   ))}
                   <div className="flex gap-2">
                     <input
-                      id={`entregable-input-${i}`}
+                      value={entregableInputs[i] ?? ""}
+                      onChange={(e) => { const n = [...entregableInputs]; n[i] = e.target.value; setEntregableInputs(n); }}
                       placeholder="Ej: 10 fotos editadas en alta resolución"
                       className={`flex-1 ${inputCls} text-xs`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          const val = (e.target as HTMLInputElement).value.trim();
-                          if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); (e.target as HTMLInputElement).value = ""; }
+                          const val = (entregableInputs[i] ?? "").trim();
+                          if (val) {
+                            const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
+                            const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
+                          }
                         }
                       }}
                     />
                     <button type="button" onClick={() => {
-                      const input = document.getElementById(`entregable-input-${i}`) as HTMLInputElement;
-                      const val = input?.value.trim();
-                      if (val) { const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n); input.value = ""; }
+                      const val = (entregableInputs[i] ?? "").trim();
+                      if (val) {
+                        const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
+                        const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
+                      }
                     }} className="text-xs text-primary font-bold hover:underline whitespace-nowrap">+ Agregar</button>
                   </div>
                 </div>
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0, entregables: [] }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+            <button type="button" onClick={() => { setItems([...items, { description: "", amount: 0, entregables: [] }]); setEntregableInputs([...entregableInputs, ""]); }} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
           </div>
 
           <div className="space-y-2">
