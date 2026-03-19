@@ -51,6 +51,7 @@ const QuotationsView = () => {
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
   const [requisitos, setRequisitos] = useState<string[]>([]);
   const [newRequisito, setNewRequisito] = useState("");
+  const [entregableInputs, setEntregableInputs] = useState<string[]>([""]);
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
