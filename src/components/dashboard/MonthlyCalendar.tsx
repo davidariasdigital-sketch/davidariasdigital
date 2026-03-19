@@ -36,7 +36,8 @@ const colorClasses: Record<string, string> = {
   purple: "bg-purple-50 text-purple-700 border-purple-200"
 };
 
-const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
+const DAYS_FULL = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 const MonthlyCalendar = () => {
