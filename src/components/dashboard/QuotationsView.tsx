@@ -212,7 +212,7 @@ const QuotationsView = () => {
                 </div>
               </div>
             ))}
-            <button type="button" onClick={() => setItems([...items, { description: "", amount: 0, entregables: [] }])} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+            <button type="button" onClick={() => { setItems([...items, { description: "", amount: 0, entregables: [] }]); setEntregableInputs([...entregableInputs, ""]); }} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
           </div>
 
           <div className="space-y-2">
