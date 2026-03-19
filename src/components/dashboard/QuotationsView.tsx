@@ -66,24 +66,32 @@ const QuotationsView = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
-    const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
-    const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
-    const payload = {
-      title: form.title, description: form.description || null, client_id: form.client_id || null,
-      status: form.status as any, items: items as any, total, conditions: conditions as any,
-      costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
-    };
-    if (editing) {
-      const { user_id, ...updatePayload } = payload;
-      await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
-    } else {
-      await supabase.from("quotations").insert(payload);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { toast.error("Debes iniciar sesión"); return; }
+      const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+      const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
+      const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
+      const payload = {
+        title: form.title, description: form.description || null, client_id: form.client_id || null,
+        status: form.status as any, items: items as any, total, conditions: conditions as any,
+        costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
+      };
+      if (editing) {
+        const { user_id, ...updatePayload } = payload;
+        const { error } = await supabase.from("quotations").update(updatePayload as any).eq("id", editing.id);
+        if (error) { toast.error("Error al guardar: " + error.message); return; }
+        toast.success("Cotización actualizada");
+      } else {
+        const { error } = await supabase.from("quotations").insert(payload);
+        if (error) { toast.error("Error al crear: " + error.message); return; }
+        toast.success("Cotización creada");
+      }
+      resetForm();
+      fetchData();
+    } catch (err: any) {
+      toast.error("Error inesperado: " + err.message);
     }
-    resetForm();
-    fetchData();
   };
 
   const resetForm = () => {
