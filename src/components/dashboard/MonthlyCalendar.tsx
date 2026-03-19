@@ -192,7 +192,7 @@ const MonthlyCalendar = () => {
                   onClick={() => day && openDayPopup(dateStr)}
                   onDragOver={day ? onDragOver : undefined}
                   onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
-                  className={`relative min-h-[100px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
+                  className={`relative min-h-[60px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
                   
                   {day &&
                   <div className="h-full flex flex-col">
