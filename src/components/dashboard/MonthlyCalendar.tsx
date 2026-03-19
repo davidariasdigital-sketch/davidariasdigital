@@ -197,7 +197,7 @@ const MonthlyCalendar = () => {
                   {day &&
                   <div className="h-full flex flex-col">
                     {/* Day number */}
-                    <span className={`text-[10px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                    <span className={`text-[9px] sm:text-[10px] font-medium inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full mb-0.5 sm:mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
                       {day}
                     </span>
 
