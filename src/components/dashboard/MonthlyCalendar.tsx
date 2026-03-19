@@ -155,7 +155,7 @@ const MonthlyCalendar = () => {
 
   return (
     <>
-      <div className="dash-tile rounded-2xl p-4">
+      <div className="dash-tile rounded-2xl p-2 sm:p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
