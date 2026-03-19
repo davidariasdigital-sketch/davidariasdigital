@@ -52,7 +52,11 @@ const Dashboard = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-[hsl(var(--dash-bg))]">
         <DashboardSidebar currentView={view} onViewChange={setView} />
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+          {/* Mobile header with sidebar trigger */}
+          <header className="md:hidden flex items-center h-12 px-3 border-b border-[hsl(var(--dash-card-border))] bg-[hsl(var(--dash-card-bg))]">
+            <SidebarTrigger className="text-[hsl(var(--dash-text-muted))]" />
+          </header>
           {/* Content */}
           <main className="flex-1 px-3 py-4 sm:px-6 md:px-8 md:py-6 overflow-auto">
             <motion.div
