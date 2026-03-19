@@ -149,7 +149,7 @@ const QuotationsView = () => {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de realización / entrega</label>
+              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de generación</label>
               <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className={`w-full ${inputCls}`} />
             </div>
           </div>
