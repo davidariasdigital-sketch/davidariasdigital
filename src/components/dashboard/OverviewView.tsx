@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { DollarSign, CheckCircle2, Circle, Plus } from "lucide-react";
+import { DollarSign, Circle, Plus } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
@@ -15,6 +15,7 @@ interface Task {
   completed: boolean;
   due_date: string | null;
   priority: string;
+  category: string;
 }
 
 const OverviewView = ({ onNavigate }: Props) => {
@@ -66,19 +67,18 @@ const OverviewView = ({ onNavigate }: Props) => {
   const formatCOP = (v: number) =>
     new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
 
-  const priorityColors: Record<string, string> = {
-    alta: "text-destructive",
-    media: "text-amber-500",
-    baja: "text-[hsl(var(--dash-text-muted))]",
+  const categoryColors: Record<string, string> = {
+    personal: "text-blue-500",
+    laboral: "text-amber-500",
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_280px] gap-4 items-start">
-      {/* Calendar left */}
+    <div className="space-y-4">
+      {/* Calendar on top */}
       <MonthlyCalendar />
 
-      {/* Right column */}
-      <div className="space-y-4">
+      {/* Bottom row: Por cobrar left, Actividades right */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Por cobrar */}
         <button
           onClick={() => onNavigate("invoices")}
@@ -126,8 +126,8 @@ const OverviewView = ({ onNavigate }: Props) => {
                         {new Date(task.due_date).toLocaleDateString("es-CO", { day: "numeric", month: "short" })}
                       </span>
                     )}
-                    <span className={`text-[10px] font-bold uppercase ${priorityColors[task.priority] ?? ""}`}>
-                      {task.priority}
+                    <span className={`text-[10px] font-bold uppercase ${categoryColors[task.category] ?? categoryColors.laboral}`}>
+                      {task.category || "laboral"}
                     </span>
                   </div>
                 </div>
