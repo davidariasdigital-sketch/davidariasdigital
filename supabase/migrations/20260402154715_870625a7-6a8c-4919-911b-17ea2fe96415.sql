@@ -1,0 +1,1 @@
+ALTER TABLE public.tasks ADD COLUMN category text NOT NULL DEFAULT 'laboral';
