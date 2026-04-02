@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Lightbulb, Instagram, Youtube, Check } from "lucide-react";
+import { Plus, X, Lightbulb, Instagram, Sun, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
@@ -10,7 +10,7 @@ interface ContentItem {
   row_index: number; is_idea: boolean; format: string | null; published: boolean;
 }
 
-type Section = "instagram" | "youtube" | "ideas";
+type Section = "instagram" | "ideas" | "solar";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -30,7 +30,7 @@ const ContentPlannerView = () => {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  const sectionKey = (section: Section) => section === "instagram" ? "IG" : section === "youtube" ? "YT" : "IDEAS";
+  const sectionKey = (section: Section) => section === "instagram" ? "IG" : section === "solar" ? "SOLAR" : "IDEAS";
 
   const addItem = async (section: Section, colIndex: number) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -100,26 +100,32 @@ const ContentPlannerView = () => {
     <div className="space-y-6 sm:space-y-8">
       <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Planeador de Contenido</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-4 sm:gap-5 items-start">
-        <div>
-          <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            {[0, 1, 2, 3].map((colIdx) => (
-              <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-pink-50 hover:bg-pink-100" />
-            ))}
-          </div>
-        </div>
-        <div className="w-full">
-          <SectionHeader icon={<Youtube className="h-5 w-5" />} label="YouTube" colorClass="text-red-500" />
-          <ContentColumn section="youtube" colIndex={0} items={getSlotItems("youtube", 0)} onAdd={() => addItem("youtube", 0)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-red-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-red-50 hover:bg-red-100" />
+      {/* Instagram */}
+      <div>
+        <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          {[0, 1, 2, 3].map((colIdx) => (
+            <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-pink-50 hover:bg-pink-100" showFormat />
+          ))}
         </div>
       </div>
 
+      {/* Ideas Futuras */}
       <div>
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
-            <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-amber-50 hover:bg-amber-100" />
+            <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-amber-50 hover:bg-amber-100" showFormat />
+          ))}
+        </div>
+      </div>
+
+      {/* Solar */}
+      <div>
+        <SectionHeader icon={<Sun className="h-5 w-5" />} label="Solar" colorClass="text-orange-500" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          {[0, 1, 2, 3].map((colIdx) => (
+            <ContentColumn key={`solar-${colIdx}`} section="solar" colIndex={colIdx} items={getSlotItems("solar", colIdx)} onAdd={() => addItem("solar", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-orange-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-orange-50 hover:bg-orange-100" showFormat />
           ))}
         </div>
       </div>
@@ -140,13 +146,13 @@ interface ContentColumnProps {
   editingId: string | null; editValue: string; onEditStart: (id: string, title: string) => void;
   onEditChange: (val: string) => void; onEditSave: (id: string) => void; onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
-  accentClass: string; publishedClass: string; chipClass: string;
+  accentClass: string; publishedClass: string; chipClass: string; showFormat?: boolean;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, accentClass, publishedClass, chipClass,
+  onFormatChange, onTogglePublished, accentClass, publishedClass, chipClass, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
 
@@ -183,7 +189,7 @@ const ContentColumn = ({
                 <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-50 transition-all"><X className="h-2.5 w-2.5" /></button>
               </div>
               <span className="text-[11px] leading-snug font-medium cursor-text text-center w-full" onClick={() => onEditStart(item.id, item.title)}>{item.title || "Sin título"}</span>
-              {section !== "youtube" && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} />}
+              {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} />}
             </div>
           )}
         </div>

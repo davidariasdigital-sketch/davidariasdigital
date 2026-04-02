@@ -226,7 +226,7 @@ const MonthlyCalendar = () => {
                             </button>
                           </div>
 
-                          <p className={`text-[8px] sm:text-[10px] font-bold leading-tight ${style.text} pr-6 sm:pr-10 line-clamp-2`}>
+                          <p className={`text-[8px] sm:text-[10px] font-bold leading-tight ${style.text} pr-6 sm:pr-10`}>
                             {firstEvent.title}
                           </p>
                           {firstEvent.event_time &&
