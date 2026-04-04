@@ -39,9 +39,10 @@ const TasksView = () => {
       title: form.title,
       category: form.category,
       due_date: form.due_date || null,
+      estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
       user_id: user.id,
     } as any);
-    setForm({ title: "", category: "laboral", due_date: "" });
+    setForm({ title: "", category: "laboral", due_date: "", estimated_time: "" });
     setShowForm(false);
     fetchTasks();
   };
