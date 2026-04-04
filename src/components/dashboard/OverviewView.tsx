@@ -54,7 +54,8 @@ const colorDots: Record<string, string> = {
 
 const OverviewView = ({ onNavigate }: Props) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [form, setForm] = useState({ title: "", estimated_time: "", color: "primary", due_date: "" });
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -67,11 +68,34 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) setShowAddPopup(false);
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) closePopup();
     };
-    if (showAddPopup) document.addEventListener("mousedown", handler);
+    if (showPopup) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [showAddPopup]);
+  }, [showPopup]);
+
+  const closePopup = () => {
+    setShowPopup(false);
+    setEditingTask(null);
+    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
+  };
+
+  const openAdd = () => {
+    setEditingTask(null);
+    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
+    setShowPopup(true);
+  };
+
+  const openEdit = (task: Task) => {
+    setEditingTask(task);
+    setForm({
+      title: task.title,
+      estimated_time: task.estimated_time ? String(task.estimated_time) : "",
+      color: task.color || "primary",
+      due_date: task.due_date || "",
+    });
+    setShowPopup(true);
+  };
 
   const toggleTask = async (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -79,19 +103,27 @@ const OverviewView = ({ onNavigate }: Props) => {
     setTasks(prev => prev.filter(t => t.id !== id));
   };
 
-  const addTask = async () => {
+  const handleSubmit = async () => {
     if (!form.title.trim()) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("tasks").insert({
-      title: form.title.trim(),
-      user_id: user.id,
-      color: form.color,
-      estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
-      due_date: form.due_date || null,
-    } as any);
-    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
-    setShowAddPopup(false);
+    if (editingTask) {
+      await supabase.from("tasks").update({
+        title: form.title.trim(),
+        color: form.color,
+        estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
+        due_date: form.due_date || null,
+      } as any).eq("id", editingTask.id);
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from("tasks").insert({
+        title: form.title.trim(),
+        user_id: user.id,
+        color: form.color,
+        estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
+        due_date: form.due_date || null,
+      } as any);
+    }
+    closePopup();
     fetchTasks();
   };
 
@@ -119,7 +151,7 @@ const OverviewView = ({ onNavigate }: Props) => {
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-primary">{tasks.length}</span>
-            <button onClick={() => setShowAddPopup(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+            <button onClick={openAdd} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
               <Plus size={14} />
             </button>
           </div>
@@ -137,6 +169,7 @@ const OverviewView = ({ onNavigate }: Props) => {
                   key={task.id}
                   draggable
                   onDragStart={(e) => onTaskDragStart(e, task)}
+                  onClick={() => openEdit(task)}
                   className={`${style.bg} ${style.border} border rounded-xl p-3 flex flex-col justify-between cursor-grab active:cursor-grabbing group relative transition-shadow hover:shadow-md min-h-[90px]`}
                 >
                   {/* Complete button */}
@@ -173,12 +206,12 @@ const OverviewView = ({ onNavigate }: Props) => {
       </div>
 
       {/* Add task popup */}
-      {showAddPopup && (
+      {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
-              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">Nueva Actividad</h3>
-              <button onClick={() => setShowAddPopup(false)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editingTask ? "Editar Actividad" : "Nueva Actividad"}</h3>
+              <button onClick={closePopup} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
                 <X size={18} />
               </button>
             </div>
@@ -218,10 +251,10 @@ const OverviewView = ({ onNavigate }: Props) => {
                 ))}
               </div>
               <div className="flex gap-2 pt-1">
-                <button onClick={addTask} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
-                  Crear
+                <button onClick={handleSubmit} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
+                  {editingTask ? "Guardar" : "Crear"}
                 </button>
-                <button onClick={() => setShowAddPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                <button onClick={closePopup} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
                   Cancelar
                 </button>
               </div>
