@@ -54,7 +54,8 @@ const colorDots: Record<string, string> = {
 
 const OverviewView = ({ onNavigate }: Props) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [form, setForm] = useState({ title: "", estimated_time: "", color: "primary", due_date: "" });
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -67,11 +68,34 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) setShowAddPopup(false);
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) closePopup();
     };
-    if (showAddPopup) document.addEventListener("mousedown", handler);
+    if (showPopup) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [showAddPopup]);
+  }, [showPopup]);
+
+  const closePopup = () => {
+    setShowPopup(false);
+    setEditingTask(null);
+    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
+  };
+
+  const openAdd = () => {
+    setEditingTask(null);
+    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
+    setShowPopup(true);
+  };
+
+  const openEdit = (task: Task) => {
+    setEditingTask(task);
+    setForm({
+      title: task.title,
+      estimated_time: task.estimated_time ? String(task.estimated_time) : "",
+      color: task.color || "primary",
+      due_date: task.due_date || "",
+    });
+    setShowPopup(true);
+  };
 
   const toggleTask = async (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -79,19 +103,27 @@ const OverviewView = ({ onNavigate }: Props) => {
     setTasks(prev => prev.filter(t => t.id !== id));
   };
 
-  const addTask = async () => {
+  const handleSubmit = async () => {
     if (!form.title.trim()) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("tasks").insert({
-      title: form.title.trim(),
-      user_id: user.id,
-      color: form.color,
-      estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
-      due_date: form.due_date || null,
-    } as any);
-    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
-    setShowAddPopup(false);
+    if (editingTask) {
+      await supabase.from("tasks").update({
+        title: form.title.trim(),
+        color: form.color,
+        estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
+        due_date: form.due_date || null,
+      } as any).eq("id", editingTask.id);
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from("tasks").insert({
+        title: form.title.trim(),
+        user_id: user.id,
+        color: form.color,
+        estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
+        due_date: form.due_date || null,
+      } as any);
+    }
+    closePopup();
     fetchTasks();
   };
 
