@@ -205,8 +205,6 @@ const MonthlyCalendar = () => {
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
-              const firstEvent = dayEvents[0];
-              const style = firstEvent ? tileStyles[firstEvent.color] ?? tileStyles.primary : null;
 
               return (
                 <div
@@ -223,45 +221,28 @@ const MonthlyCalendar = () => {
                       {day}
                     </span>
 
-                      {/* Event tile — draggable pastel card */}
-                      {firstEvent && style &&
-                    <div
-                      draggable
-                      onDragStart={(e) => {e.stopPropagation();onDragStart(e, firstEvent.id);}}
-                      className={`flex-1 ${style.bg} ${style.border} border sm:border-2 rounded-lg sm:rounded-xl p-1 sm:p-2 flex flex-col justify-between relative cursor-grab active:cursor-grabbing`}>
-                      
-                          {/* Action buttons — visible on hover */}
-                          <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                          onClick={(e) => handleDuplicate(firstEvent, e)}
-                          title="Duplicar"
-                          className="p-1 rounded-md bg-white/70 hover:bg-white shadow-sm transition-colors">
-                          
-                              <Copy size={10} className="text-[hsl(var(--dash-text))]" />
-                            </button>
-                            <button
-                          onClick={(e) => handleDelete(firstEvent.id, e)}
-                          title="Eliminar"
-                          className="p-1 rounded-md bg-white/70 hover:bg-red-100 shadow-sm transition-colors">
-                          
-                              <Trash2 size={10} className="text-red-500" />
-                            </button>
-                          </div>
-
-                          <p className={`text-[8px] sm:text-[10px] font-bold leading-tight ${style.text} pr-6 sm:pr-10`}>
-                            {firstEvent.title}
-                          </p>
-                          {firstEvent.event_time &&
-                      <p className={`text-[7px] sm:text-[9px] font-bold uppercase tracking-wider mt-0.5 sm:mt-1.5 ${style.label}`}>
-                              {firstEvent.event_time.slice(0, 5)}
-                            </p>
-                      }
-                        </div>
-                    }
-
-                      {dayEvents.length > 1 &&
-                    <span className="text-[8px] text-[hsl(var(--dash-text-muted))] mt-1 text-center">+{dayEvents.length - 1} más</span>
-                    }
+                      {/* Event tiles — all events visible */}
+                      <div className="flex flex-col gap-0.5 flex-1 overflow-hidden">
+                        {dayEvents.map((ev) => {
+                          const evStyle = tileStyles[ev.color] ?? tileStyles.primary;
+                          return (
+                            <div
+                              key={ev.id}
+                              draggable
+                              onDragStart={(e) => {e.stopPropagation();onDragStart(e, ev.id);}}
+                              className={`${evStyle.bg} ${evStyle.border} border rounded-md sm:rounded-lg px-1 py-0.5 sm:p-1.5 relative cursor-grab active:cursor-grabbing group/event`}>
+                              <p className={`text-[7px] sm:text-[9px] font-bold leading-tight ${evStyle.text} truncate`}>
+                                {ev.title}
+                              </p>
+                              {ev.event_time &&
+                                <p className={`text-[6px] sm:text-[8px] font-bold uppercase tracking-wider ${evStyle.label}`}>
+                                  {ev.event_time.slice(0, 5)}
+                                </p>
+                              }
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   }
                 </div>);
