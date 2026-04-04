@@ -169,6 +169,7 @@ const OverviewView = ({ onNavigate }: Props) => {
                   key={task.id}
                   draggable
                   onDragStart={(e) => onTaskDragStart(e, task)}
+                  onClick={() => openEdit(task)}
                   className={`${style.bg} ${style.border} border rounded-xl p-3 flex flex-col justify-between cursor-grab active:cursor-grabbing group relative transition-shadow hover:shadow-md min-h-[90px]`}
                 >
                   {/* Complete button */}
