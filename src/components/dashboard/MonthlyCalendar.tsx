@@ -205,8 +205,6 @@ const MonthlyCalendar = () => {
             {cells.map((day, i) => {
               const dayEvents = day ? eventsForDay(day) : [];
               const dateStr = day ? getDateStr(day) : "";
-              const firstEvent = dayEvents[0];
-              const style = firstEvent ? tileStyles[firstEvent.color] ?? tileStyles.primary : null;
 
               return (
                 <div
