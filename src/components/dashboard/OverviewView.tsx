@@ -251,10 +251,10 @@ const OverviewView = ({ onNavigate }: Props) => {
                 ))}
               </div>
               <div className="flex gap-2 pt-1">
-                <button onClick={addTask} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
-                  Crear
+                <button onClick={handleSubmit} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
+                  {editingTask ? "Guardar" : "Crear"}
                 </button>
-                <button onClick={() => setShowAddPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                <button onClick={closePopup} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
                   Cancelar
                 </button>
               </div>
