@@ -206,12 +206,12 @@ const OverviewView = ({ onNavigate }: Props) => {
       </div>
 
       {/* Add task popup */}
-      {showAddPopup && (
+      {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
-              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">Nueva Actividad</h3>
-              <button onClick={() => setShowAddPopup(false)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editingTask ? "Editar Actividad" : "Nueva Actividad"}</h3>
+              <button onClick={closePopup} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
                 <X size={18} />
               </button>
             </div>
