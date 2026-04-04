@@ -306,6 +306,7 @@ export type Database = {
           completed: boolean
           created_at: string
           due_date: string | null
+          estimated_time: number | null
           id: string
           priority: Database["public"]["Enums"]["task_priority"]
           project_id: string | null
@@ -317,6 +318,7 @@ export type Database = {
           completed?: boolean
           created_at?: string
           due_date?: string | null
+          estimated_time?: number | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
           project_id?: string | null
@@ -328,6 +330,7 @@ export type Database = {
           completed?: boolean
           created_at?: string
           due_date?: string | null
+          estimated_time?: number | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
           project_id?: string | null

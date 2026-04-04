@@ -21,7 +21,7 @@ const categoryColors: Record<string, string> = {
 const TasksView = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", category: "laboral", due_date: "" });
+  const [form, setForm] = useState({ title: "", category: "laboral", due_date: "", estimated_time: "" });
 
   const fetchTasks = async () => {
     const { data } = await supabase.from("tasks").select("*").order("completed").order("created_at", { ascending: false });
@@ -39,9 +39,10 @@ const TasksView = () => {
       title: form.title,
       category: form.category,
       due_date: form.due_date || null,
+      estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
       user_id: user.id,
     } as any);
-    setForm({ title: "", category: "laboral", due_date: "" });
+    setForm({ title: "", category: "laboral", due_date: "", estimated_time: "" });
     setShowForm(false);
     fetchTasks();
   };
@@ -74,12 +75,13 @@ const TasksView = () => {
             <h3 className="font-semibold text-foreground">Nueva tarea</h3>
             <button type="button" onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X size={16} /></button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className="md:col-span-1 bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
             <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
               <option value="laboral">Laboral</option>
               <option value="personal">Personal</option>
             </select>
+            <input type="number" min="1" value={form.estimated_time} onChange={(e) => setForm({ ...form, estimated_time: e.target.value })} placeholder="Minutos estimados" className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
             <input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} className="bg-muted/50 border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
           </div>
           <button type="submit" className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-full hover:shadow-lg transition-all">Crear</button>
