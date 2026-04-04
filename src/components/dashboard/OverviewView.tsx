@@ -151,7 +151,7 @@ const OverviewView = ({ onNavigate }: Props) => {
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-primary">{tasks.length}</span>
-            <button onClick={() => setShowAddPopup(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+            <button onClick={openAdd} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
               <Plus size={14} />
             </button>
           </div>
