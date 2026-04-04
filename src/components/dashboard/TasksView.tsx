@@ -21,7 +21,7 @@ const categoryColors: Record<string, string> = {
 const TasksView = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: "", category: "laboral", due_date: "" });
+  const [form, setForm] = useState({ title: "", category: "laboral", due_date: "", estimated_time: "" });
 
   const fetchTasks = async () => {
     const { data } = await supabase.from("tasks").select("*").order("completed").order("created_at", { ascending: false });

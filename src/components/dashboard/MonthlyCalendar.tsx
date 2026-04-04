@@ -144,8 +144,30 @@ const MonthlyCalendar = () => {
     e.dataTransfer.dropEffect = "move";
   };
 
-  const onDrop = (e: DragEvent, dateStr: string) => {
+  const onDrop = async (e: DragEvent, dateStr: string) => {
     e.preventDefault();
+    // Check if it's a task being dropped from the overview
+    const taskData = e.dataTransfer.getData("taskDrag");
+    if (taskData && dateStr) {
+      try {
+        const task = JSON.parse(taskData);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        await supabase.from("events").insert({
+          title: task.title,
+          description: task.estimated_time ? `Duración: ${task.estimated_time} min` : null,
+          event_date: dateStr,
+          event_time: null,
+          color: task.category === "personal" ? "blue" : "primary",
+          client_id: null,
+          user_id: user.id,
+        } as any);
+        // Mark task as completed
+        await supabase.from("tasks").update({ completed: true } as any).eq("id", task.id);
+        fetchEvents();
+        return;
+      } catch {}
+    }
     const eventId = e.dataTransfer.getData("eventId");
     if (eventId && dateStr) handleMoveEvent(eventId, dateStr);
   };
