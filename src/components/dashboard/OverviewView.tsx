@@ -1,6 +1,6 @@
-import { useEffect, useState, DragEvent } from "react";
+import { useEffect, useState, useRef, DragEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Circle, Plus, Clock, GripVertical } from "lucide-react";
+import { Plus, Clock, X, Check, CalendarIcon } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
@@ -17,57 +17,87 @@ interface Task {
   priority: string;
   category: string;
   estimated_time: number | null;
+  color: string;
 }
+
+const COLORS = [
+  { value: "primary", label: "Mostaza" },
+  { value: "blue", label: "Azul" },
+  { value: "green", label: "Verde" },
+  { value: "red", label: "Rojo" },
+  { value: "purple", label: "Morado" },
+];
+
+const colorClasses: Record<string, string> = {
+  primary: "bg-amber-100 text-amber-800 border-amber-200",
+  blue: "bg-blue-100 text-blue-800 border-blue-200",
+  green: "bg-green-100 text-green-800 border-green-200",
+  red: "bg-pink-100 text-pink-800 border-pink-200",
+  purple: "bg-purple-100 text-purple-800 border-purple-200",
+};
+
+const tileStyles: Record<string, { bg: string; border: string; text: string; label: string }> = {
+  primary: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-900", label: "text-amber-500" },
+  blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-900", label: "text-blue-400" },
+  green: { bg: "bg-green-50", border: "border-green-200", text: "text-green-900", label: "text-green-500" },
+  red: { bg: "bg-pink-100", border: "border-pink-200", text: "text-pink-900", label: "text-pink-400" },
+  purple: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-900", label: "text-purple-400" },
+};
+
+const colorDots: Record<string, string> = {
+  primary: "bg-amber-400",
+  blue: "bg-blue-400",
+  green: "bg-green-400",
+  red: "bg-pink-400",
+  purple: "bg-purple-400",
+};
 
 const OverviewView = ({ onNavigate }: Props) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskTime, setNewTaskTime] = useState("");
-  const [newTaskCategory, setNewTaskCategory] = useState("laboral");
-  const [showAddTask, setShowAddTask] = useState(false);
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [form, setForm] = useState({ title: "", estimated_time: "", color: "primary", due_date: "" });
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const fetchTasks = async () => {
-    const t = await supabase.from("tasks").select("*").eq("completed", false).order("due_date", { ascending: true }).limit(8);
+    const t = await supabase.from("tasks").select("*").eq("completed", false).order("due_date", { ascending: true }).limit(9);
     if (t.data) setTasks(t.data as Task[]);
   };
 
   useEffect(() => { fetchTasks(); }, []);
 
-  const toggleTask = async (id: string) => {
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) setShowAddPopup(false);
+    };
+    if (showAddPopup) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showAddPopup]);
+
+  const toggleTask = async (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     await supabase.from("tasks").update({ completed: true } as any).eq("id", id);
     setTasks(prev => prev.filter(t => t.id !== id));
   };
 
   const addTask = async () => {
-    if (!newTaskTitle.trim()) return;
+    if (!form.title.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("tasks").insert({
-      title: newTaskTitle.trim(),
+      title: form.title.trim(),
       user_id: user.id,
-      category: newTaskCategory,
-      estimated_time: newTaskTime ? parseInt(newTaskTime) : null,
+      color: form.color,
+      estimated_time: form.estimated_time ? parseInt(form.estimated_time) : null,
+      due_date: form.due_date || null,
     } as any);
-    setNewTaskTitle("");
-    setNewTaskTime("");
-    setNewTaskCategory("laboral");
-    setShowAddTask(false);
+    setForm({ title: "", estimated_time: "", color: "primary", due_date: "" });
+    setShowAddPopup(false);
     fetchTasks();
-  };
-
-  const handleAddKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") addTask();
-    if (e.key === "Escape") { setShowAddTask(false); setNewTaskTitle(""); setNewTaskTime(""); }
   };
 
   const onTaskDragStart = (e: DragEvent, task: Task) => {
     e.dataTransfer.setData("taskDrag", JSON.stringify(task));
     e.dataTransfer.effectAllowed = "copy";
-  };
-
-  const categoryColors: Record<string, string> = {
-    personal: "text-blue-500",
-    laboral: "text-amber-500",
   };
 
   const formatTime = (minutes: number) => {
@@ -77,98 +107,128 @@ const OverviewView = ({ onNavigate }: Props) => {
     return m ? `${h}h ${m}m` : `${h}h`;
   };
 
+  const inputCls = "w-full dash-input rounded-lg px-3 py-2 text-sm";
+
   return (
     <div className="space-y-4">
-      {/* Calendar on top */}
       <MonthlyCalendar />
 
-      {/* Actividades pendientes — full width */}
+      {/* Actividades pendientes — grid */}
       <div className="dash-tile rounded-2xl p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-primary">{tasks.length}</span>
-            <button onClick={() => setShowAddTask(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+            <button onClick={() => setShowAddPopup(true)} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
               <Plus size={14} />
             </button>
           </div>
         </div>
-        <p className="text-[10px] text-[hsl(var(--dash-text-muted))] mb-3 italic">Arrastra una actividad al calendario para agendarla</p>
-        <div className="space-y-2.5">
-          {tasks.length === 0 && (
-            <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-4">Sin actividades pendientes 🎉</p>
-          )}
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              draggable
-              onDragStart={(e) => onTaskDragStart(e, task)}
-              className="flex items-start gap-2 group cursor-grab active:cursor-grabbing"
-            >
-              <GripVertical size={14} className="mt-1 text-[hsl(var(--dash-text-muted))] opacity-0 group-hover:opacity-60 transition-opacity shrink-0" />
-              <button
-                onClick={() => toggleTask(task.id)}
-                className="mt-0.5 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors shrink-0"
-              >
-                <Circle size={16} />
-              </button>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-[hsl(var(--dash-text))] truncate">{task.title}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  {task.due_date && (
-                    <span className="text-[10px] text-[hsl(var(--dash-text-muted))]">
-                      {new Date(task.due_date).toLocaleDateString("es-CO", { day: "numeric", month: "short" })}
-                    </span>
-                  )}
-                  {task.estimated_time && (
-                    <span className="text-[10px] text-[hsl(var(--dash-text-muted))] flex items-center gap-0.5">
-                      <Clock size={9} /> {formatTime(task.estimated_time)}
-                    </span>
-                  )}
-                  <span className={`text-[10px] font-bold uppercase ${categoryColors[task.category] ?? categoryColors.laboral}`}>
-                    {task.category || "laboral"}
-                  </span>
+        <p className="text-[10px] text-[hsl(var(--dash-text-muted))] mb-4 italic">Arrastra una actividad al calendario para agendarla</p>
+
+        {tasks.length === 0 ? (
+          <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-6">Sin actividades pendientes 🎉</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {tasks.map((task) => {
+              const style = tileStyles[task.color] ?? tileStyles.primary;
+              return (
+                <div
+                  key={task.id}
+                  draggable
+                  onDragStart={(e) => onTaskDragStart(e, task)}
+                  className={`${style.bg} ${style.border} border rounded-xl p-3 flex flex-col justify-between cursor-grab active:cursor-grabbing group relative transition-shadow hover:shadow-md min-h-[90px]`}
+                >
+                  {/* Complete button */}
+                  <button
+                    onClick={(e) => toggleTask(task.id, e)}
+                    title="Completar"
+                    className="absolute top-2 right-2 p-1 rounded-md bg-white/60 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Check size={10} className={style.text} />
+                  </button>
+
+                  <p className={`text-[11px] sm:text-xs font-bold leading-tight ${style.text} pr-6`}>
+                    {task.title}
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    {task.due_date && (
+                      <span className={`text-[9px] font-semibold ${style.label} flex items-center gap-0.5`}>
+                        <CalendarIcon size={8} />
+                        {new Date(task.due_date + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
+                    {task.estimated_time && (
+                      <span className={`text-[9px] font-semibold ${style.label} flex items-center gap-0.5`}>
+                        <Clock size={8} /> {formatTime(task.estimated_time)}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Add task popup */}
+      {showAddPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">Nueva Actividad</h3>
+              <button onClick={() => setShowAddPopup(false)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+                <X size={18} />
+              </button>
             </div>
-          ))}
-          {showAddTask && (
-            <div className="space-y-2 pl-6">
-              <div className="flex items-center gap-2">
-                <Circle size={16} className="text-[hsl(var(--dash-text-muted))] shrink-0 mt-0.5" />
-                <input
-                  autoFocus
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
-                  onKeyDown={handleAddKeyDown}
-                  placeholder="Nueva actividad..."
-                  className="flex-1 text-sm dash-input rounded-lg px-2 py-1"
-                />
-              </div>
-              <div className="flex items-center gap-2 pl-6">
+            <div className="px-6 py-4 space-y-3">
+              <input
+                autoFocus
+                placeholder="Título *"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className={inputCls}
+              />
+              <div className="grid grid-cols-2 gap-3">
                 <input
                   type="number"
                   min="1"
-                  value={newTaskTime}
-                  onChange={(e) => setNewTaskTime(e.target.value)}
-                  onKeyDown={handleAddKeyDown}
                   placeholder="Min. estimados"
-                  className="w-28 text-xs dash-input rounded-lg px-2 py-1"
+                  value={form.estimated_time}
+                  onChange={(e) => setForm({ ...form, estimated_time: e.target.value })}
+                  className={inputCls}
                 />
-                <select
-                  value={newTaskCategory}
-                  onChange={(e) => setNewTaskCategory(e.target.value)}
-                  className="text-xs dash-input rounded-lg px-2 py-1"
-                >
-                  <option value="laboral">Laboral</option>
-                  <option value="personal">Personal</option>
-                </select>
-                <button onClick={addTask} className="btn-dark text-xs px-3 py-1">Añadir</button>
+                <input
+                  type="date"
+                  value={form.due_date}
+                  onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+                  className={inputCls}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[hsl(var(--dash-text-muted))]">Color:</span>
+                {COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    onClick={() => setForm({ ...form, color: c.value })}
+                    className={`w-6 h-6 rounded-full ${colorDots[c.value]} transition-transform ${form.color === c.value ? "ring-2 ring-[hsl(var(--dash-text))] scale-110" : "opacity-40 hover:opacity-70"}`}
+                    title={c.label}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={addTask} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
+                  Crear
+                </button>
+                <button onClick={() => setShowAddPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                  Cancelar
+                </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
