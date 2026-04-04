@@ -303,6 +303,7 @@ export type Database = {
       tasks: {
         Row: {
           category: string
+          color: string
           completed: boolean
           created_at: string
           due_date: string | null
@@ -315,6 +316,7 @@ export type Database = {
         }
         Insert: {
           category?: string
+          color?: string
           completed?: boolean
           created_at?: string
           due_date?: string | null
@@ -327,6 +329,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          color?: string
           completed?: boolean
           created_at?: string
           due_date?: string | null
