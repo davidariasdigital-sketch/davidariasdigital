@@ -37,7 +37,7 @@ const InvoicesView = () => {
     const [inv, cl, qt] = await Promise.all([
       supabase.from("invoices").select("*, clients(name)").order("created_at", { ascending: false }),
       supabase.from("clients").select("id, name").order("name"),
-      supabase.from("quotations").select("id, title").order("created_at", { ascending: false }),
+      supabase.from("quotations").select("id, title, total, description, client_id, items, clients(name)").order("created_at", { ascending: false }),
     ]);
     setInvoices((inv.data as any) ?? []);
     setClients(cl.data ?? []);
