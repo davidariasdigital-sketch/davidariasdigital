@@ -139,9 +139,26 @@ const InvoicesView = () => {
               <option value="">Sin cliente</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <select value={form.quotation_id} onChange={(e) => setForm({ ...form, quotation_id: e.target.value })} className={inputCls}>
+            <select value={form.quotation_id} onChange={(e) => {
+              const qId = e.target.value;
+              const qt = quotations.find((q) => q.id === qId);
+              if (qt) {
+                const itemsSummary = Array.isArray(qt.items)
+                  ? (qt.items as any[]).map((it: any) => it.concept || it.title || "").filter(Boolean).join(", ")
+                  : "";
+                setForm({
+                  ...form,
+                  quotation_id: qId,
+                  concept: itemsSummary || qt.title,
+                  amount: String(qt.total),
+                  client_id: qt.client_id ?? "",
+                });
+              } else {
+                setForm({ ...form, quotation_id: qId });
+              }
+            }} className={inputCls}>
               <option value="">Sin cotización</option>
-              {quotations.map((q) => <option key={q.id} value={q.id}>{q.title}</option>)}
+              {quotations.map((q) => <option key={q.id} value={q.id}>{q.title} — {formatCOP(q.total)}</option>)}
             </select>
           </div>
           <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
