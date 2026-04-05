@@ -11,7 +11,7 @@ interface Invoice {
 }
 
 interface Client { id: string; name: string; }
-interface Quotation { id: string; title: string; }
+interface Quotation { id: string; title: string; total: number; description: string | null; client_id: string | null; items: any; clients?: { name: string } | null; }
 
 const statusLabels: Record<string, string> = { pendiente: "Pendiente", pagada: "Pagada", vencida: "Vencida" };
 const statusColors: Record<string, string> = {
