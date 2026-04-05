@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
+import { Plus, X, Trash2, Edit2, FileDown, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
 import QuotationAIAssistant from "./QuotationAIAssistant";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface QuotationItem { description: string; amount: number; entregables?: string[]; }
 
@@ -52,6 +60,9 @@ const QuotationsView = () => {
   const [requisitos, setRequisitos] = useState<string[]>([]);
   const [newRequisito, setNewRequisito] = useState("");
   const [entregableInputs, setEntregableInputs] = useState<string[]>([""]);
+  const [showConditions, setShowConditions] = useState(false);
+  const [showCostos, setShowCostos] = useState(false);
+  const isMobile = useIsMobile();
 
   const fetchData = async () => {
     const [q, c] = await Promise.all([
@@ -64,8 +75,8 @@ const QuotationsView = () => {
 
   useEffect(() => { fetchData(); }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { toast.error("Debes iniciar sesión"); return; }
@@ -104,6 +115,8 @@ const QuotationsView = () => {
     setEntregableInputs([""]);
     setShowForm(false);
     setEditing(null);
+    setShowConditions(false);
+    setShowCostos(false);
   };
 
   const handleEdit = (q: Quotation) => {
@@ -130,147 +143,192 @@ const QuotationsView = () => {
     fetchData();
   };
 
-  const inputCls = "dash-input rounded-xl px-4 py-2.5 text-sm";
+  const inputCls = "dash-input rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm w-full";
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cotizaciones</h1>
-        <button onClick={() => { setShowForm(true); setEditing(null); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
-          <Plus size={14} /> Nueva
-        </button>
+  const formContent = (
+    <div className="space-y-3 sm:space-y-4">
+      {/* Title & Client */}
+      <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={inputCls} />
+      <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
+        <option value="">Sin cliente</option>
+        {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </select>
+
+      <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo" className={`${inputCls} min-h-[50px]`} rows={2} />
+      <QuotationAIAssistant
+        currentDescription={form.description}
+        quotationTitle={form.title}
+        onApply={(text) => setForm({ ...form, description: text })}
+      />
+
+      <div>
+        <label className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de generación</label>
+        <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className={inputCls} />
       </div>
 
-      {showForm && (
-        <form onSubmit={handleSubmit} className="dash-tile rounded-2xl p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
-            <button type="button" onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={`w-full ${inputCls}`} />
-            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={`w-full ${inputCls}`}>
-              <option value="">Sin cliente</option>
-              {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo de la cotización" className={`w-full ${inputCls} min-h-[60px]`} />
-          <QuotationAIAssistant
-            currentDescription={form.description}
-            quotationTitle={form.title}
-            onApply={(text) => setForm({ ...form, description: text })}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider mb-1 block">Fecha de generación</label>
-              <input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} className={`w-full ${inputCls}`} />
+      {/* Conceptos */}
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Conceptos</p>
+        {items.map((item, i) => (
+          <div key={i} className="space-y-2 p-2.5 sm:p-3 rounded-xl bg-[hsl(0,0%,97%)] border border-[hsl(var(--dash-card-border))]">
+            <div className="space-y-2">
+              <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={inputCls} />
+              <div className="flex gap-2 items-center">
+                <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$ Monto" className={inputCls} />
+                {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2 shrink-0"><X size={14} /></button>}
+              </div>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Conceptos</p>
-            {items.map((item, i) => (
-              <div key={i} className="space-y-2 p-3 rounded-xl bg-[hsl(0,0%,97%)] border border-[hsl(var(--dash-card-border))]">
-                <div className="flex gap-2">
-                  <input value={item.description} onChange={(e) => { const n = [...items]; n[i].description = e.target.value; setItems(n); }} placeholder="Concepto" className={`flex-1 ${inputCls}`} />
-                  <input type="number" value={item.amount || ""} onChange={(e) => { const n = [...items]; n[i].amount = Number(e.target.value); setItems(n); }} placeholder="$" className={`w-28 ${inputCls}`} />
-                  {items.length > 1 && <button type="button" onClick={() => setItems(items.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-2"><X size={14} /></button>}
+            {/* Entregables */}
+            <div className="space-y-1">
+              <p className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Entregables</p>
+              {(item.entregables ?? []).map((ent, ei) => (
+                <div key={ei} className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-[hsl(var(--dash-text))] flex-1 leading-tight">• {ent}</span>
+                  <button type="button" onClick={() => { const n = [...items]; n[i].entregables = (n[i].entregables ?? []).filter((_, j) => j !== ei); setItems(n); }} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-0.5 shrink-0"><X size={10} /></button>
                 </div>
-                <div className="pl-1 space-y-1">
-                  <p className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Entregables</p>
-                  {(item.entregables ?? []).map((ent, ei) => (
-                    <div key={ei} className="flex items-center gap-2">
-                      <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {ent}</span>
-                      <button type="button" onClick={() => { const n = [...items]; n[i].entregables = (n[i].entregables ?? []).filter((_, j) => j !== ei); setItems(n); }} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-0.5"><X size={10} /></button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2">
-                    <input
-                      value={entregableInputs[i] ?? ""}
-                      onChange={(e) => { const n = [...entregableInputs]; n[i] = e.target.value; setEntregableInputs(n); }}
-                      placeholder="Ej: 10 fotos editadas en alta resolución"
-                      className={`flex-1 ${inputCls} text-xs`}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const val = (entregableInputs[i] ?? "").trim();
-                          if (val) {
-                            const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
-                            const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
-                          }
-                        }
-                      }}
-                    />
-                    <button type="button" onClick={() => {
+              ))}
+              <div className="flex gap-1.5">
+                <input
+                  value={entregableInputs[i] ?? ""}
+                  onChange={(e) => { const n = [...entregableInputs]; n[i] = e.target.value; setEntregableInputs(n); }}
+                  placeholder="Ej: 10 fotos editadas"
+                  className={`${inputCls} text-xs`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
                       const val = (entregableInputs[i] ?? "").trim();
                       if (val) {
                         const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
                         const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
                       }
-                    }} className="text-xs text-primary font-bold hover:underline whitespace-nowrap">+ Agregar</button>
-                  </div>
-                </div>
+                    }
+                  }}
+                />
+                <button type="button" onClick={() => {
+                  const val = (entregableInputs[i] ?? "").trim();
+                  if (val) {
+                    const n = [...items]; n[i].entregables = [...(n[i].entregables ?? []), val]; setItems(n);
+                    const ni = [...entregableInputs]; ni[i] = ""; setEntregableInputs(ni);
+                  }
+                }} className="text-[10px] text-primary font-bold hover:underline whitespace-nowrap shrink-0 px-1">+ Add</button>
               </div>
-            ))}
-            <button type="button" onClick={() => { setItems([...items, { description: "", amount: 0, entregables: [] }]); setEntregableInputs([...entregableInputs, ""]); }} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+            </div>
           </div>
+        ))}
+        <button type="button" onClick={() => { setItems([...items, { description: "", amount: 0, entregables: [] }]); setEntregableInputs([...entregableInputs, ""]); }} className="text-xs text-primary font-bold hover:underline">+ Agregar concepto</button>
+      </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Condiciones del PDF</p>
+      {/* Condiciones - collapsible on mobile */}
+      <div className="space-y-1.5">
+        <button type="button" onClick={() => setShowConditions(!showConditions)} className="flex items-center gap-1.5 w-full">
+          <p className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Condiciones del PDF</p>
+          {isMobile && (showConditions ? <ChevronUp size={12} className="text-[hsl(var(--dash-text-muted))]" /> : <ChevronDown size={12} className="text-[hsl(var(--dash-text-muted))]" />)}
+        </button>
+        {(showConditions || !isMobile) && (
+          <div className="space-y-1.5">
             {DEFAULT_CONDITIONS.map((condition, i) => (
               <label key={i} className="flex items-start gap-2 cursor-pointer group">
-                <input type="checkbox" checked={selectedConditions[i]} onChange={() => { const n = [...selectedConditions]; n[i] = !n[i]; setSelectedConditions(n); }} className="mt-0.5 accent-primary" />
-                <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{condition}</span>
+                <input type="checkbox" checked={selectedConditions[i]} onChange={() => { const n = [...selectedConditions]; n[i] = !n[i]; setSelectedConditions(n); }} className="mt-0.5 accent-primary shrink-0" />
+                <span className="text-[11px] leading-tight text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{condition}</span>
               </label>
             ))}
           </div>
+        )}
+      </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Costos incluidos en el PDF</p>
+      {/* Costos - collapsible on mobile */}
+      <div className="space-y-1.5">
+        <button type="button" onClick={() => setShowCostos(!showCostos)} className="flex items-center gap-1.5 w-full">
+          <p className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Costos incluidos</p>
+          {isMobile && (showCostos ? <ChevronUp size={12} className="text-[hsl(var(--dash-text-muted))]" /> : <ChevronDown size={12} className="text-[hsl(var(--dash-text-muted))]" />)}
+        </button>
+        {(showCostos || !isMobile) && (
+          <div className="space-y-1.5">
             {COSTOS_OPTIONS.map((costo, i) => (
               <label key={i} className="flex items-start gap-2 cursor-pointer group">
-                <input type="checkbox" checked={selectedCostos[i]} onChange={() => { const n = [...selectedCostos]; n[i] = !n[i]; setSelectedCostos(n); }} className="mt-0.5 accent-primary" />
-                <span className="text-xs text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{costo}</span>
+                <input type="checkbox" checked={selectedCostos[i]} onChange={() => { const n = [...selectedCostos]; n[i] = !n[i]; setSelectedCostos(n); }} className="mt-0.5 accent-primary shrink-0" />
+                <span className="text-[11px] text-[hsl(var(--dash-text-muted))] group-hover:text-[hsl(var(--dash-text))] transition-colors">{costo}</span>
               </label>
             ))}
           </div>
+        )}
+      </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Requisitos</p>
-            <div className="space-y-1">
-              {requisitos.map((req, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="text-xs text-[hsl(var(--dash-text))] flex-1">• {req}</span>
-                  <button type="button" onClick={() => setRequisitos(requisitos.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1"><X size={12} /></button>
-                </div>
-              ))}
+      {/* Requisitos */}
+      <div className="space-y-1.5">
+        <p className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Requisitos</p>
+        <div className="space-y-1">
+          {requisitos.map((req, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              <span className="text-[11px] text-[hsl(var(--dash-text))] flex-1 leading-tight">• {req}</span>
+              <button type="button" onClick={() => setRequisitos(requisitos.filter((_, j) => j !== i))} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-0.5 shrink-0"><X size={12} /></button>
             </div>
-            <div className="flex gap-2">
-              <input value={newRequisito} onChange={(e) => setNewRequisito(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } } }} placeholder="Ej: Acceso al lugar de grabación" className={`flex-1 ${inputCls}`} />
-              <button type="button" onClick={() => { if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } }} className="text-xs text-primary font-bold hover:underline">+ Agregar</button>
-            </div>
-          </div>
+          ))}
+        </div>
+        <div className="flex gap-1.5">
+          <input value={newRequisito} onChange={(e) => setNewRequisito(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } } }} placeholder="Ej: Acceso al lugar" className={inputCls} />
+          <button type="button" onClick={() => { if (newRequisito.trim()) { setRequisitos([...requisitos, newRequisito.trim()]); setNewRequisito(""); } }} className="text-[10px] text-primary font-bold hover:underline shrink-0 px-1">+ Add</button>
+        </div>
+      </div>
 
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-bold text-[hsl(var(--dash-text))]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
-            <button type="submit" className="btn-dark text-sm px-6 py-2.5">
-              {editing ? "Guardar" : "Crear"}
-            </button>
-          </div>
-        </form>
+      {/* Total & Submit */}
+      <div className="flex items-center justify-between pt-2 border-t border-[hsl(var(--dash-card-border))]">
+        <p className="text-sm font-bold text-[hsl(var(--dash-text))]">Total: ${items.reduce((s, i) => s + (Number(i.amount) || 0), 0).toLocaleString()}</p>
+        <button type={isMobile ? "button" : "submit"} onClick={isMobile ? () => handleSubmit() : undefined} className="btn-dark text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-2.5">
+          {editing ? "Guardar" : "Crear"}
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cotizaciones</h1>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
+          <Plus size={14} /> Nueva
+        </button>
+      </div>
+
+      {/* Mobile: Drawer | Desktop: Inline form */}
+      {isMobile ? (
+        <Drawer open={showForm} onOpenChange={(open) => { if (!open) resetForm(); }}>
+          <DrawerContent className="max-h-[90vh]">
+            <DrawerHeader className="pb-2">
+              <DrawerTitle className="font-display font-bold text-[hsl(var(--dash-text))]">
+                {editing ? "Editar cotización" : "Nueva cotización"}
+              </DrawerTitle>
+              <DrawerDescription className="sr-only">Formulario de cotización</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 pb-6 overflow-y-auto">
+              {formContent}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        showForm && (
+          <form onSubmit={handleSubmit} className="dash-tile rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editing ? "Editar cotización" : "Nueva cotización"}</h3>
+              <button type="button" onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
+            </div>
+            {formContent}
+          </form>
+        )
       )}
 
-      <div className="space-y-3">
+      {/* Quotation list */}
+      <div className="space-y-2 sm:space-y-3">
         {quotations.map((q) => (
-          <div key={q.id} className="dash-tile rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+          <div key={q.id} className="dash-tile rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-[hsl(var(--dash-text))] text-xs sm:text-sm truncate">{q.title}</p>
-              <p className="text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] truncate">
+              <p className="text-[10px] sm:text-xs text-[hsl(var(--dash-text-muted))] truncate">
                 {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
                 {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
               </p>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
               <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
