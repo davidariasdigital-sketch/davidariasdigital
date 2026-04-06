@@ -23,7 +23,7 @@ interface Quotation {
 }
 
 const DEFAULT_CONDITIONS = [
-  "Forma de pago: 40% al finalizar la sesión y 60% al momento de entregar el contenido total finalizado.",
+  "Para agendar el servicio debe pagarse el 50% del valor total una semana antes de la fecha de grabación. El 50% restante se cancela cuando el contenido total sea entregado.",
   "La entrega del contenido total editado se coordina directamente con el cliente.",
   "Si se exceden las horas de grabación durante la jornada, se hará un cobro adicional de $80.000 COP por cada hora que transcurra.",
   "Modelos, utilería o algún elemento a solicitud del cliente tiene un costo adicional según el requerimiento.",
