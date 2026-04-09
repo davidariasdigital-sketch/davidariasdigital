@@ -228,6 +228,22 @@ const ServiceCostsView = () => {
         columns: d.columns as string[],
         rows: d.rows as string[][],
       }));
+
+      // Insert any missing default modules
+      const existingKeys = new Set(parsed.map((m: CostModule) => m.module_key));
+      const missing = DEFAULT_MODULES.filter((m) => !existingKeys.has(m.module_key));
+      if (missing.length > 0) {
+        const inserts = missing.map((m) => ({
+          user_id: session.user.id,
+          ...m,
+          columns: JSON.parse(JSON.stringify(m.columns)),
+          rows: JSON.parse(JSON.stringify(m.rows)),
+        }));
+        await supabase.from("cost_modules").insert(inserts);
+        fetchModules();
+        return;
+      }
+
       setModules(parsed);
       const notes: Record<string, string> = {};
       parsed.forEach((m: CostModule) => { notes[m.module_key] = m.notes || ""; });
