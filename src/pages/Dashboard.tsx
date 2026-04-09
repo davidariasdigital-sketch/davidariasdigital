@@ -54,8 +54,8 @@ const Dashboard = () => {
         <DashboardSidebar currentView={view} onViewChange={setView} />
         <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
           {/* Mobile header with sidebar trigger */}
-          <header className="md:hidden flex items-center h-12 px-3 border-b border-[hsl(var(--dash-card-border))] bg-[hsl(var(--dash-card-bg))]">
-            <SidebarTrigger className="text-[hsl(var(--dash-text-muted))]" />
+          <header className="md:hidden flex items-center h-14 px-4 border-b border-[hsl(var(--dash-card-border))] bg-[hsl(var(--dash-card-bg))]">
+            <SidebarTrigger className="text-[hsl(var(--dash-text))] h-8 w-8" />
           </header>
           {/* Content */}
           <main className="flex-1 px-3 py-4 sm:px-6 md:px-8 md:py-6 overflow-auto">
