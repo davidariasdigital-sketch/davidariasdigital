@@ -229,7 +229,8 @@ const ServiceCostsView = () => {
     const newRows = [...mod.rows.map((r) => [...r])];
     newRows[editCell.row][editCell.col] = editValue;
 
-    const updated = { ...mod, rows: newRows };
+    const withRecalc = recalculateModule({ ...mod, rows: newRows });
+    const updated = { ...mod, rows: withRecalc };
     setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
     setEditCell(null);
     await saveModule(updated);
