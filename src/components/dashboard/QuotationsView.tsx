@@ -318,24 +318,39 @@ const QuotationsView = () => {
       )}
 
       {/* Quotation list */}
-      <div className="space-y-2 sm:space-y-3">
+      <div className="space-y-3">
+        {quotations.length === 0 && (
+          <p className="text-[hsl(var(--dash-text-muted))] text-sm text-center py-10">No hay cotizaciones aún.</p>
+        )}
         {quotations.map((q) => (
-          <div key={q.id} className="dash-tile rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold text-[hsl(var(--dash-text))] text-xs sm:text-sm truncate">{q.title}</p>
-              <p className="text-[10px] sm:text-xs text-[hsl(var(--dash-text-muted))] truncate">
-                {q.clients?.name ?? "Sin cliente"} · ${Number(q.total).toLocaleString()}
-                {(q as any).delivery_date && ` · 📅 ${new Date((q as any).delivery_date).toLocaleDateString("es-CO")}`}
-              </p>
+          <div key={q.id} className="dash-tile rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-xs sm:text-sm text-[hsl(var(--dash-text))] truncate">{q.title}</span>
+                <select
+                  value={q.status}
+                  onChange={(e) => updateStatus(q.id, e.target.value)}
+                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border appearance-none cursor-pointer ${statusColors[q.status] ?? statusColors.borrador}`}
+                >
+                  <option value="borrador">Borrador</option>
+                  <option value="enviada">Enviada</option>
+                  <option value="aceptada">Aceptada</option>
+                  <option value="rechazada">Rechazada</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
+                <span className="font-bold text-[hsl(var(--dash-text))]">${Number(q.total).toLocaleString()} COP</span>
+                {q.clients?.name && <span>• {q.clients.name}</span>}
+                {(q as any).delivery_date && <span className="hidden sm:inline">• {new Date((q as any).delivery_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
+              </div>
             </div>
-            <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
-              <button onClick={() => generateQuotationPDF(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
-              <button onClick={() => handleEdit(q)} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
-              <button onClick={() => handleDelete(q.id)} className="text-[hsl(var(--dash-text-muted))] hover:text-destructive p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
+            <div className="flex items-center gap-1">
+              <button onClick={() => generateQuotationPDF(q)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => handleEdit(q)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
+              <button onClick={() => handleDelete(q.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
           </div>
         ))}
-        {quotations.length === 0 && <p className="text-center text-[hsl(var(--dash-text-muted))] text-sm py-8">No hay cotizaciones aún</p>}
       </div>
     </div>
   );
