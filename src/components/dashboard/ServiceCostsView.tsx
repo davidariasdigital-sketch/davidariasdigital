@@ -98,6 +98,70 @@ const formatCOP = (v: number) =>
 const isNumeric = (s: string) => /^[\d.]+$/.test(s.replace(/[,$\s]/g, ""));
 const parseNum = (s: string) => parseFloat(s.replace(/[,$\s]/g, "")) || 0;
 
+// Percentage formulas keyed by row label pattern
+const NOMINA_PERCENTAGES: Record<string, number> = {
+  "salud": 0.085,
+  "pensión": 0.12,
+  "prima": 0.0833,
+  "cesantías": 0.0833,
+  "intereses": 0.01,
+  "vacaciones": 0.0417,
+};
+
+const ARL_RATES: Record<string, number> = {
+  "R-III": 0.02436,
+  "R-I": 0.00522,
+};
+
+const findRowByLabel = (rows: string[][], pattern: string): number =>
+  rows.findIndex((r) => r[0]?.toLowerCase().includes(pattern.toLowerCase()));
+
+const recalculateModule = (mod: CostModule): string[][] => {
+  const rows = mod.rows.map((r) => [...r]);
+
+  if (mod.module_key === "nomina" || mod.module_key === "freelance") {
+    const baseLabel = mod.module_key === "nomina" ? "salario base" : "utilidad";
+    const baseIdx = findRowByLabel(rows, baseLabel);
+    if (baseIdx === -1) return rows;
+
+    for (let ci = 1; ci < mod.columns.length; ci++) {
+      const base = parseNum(rows[baseIdx][ci]);
+      if (!base) continue;
+
+      const colHeader = (mod.columns[ci] || "").toString();
+
+      for (const [pattern, pct] of Object.entries(NOMINA_PERCENTAGES)) {
+        const ri = findRowByLabel(rows, pattern);
+        if (ri !== -1 && ri !== baseIdx) {
+          rows[ri][ci] = Math.round(base * pct).toString();
+        }
+      }
+
+      // ARL depends on column header (R-III or R-I)
+      const arlIdx = findRowByLabel(rows, "arl");
+      if (arlIdx !== -1) {
+        const riskKey = colHeader.includes("R-I") && !colHeader.includes("R-II") && !colHeader.includes("R-III")
+          ? "R-I" : "R-III";
+        rows[arlIdx][ci] = Math.round(base * ARL_RATES[riskKey]).toString();
+      }
+    }
+  }
+
+  if (mod.module_key === "equipos") {
+    for (let ri = 0; ri < rows.length; ri++) {
+      const valorActivo = parseNum(rows[ri][1]);
+      if (valorActivo > 0) {
+        const depMensual = Math.round(valorActivo / 36);
+        const alqDia = Math.round(depMensual / 22);
+        rows[ri][2] = depMensual.toString();
+        rows[ri][3] = alqDia.toString();
+      }
+    }
+  }
+
+  return rows;
+};
+
 const ServiceCostsView = () => {
   const [modules, setModules] = useState<CostModule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -165,7 +229,8 @@ const ServiceCostsView = () => {
     const newRows = [...mod.rows.map((r) => [...r])];
     newRows[editCell.row][editCell.col] = editValue;
 
-    const updated = { ...mod, rows: newRows };
+    const withRecalc = recalculateModule({ ...mod, rows: newRows });
+    const updated = { ...mod, rows: withRecalc };
     setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
     setEditCell(null);
     await saveModule(updated);
