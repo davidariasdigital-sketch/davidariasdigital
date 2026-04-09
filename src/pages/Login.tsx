@@ -27,14 +27,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6 relative">
-      <div className="blob w-[400px] h-[400px] bg-primary/15 top-1/3 left-1/4 float-slower" />
+    <div className="min-h-screen bg-background flex items-center justify-center px-6 relative overflow-hidden">
+      <div className="hidden sm:block blob w-[400px] h-[400px] bg-primary/15 top-1/3 left-1/4 float-slower" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-sm liquid-glass rounded-[var(--radius)] p-8 relative z-10"
+        className="w-full max-w-sm liquid-glass rounded-[var(--radius)] p-6 sm:p-8 relative z-10"
       >
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
