@@ -300,6 +300,39 @@ export type Database = {
           },
         ]
       }
+      service_costs: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          price: number
+          service: string
+          unit: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          price?: number
+          service: string
+          unit?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          price?: number
+          service?: string
+          unit?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           category: string
