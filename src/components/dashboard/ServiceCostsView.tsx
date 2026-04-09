@@ -159,7 +159,7 @@ const ServiceCostsView = () => {
       </div>
       <div className="flex gap-2 pt-2">
         <button onClick={handleSave}
-          className="flex-1 bg-[hsl(var(--dash-accent))] text-white text-sm font-semibold py-2.5 rounded-full hover:opacity-90 transition-opacity">
+          className="flex-1 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] text-sm font-semibold py-2.5 rounded-full hover:opacity-90 transition-opacity">
           {editingId ? "Guardar cambios" : "Añadir servicio"}
         </button>
         <button onClick={resetForm}
@@ -186,7 +186,7 @@ const ServiceCostsView = () => {
           </p>
         </div>
         <button onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 bg-[hsl(var(--dash-accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity">
+          className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity">
           <Plus size={16} /> Nuevo servicio
         </button>
       </div>
@@ -267,7 +267,7 @@ const ServiceCostsView = () => {
                       <td className="py-3 px-4 text-[hsl(var(--dash-text-muted))]">{item.unit}</td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1 justify-end">
-                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-[hsl(var(--dash-bg))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-accent))] transition-colors">
+                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-[hsl(var(--dash-bg))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--primary))] transition-colors">
                             <Edit2 size={14} />
                           </button>
                           <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-[hsl(var(--dash-text-muted))] hover:text-red-500 transition-colors">
@@ -291,11 +291,11 @@ const ServiceCostsView = () => {
                       {item.description && (
                         <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5 truncate">{item.description}</p>
                       )}
-                      <p className="text-sm font-bold text-[hsl(var(--dash-accent))] mt-1.5">{formatPrice(item.price)}</p>
+                      <p className="text-sm font-bold text-[hsl(var(--primary))] mt-1.5">{formatPrice(item.price)}</p>
                       <p className="text-[10px] text-[hsl(var(--dash-text-muted))] uppercase">{item.unit}</p>
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => handleEdit(item)} className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-accent))]">
+                      <button onClick={() => handleEdit(item)} className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--primary))]">
                         <Edit2 size={16} />
                       </button>
                       <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-red-500">
