@@ -246,7 +246,7 @@ const ServiceCostsView = () => {
                             onChange={(e) => setEditValue(e.target.value)}
                             onBlur={handleCellBlur}
                             onKeyDown={(e) => { if (e.key === "Enter") handleCellBlur(); if (e.key === "Escape") setEditCell(null); }}
-                            className={`w-full bg-transparent border-b-2 border-[hsl(var(--primary))] outline-none text-sm py-0.5 ${ci === 0 ? "text-left" : "text-right"}`}
+                            className={`w-full bg-transparent border-b-2 border-[hsl(var(--primary))] outline-none text-sm py-0.5 text-[hsl(var(--dash-text))] ${ci === 0 ? "text-left" : "text-right"}`}
                           />
                         ) : (
                           <span className={ci > 0 && !isProjectsModule && isNumeric(cell) ? "font-semibold text-[hsl(var(--dash-text))]" : "text-[hsl(var(--dash-text-muted))]"}>
