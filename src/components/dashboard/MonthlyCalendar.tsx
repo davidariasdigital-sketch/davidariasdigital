@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, DragEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy, Pencil } from "lucide-react";
 
 interface CalendarEvent {
   id: string;title: string;description: string | null;event_date: string;
@@ -48,6 +48,7 @@ const MonthlyCalendar = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -96,18 +97,43 @@ const MonthlyCalendar = () => {
 
   const openDayPopup = (dateStr: string) => {
     setSelectedDate(dateStr);
+    setEditingId(null);
     setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
     setShowPopup(true);
   };
 
+  const startEdit = (ev: CalendarEvent) => {
+    setEditingId(ev.id);
+    setForm({
+      title: ev.title,
+      description: ev.description || "",
+      event_time: ev.event_time ? ev.event_time.slice(0, 5) : "",
+      color: ev.color || "primary",
+      client_id: ev.client_id || "",
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
+  };
+
   const handleSubmit = async () => {
     if (!form.title || !selectedDate) return;
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("events").insert({
-      title: form.title, description: form.description || null, event_date: selectedDate,
-      event_time: form.event_time || null, color: form.color, client_id: form.client_id || null, user_id: user.id
-    } as any);
+    if (editingId) {
+      await supabase.from("events").update({
+        title: form.title, description: form.description || null,
+        event_time: form.event_time || null, color: form.color, client_id: form.client_id || null,
+      } as any).eq("id", editingId);
+      setEditingId(null);
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from("events").insert({
+        title: form.title, description: form.description || null, event_date: selectedDate,
+        event_time: form.event_time || null, color: form.color, client_id: form.client_id || null, user_id: user.id
+      } as any);
+    }
     setForm({ title: "", description: "", event_time: "", color: "primary", client_id: "" });
     fetchEvents();
   };
@@ -282,6 +308,9 @@ const MonthlyCalendar = () => {
                     {ev.description && <p className="text-xs opacity-60 mt-1">{ev.description}</p>}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => startEdit(ev)} title="Editar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-amber-50 transition-all">
+                      <Pencil size={13} />
+                    </button>
                     <button onClick={() => handleDuplicate(ev)} title="Duplicar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-blue-50 transition-all">
                       <Copy size={13} />
                     </button>
