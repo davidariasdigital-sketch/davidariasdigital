@@ -117,33 +117,27 @@ const InvoicesView = () => {
         </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <div className="dash-tile rounded-2xl p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
-            <button onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
-          </div>
-          <input placeholder="Concepto *" value={form.concept} onChange={(e) => setForm({ ...form, concept: e.target.value })} className={inputCls} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Form content */}
+      {(() => {
+        const formContent = (
+          <div className="space-y-4">
+            <input placeholder="Concepto *" value={form.concept} onChange={(e) => setForm({ ...form, concept: e.target.value })} className={inputCls} />
             <input type="number" placeholder="Monto (COP) *" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputCls} />
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputCls}>
               <option value="pendiente">Pendiente</option>
               <option value="pagada">Pagada</option>
               <option value="vencida">Vencida</option>
             </select>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de vencimiento</label>
-              <input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} className={inputCls} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de vencimiento</label>
+                <input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} className={inputCls} />
+              </div>
+              <div>
+                <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de pago</label>
+                <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
+              </div>
             </div>
-            <div>
-              <label className="text-xs text-[hsl(var(--dash-text-muted))] mb-1 block">Fecha de pago</label>
-              <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
               <option value="">Sin cliente</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -155,13 +149,7 @@ const InvoicesView = () => {
                 const itemsSummary = Array.isArray(qt.items)
                   ? (qt.items as any[]).map((it: any) => it.concept || it.title || "").filter(Boolean).join(", ")
                   : "";
-                setForm({
-                  ...form,
-                  quotation_id: qId,
-                  concept: itemsSummary || qt.title,
-                  amount: String(qt.total),
-                  client_id: qt.client_id ?? "",
-                });
+                setForm({ ...form, quotation_id: qId, concept: itemsSummary || qt.title, amount: String(qt.total), client_id: qt.client_id ?? "" });
               } else {
                 setForm({ ...form, quotation_id: qId });
               }
@@ -169,13 +157,37 @@ const InvoicesView = () => {
               <option value="">Sin cotización</option>
               {quotations.map((q) => <option key={q.id} value={q.id}>{q.title} — {formatCOP(q.total)}</option>)}
             </select>
+            <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
+            <button onClick={handleSubmit} className="btn-dark text-sm px-6 py-2.5 w-full sm:w-auto">
+              {editingId ? "Guardar cambios" : "Crear cuenta"}
+            </button>
           </div>
-          <textarea placeholder="Notas (opcional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={`${inputCls} resize-none`} rows={2} />
-          <button onClick={handleSubmit} className="btn-dark text-sm px-6 py-2.5">
-            {editingId ? "Guardar cambios" : "Crear cuenta"}
-          </button>
-        </div>
-      )}
+        );
+
+        return isMobile ? (
+          <Drawer open={showForm} onOpenChange={(open) => { if (!open) resetForm(); }}>
+            <DrawerContent className="max-h-[90vh]">
+              <DrawerHeader className="pb-2">
+                <DrawerTitle className="font-display font-bold text-[hsl(var(--dash-text))]">
+                  {editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}
+                </DrawerTitle>
+                <DrawerDescription className="sr-only">Formulario de cuenta por cobrar</DrawerDescription>
+              </DrawerHeader>
+              <div className="px-4 pb-6 overflow-y-auto">{formContent}</div>
+            </DrawerContent>
+          </Drawer>
+        ) : (
+          showForm && (
+            <div className="dash-tile rounded-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editingId ? "Editar cuenta" : "Nueva cuenta por cobrar"}</h3>
+                <button onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"><X size={16} /></button>
+              </div>
+              {formContent}
+            </div>
+          )
+        );
+      })()}
 
       {/* List */}
       <div className="space-y-3">
