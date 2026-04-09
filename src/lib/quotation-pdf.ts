@@ -111,14 +111,7 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.setTextColor(...LIGHT_GRAY);
   doc.text(dateStr, pw - margin, 30, { align: "right" });
 
-  // Status badge
-  const statusLabels: Record<string, string> = {
-    borrador: "BORRADOR", enviada: "ENVIADA", aceptada: "ACEPTADA", rechazada: "RECHAZADA",
-  };
-  doc.setFontSize(7);
-  useFont("bold");
-  doc.setTextColor(...MUSTARD);
-  doc.text(statusLabels[q.status] ?? q.status.toUpperCase(), pw - margin, 37, { align: "right" });
+  // Status badge removed from PDF per user request
 
   let y = 54;
 
