@@ -84,7 +84,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
                   return (
                     <SidebarMenuItem key={item.view}>
                       <SidebarMenuButton
-                        onClick={() => onViewChange(item.view)}
+                        onClick={() => handleNavClick(item.view)}
                         className={`cursor-pointer transition-all py-2.5 ${
                           isActive
                             ? "dash-sidebar-active"
