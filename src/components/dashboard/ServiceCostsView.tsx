@@ -69,10 +69,50 @@ const DEFAULT_MODULES: Omit<CostModule, "id" | "user_id" | "created_at">[] = [
     ],
   },
   {
+    module_key: "equipos_av",
+    title: "Inventario de Equipos Audiovisuales",
+    subtitle: "Listado completo de equipos con su valor de adquisición. Total calculado automáticamente.",
+    sort_order: 3,
+    notes: "Mantén actualizado el inventario para calcular correctamente la depreciación y tarifas de alquiler.",
+    columns: ["Item", "Valor"],
+    rows: [
+      ["Kit camera", "10000000"],
+      ["Lente sigma 28-70", "3000000"],
+      ["Iphone 15 pro", "4300000"],
+      ["Kit Ronin Rs3 mini", "1500000"],
+      ["Tripod camera", "500000"],
+      ["Amaran 300C", "3000000"],
+      ["Amaran 60D", "500000"],
+      ["Flex", "80000"],
+      ["Octabox armado manual", "200000"],
+      ["Softbox armado rapido", "200000"],
+      ["C-Stand", "700000"],
+      ["Tripode plateado", "300000"],
+      ["PC", "6770000"],
+      ["HDD disk portatil", "200000"],
+      ["Maquina de humo", "220000"],
+      ["Viltrox 20mm lens", "680000"],
+      ["Adapter ND anillos", "150000"],
+      ["Magic arm", "150000"],
+      ["Bag pack camera", "300000"],
+      ["Monitor Feelworld f7 plus", "800000"],
+      ["Transmisores TP MAX", "550000"],
+      ["Equipment car", "800000"],
+      ["Camera cage", "780000"],
+      ["Paneles acustico", "800000"],
+      ["Escritorio", "500000"],
+      ["Wacom tableta", "300000"],
+      ["Dji mic mini", "400000"],
+      ["SSD 2 TB", "950000"],
+      ["Macbook air M4 512 gbs", "5000000"],
+      ["Davinci resolve", "1200000"],
+    ],
+  },
+  {
     module_key: "proyectos",
     title: "Proyectos y Servicios Específicos (Llave en Mano)",
     subtitle: "Fórmula: (Días Talento × $265.000) + (Días Uso Equipo Comercial) + Viáticos + Externos + Margen (%) = PRECIO CLIENTE",
-    sort_order: 3,
+    sort_order: 4,
     notes: "Los valores de referencia son aproximados basándose en tu tarifa diaria freelance de $265.000 COP + costos comerciales de alquiler de equipo + margen.\n\nGestión de Riesgos ARL: Riesgo III para campo, Riesgo I para edición en casa/estudio.\nNunca saltarse el margen de ganancia: cubre imprevistos y tiempo de ventas.",
     columns: ["Tipo de Servicio", "Despliegue de Costos", "Margen Sugerido", "Valor Referencia"],
     rows: [
@@ -89,6 +129,7 @@ const TAB_LABELS: Record<string, string> = {
   nomina: "Nómina",
   freelance: "Freelance",
   equipos: "Equipos",
+  equipos_av: "Equipos AV",
   proyectos: "Proyectos",
 };
 
@@ -265,7 +306,7 @@ const ServiceCostsView = () => {
   };
 
   const computeTotal = (mod: CostModule) => {
-    if (mod.module_key !== "nomina" && mod.module_key !== "freelance") return null;
+    if (mod.module_key !== "nomina" && mod.module_key !== "freelance" && mod.module_key !== "equipos_av") return null;
     const totals = mod.columns.slice(1).map((_, colIdx) =>
       mod.rows.reduce((sum, row) => sum + parseNum(row[colIdx + 1]), 0)
     );
@@ -332,7 +373,7 @@ const ServiceCostsView = () => {
                 {totals && (
                   <tr className="bg-[hsl(var(--dash-bg))] font-bold">
                     <td className="py-3 px-4 text-[hsl(var(--dash-text))]">
-                      {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : "TOTAL MÍNIMO FACTURAR"}
+                      {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : mod.module_key === "equipos_av" ? "TOTAL INVENTARIO" : "TOTAL MÍNIMO FACTURAR"}
                     </td>
                     {totals.map((t, i) => (
                       <td key={i} className="py-3 px-4 text-right text-[hsl(var(--primary))]">{formatCOP(t)}</td>
@@ -372,7 +413,7 @@ const ServiceCostsView = () => {
           {totals && (
             <div className="dash-tile p-4 bg-[hsl(var(--dash-bg))]">
               <p className="font-bold text-sm text-[hsl(var(--dash-text))] mb-2">
-                {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : "TOTAL MÍNIMO FACTURAR"}
+                {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : mod.module_key === "equipos_av" ? "TOTAL INVENTARIO" : "TOTAL MÍNIMO FACTURAR"}
               </p>
               {totals.map((t, i) => (
                 <div key={i} className="flex justify-between mt-1">
