@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, X, Trash2, Edit2, FileDown } from "lucide-react";
 import { generateInvoicePDF } from "@/lib/invoice-pdf";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 
 interface Invoice {
   id: string; concept: string; amount: number; status: string;
@@ -21,6 +29,7 @@ const statusColors: Record<string, string> = {
 };
 
 const InvoicesView = () => {
+  const isMobile = useIsMobile();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
