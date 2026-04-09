@@ -1,63 +1,28 @@
 
 
-## Plan
+## Revision de la plataforma — Problemas encontrados y correcciones
 
-### 1. Fix Login page design for PC and tablet
+### Problemas detectados
 
-The login page uses `liquid-glass` class and dark landing theme variables (`--background: 0 0% 4%`), which likely causes visual issues. The card itself uses `bg-muted/50` inputs that may not contrast well.
+1. **Botones invisibles en "Tabla de Costos"**: El botón "+ Nuevo servicio" y los botones de acción usan `bg-[hsl(var(--dash-accent))]` pero la variable CSS `--dash-accent` NO EXISTE en `index.css`. Esto hace que los botones no tengan color de fondo y el texto blanco sea invisible sobre fondo claro. Afecta tanto desktop como mobile.
 
-**Changes to `src/pages/Login.tsx`:**
-- Add a proper visible background — use a light/neutral gradient or the dashboard bg color so the card stands out clearly
-- Ensure the card has a solid white background with proper shadow instead of relying on `liquid-glass`
-- Increase max-width slightly for tablet (`max-w-md`)
-- Add a subtle decorative element that works on all screen sizes
-- Ensure inputs have proper contrast and sizing for desktop
+2. **Warning de React en consola**: `QueryClientProvider` genera un warning de ref en `App.tsx`. Esto es un warning menor de compatibilidad entre versiones de React y react-query, no afecta funcionalidad.
 
-### 2. New "Tabla de Costos" (Pricing/Services table) view in the dashboard
+### Correcciones propuestas
 
-A new section where the user can manage a table of service costs — add, edit, and delete service pricing entries.
+**Archivo: `src/components/dashboard/ServiceCostsView.tsx`**
+- Reemplazar todas las referencias a `hsl(var(--dash-accent))` por `hsl(var(--primary))` (el amarillo dorado que ya existe y se usa en el resto del dashboard)
+- Ajustar el color del texto en los botones de "Nuevo servicio" y "Añadir servicio" de `text-white` a `text-[hsl(var(--primary-foreground))]` (negro/oscuro sobre amarillo, para mantener consistencia con el resto de la UI)
+- Los precios en las cards mobile también usan `dash-accent` — cambiar a `text-[hsl(var(--primary))]`
 
-**Database migration — create `service_costs` table:**
-```sql
-CREATE TABLE public.service_costs (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  category text NOT NULL DEFAULT '',
-  service text NOT NULL,
-  description text,
-  price numeric NOT NULL DEFAULT 0,
-  unit text DEFAULT 'por servicio',
-  created_at timestamptz NOT NULL DEFAULT now()
-);
+**Resumen de cambios (un solo archivo):**
+- ~6 reemplazos de `dash-accent` → `primary` en `ServiceCostsView.tsx`
+- Ajuste de `text-white` → `text-[hsl(var(--primary-foreground))]` en los 2 botones principales
 
-ALTER TABLE public.service_costs ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users manage own service costs"
-  ON public.service_costs FOR ALL
-  TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
-```
-
-**New file `src/components/dashboard/ServiceCostsView.tsx`:**
-- Table view displaying all services with columns: Categoría, Servicio, Descripción, Precio, Unidad
-- Inline add/edit form (Drawer on mobile, tile on desktop — following existing patterns)
-- Delete with confirmation
-- Search/filter by category
-- Categories could include: "Fotografía", "Video", "Edición", "Dirección creativa", etc.
-
-**Update `src/components/dashboard/DashboardSidebar.tsx`:**
-- Add new nav item "Costos" with `Receipt` or `TableProperties` icon
-- Add `"service-costs"` to the `View` type
-
-**Update `src/pages/Dashboard.tsx`:**
-- Add `"service-costs"` to the `View` type
-- Import and render `ServiceCostsView` in `renderView()`
-
-### Files to create/modify:
-1. **Migration** — create `service_costs` table with RLS
-2. **Create** `src/components/dashboard/ServiceCostsView.tsx` — full CRUD table view
-3. **Edit** `src/components/dashboard/DashboardSidebar.tsx` — add nav item
-4. **Edit** `src/pages/Dashboard.tsx` — add view routing
-5. **Edit** `src/pages/Login.tsx` — fix styling for PC/tablet
+### Lo que está correcto
+- Login: se ve bien en desktop (1280px) y mobile (390px)
+- Sidebar: navegación funcional, se cierra al seleccionar en mobile
+- Cotizaciones: lista y botones correctos
+- Clientes: grid responsive funciona bien
+- Dashboard overview: calendario y actividades correctas
 
