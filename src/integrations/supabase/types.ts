@@ -86,6 +86,45 @@ export type Database = {
         }
         Relationships: []
       }
+      cost_modules: {
+        Row: {
+          columns: Json
+          created_at: string
+          id: string
+          module_key: string
+          notes: string | null
+          rows: Json
+          sort_order: number | null
+          subtitle: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          columns?: Json
+          created_at?: string
+          id?: string
+          module_key: string
+          notes?: string | null
+          rows?: Json
+          sort_order?: number | null
+          subtitle?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          columns?: Json
+          created_at?: string
+          id?: string
+          module_key?: string
+          notes?: string | null
+          rows?: Json
+          sort_order?: number | null
+          subtitle?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           client_id: string | null

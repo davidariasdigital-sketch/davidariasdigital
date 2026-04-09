@@ -1,314 +1,390 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, Search } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+import { Plus, Trash2, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-interface ServiceCost {
+interface CostModule {
   id: string;
-  category: string;
-  service: string;
-  description: string | null;
-  price: number;
-  unit: string | null;
+  user_id: string;
+  module_key: string;
+  title: string;
+  subtitle: string | null;
+  columns: string[];
+  rows: string[][];
+  notes: string | null;
+  sort_order: number;
   created_at: string;
 }
 
-const CATEGORIES = [
-  "Fotografía",
-  "Video",
-  "Edición",
-  "Dirección creativa",
-  "Redes sociales",
-  "Otro",
+const DEFAULT_MODULES: Omit<CostModule, "id" | "user_id" | "created_at">[] = [
+  {
+    module_key: "nomina",
+    title: "Escenario de Nómina (Contrato Laboral)",
+    subtitle: "Costo mensual total que la empresa debe presupuestar para contratarte, sin incluir el uso de tus herramientas personales.",
+    sort_order: 0,
+    notes: "Base de Tiempo: Mes de 22 días laborales (Hábiles).",
+    columns: ["Concepto Mensual", "Servicio Completo (R-III)", "Servicio Básico (R-III)", "Solo Edición (R-I)"],
+    rows: [
+      ["Salario Base (Bruto)", "4000000", "4000000", "4000000"],
+      ["Transporte/Movilidad", "180000", "180000", "180000"],
+      ["Salud (Patronal 8.5%)", "340000", "340000", "340000"],
+      ["Pensión (Patronal 12%)", "480000", "480000", "480000"],
+      ["ARL (Según Riesgo)", "97440", "97440", "20880"],
+      ["Prima (8.33%)", "333200", "333200", "333200"],
+      ["Cesantías (8.33%)", "333200", "333200", "333200"],
+      ["Intereses Cesantías (1%)", "40000", "40000", "40000"],
+      ["Vacaciones (4.17%)", "166800", "166800", "166800"],
+    ],
+  },
+  {
+    module_key: "freelance",
+    title: "Prestación de Servicios (Freelance)",
+    subtitle: "Valor mínimo a facturar para cubrir tu talento, gastos operativos y seguridad social (sin incluir equipos).",
+    sort_order: 1,
+    notes: "Para cálculo de proyectos: Tu tarifa base de talento equivale a aprox. $264.668 COP / día.",
+    columns: ["Concepto Mensual", "Servicio Completo (R-III)", "Servicio Básico (R-III)", "Solo Edición (R-I)"],
+    rows: [
+      ["Utilidad (Tu sueldo)", "4000000", "4000000", "4000000"],
+      ["Operación (Luz/Net)", "290000", "290000", "290000"],
+      ["Movilidad y Transportes", "180000", "180000", "180000"],
+      ["Seguridad Social (SMLV)", "441750", "441750", "441750"],
+      ["ARL (Independiente)", "37758", "37758", "8091"],
+      ["Prima de Servicios (8.33%)", "333200", "333200", "333200"],
+      ["Cesantías (8.33%)", "333200", "333200", "333200"],
+      ["Intereses Cesantías (1%)", "40000", "40000", "40000"],
+      ["Vacaciones (4.17%)", "166800", "166800", "166800"],
+    ],
+  },
+  {
+    module_key: "equipos",
+    title: "Tarifario de Alquiler de Equipos (Por Día)",
+    subtitle: "Basado en depreciación a 3 años (36 meses) sobre 22 días hábiles/mes.",
+    sort_order: 2,
+    notes: "Estos valores son preferenciales por volumen (basados en depreciación pura). Para alquileres externos, se recomienda un margen comercial superior (ej. $400.000/día para kit completo).",
+    columns: ["Escenario de Equipo", "Valor del Activo", "Depreciación Mensual", "Alquiler por Día"],
+    rows: [
+      ["Servicio Completo", "31000000", "861111", "39141"],
+      ["Servicio Básico", "20000000", "555556", "25253"],
+      ["Solo Edición", "4000000", "111111", "5051"],
+    ],
+  },
+  {
+    module_key: "proyectos",
+    title: "Proyectos y Servicios Específicos (Llave en Mano)",
+    subtitle: "Fórmula: (Días Talento × $265.000) + (Días Uso Equipo Comercial) + Viáticos + Externos + Margen (%) = PRECIO CLIENTE",
+    sort_order: 3,
+    notes: "Los valores de referencia son aproximados basándose en tu tarifa diaria freelance de $265.000 COP + costos comerciales de alquiler de equipo + margen.\n\nGestión de Riesgos ARL: Riesgo III para campo, Riesgo I para edición en casa/estudio.\nNunca saltarse el margen de ganancia: cubre imprevistos y tiempo de ventas.",
+    columns: ["Tipo de Servicio", "Despliegue de Costos", "Margen Sugerido", "Valor Referencia"],
+    rows: [
+      ["Producción Sesión de Contenido", "1d Pre + 1d Rodaje + 2d Edición + Viáticos", "20% - 30%", "$1.600.000 - $1.900.000"],
+      ["Cobertura de Boda (Foto o Video)", "0.5d Reuniones + 1.5d Cobertura + 2da Cám + 4-5d Edición + Equipo Full", "30% - 40%", "$3.200.000 - $4.500.000"],
+      ["Sesión de Fotos (Retrato/Producto)", "0.5d Concepto + 1d Rodaje + 1d Retoque (15-20 fotos)", "20% - 25%", "$850.000 - $1.100.000"],
+      ["Solo Edición (Reels / Video YT)", "0.5d Ingesta + 1-2d Edición + Música/Librerías + Depreciación", "15% - 20%", "$450.000 - $650.000"],
+      ["Colorización (Color Grading)", "0.5d Conformado + 1-2d Etalonaje + Render + Monitor Calibrado", "25% - 35%", "$1.000.000 - $1.400.000"],
+    ],
+  },
 ];
 
+const TAB_LABELS: Record<string, string> = {
+  nomina: "Nómina",
+  freelance: "Freelance",
+  equipos: "Equipos",
+  proyectos: "Proyectos",
+};
+
+const formatCOP = (v: number) =>
+  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
+
+const isNumeric = (s: string) => /^[\d.]+$/.test(s.replace(/[,$\s]/g, ""));
+const parseNum = (s: string) => parseFloat(s.replace(/[,$\s]/g, "")) || 0;
+
 const ServiceCostsView = () => {
-  const [items, setItems] = useState<ServiceCost[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [filterCat, setFilterCat] = useState("");
-  const isMobile = useIsMobile();
+  const [modules, setModules] = useState<CostModule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editCell, setEditCell] = useState<{ modKey: string; row: number; col: number } | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [editNotes, setEditNotes] = useState<Record<string, string>>({});
+  const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({});
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Form state
-  const [category, setCategory] = useState("Video");
-  const [service, setService] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [unit, setUnit] = useState("por servicio");
-
-  const fetchItems = async () => {
+  const fetchModules = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
+
     const { data } = await supabase
-      .from("service_costs")
+      .from("cost_modules")
       .select("*")
       .eq("user_id", session.user.id)
-      .order("category")
-      .order("service");
-    if (data) setItems(data);
-  };
+      .order("sort_order");
 
-  useEffect(() => { fetchItems(); }, []);
-
-  const resetForm = () => {
-    setCategory("Video");
-    setService("");
-    setDescription("");
-    setPrice("");
-    setUnit("por servicio");
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  const handleSave = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !service.trim()) return;
-
-    const payload = {
-      user_id: session.user.id,
-      category,
-      service: service.trim(),
-      description: description.trim() || null,
-      price: parseFloat(price) || 0,
-      unit: unit.trim() || "por servicio",
-    };
-
-    if (editingId) {
-      await supabase.from("service_costs").update(payload).eq("id", editingId);
+    if (data && data.length > 0) {
+      const parsed = data.map((d: any) => ({
+        ...d,
+        columns: d.columns as string[],
+        rows: d.rows as string[][],
+      }));
+      setModules(parsed);
+      const notes: Record<string, string> = {};
+      parsed.forEach((m: CostModule) => { notes[m.module_key] = m.notes || ""; });
+      setEditNotes(notes);
     } else {
-      await supabase.from("service_costs").insert(payload);
+      // Initialize with defaults
+      const inserts = DEFAULT_MODULES.map((m) => ({
+        user_id: session.user.id,
+        ...m,
+        columns: JSON.parse(JSON.stringify(m.columns)),
+        rows: JSON.parse(JSON.stringify(m.rows)),
+      }));
+      await supabase.from("cost_modules").insert(inserts);
+      fetchModules();
+      return;
     }
-    resetForm();
-    fetchItems();
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchModules(); }, [fetchModules]);
+
+  const saveModule = async (mod: CostModule) => {
+    await supabase
+      .from("cost_modules")
+      .update({ columns: mod.columns as any, rows: mod.rows as any, notes: mod.notes })
+      .eq("id", mod.id);
   };
 
-  const handleEdit = (item: ServiceCost) => {
-    setCategory(item.category);
-    setService(item.service);
-    setDescription(item.description || "");
-    setPrice(String(item.price));
-    setUnit(item.unit || "por servicio");
-    setEditingId(item.id);
-    setShowForm(true);
+  const handleCellClick = (modKey: string, row: number, col: number, value: string) => {
+    setEditCell({ modKey, row, col });
+    setEditValue(value);
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from("service_costs").delete().eq("id", id);
-    fetchItems();
+  const handleCellBlur = async () => {
+    if (!editCell) return;
+    const mod = modules.find((m) => m.module_key === editCell.modKey);
+    if (!mod) return;
+
+    const newRows = [...mod.rows.map((r) => [...r])];
+    newRows[editCell.row][editCell.col] = editValue;
+
+    const updated = { ...mod, rows: newRows };
+    setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
+    setEditCell(null);
+    await saveModule(updated);
   };
 
-  const filtered = items.filter((i) => {
-    const matchSearch =
-      !search ||
-      i.service.toLowerCase().includes(search.toLowerCase()) ||
-      i.description?.toLowerCase().includes(search.toLowerCase());
-    const matchCat = !filterCat || i.category === filterCat;
-    return matchSearch && matchCat;
-  });
+  const handleAddRow = async (modKey: string) => {
+    const mod = modules.find((m) => m.module_key === modKey);
+    if (!mod) return;
 
-  // Group by category
-  const grouped = filtered.reduce<Record<string, ServiceCost[]>>((acc, item) => {
-    const cat = item.category || "Sin categoría";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(item);
-    return acc;
-  }, {});
+    const emptyRow = mod.columns.map(() => "");
+    const updated = { ...mod, rows: [...mod.rows, emptyRow] };
+    setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
+    await saveModule(updated);
+  };
 
-  const formContent = (
-    <div className="space-y-4">
-      <div>
-        <label className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider block mb-1.5">Categoría</label>
-        <select value={category} onChange={(e) => setCategory(e.target.value)}
-          className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]">
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </div>
-      <div>
-        <label className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider block mb-1.5">Servicio *</label>
-        <input value={service} onChange={(e) => setService(e.target.value)}
-          className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]"
-          placeholder="Ej: Video corporativo" />
-      </div>
-      <div>
-        <label className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider block mb-1.5">Descripción</label>
-        <input value={description} onChange={(e) => setDescription(e.target.value)}
-          className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]"
-          placeholder="Descripción breve del servicio" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider block mb-1.5">Precio (COP)</label>
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)}
-            className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]"
-            placeholder="0" />
-        </div>
-        <div>
-          <label className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider block mb-1.5">Unidad</label>
-          <input value={unit} onChange={(e) => setUnit(e.target.value)}
-            className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]"
-            placeholder="por servicio" />
-        </div>
-      </div>
-      <div className="flex gap-2 pt-2">
-        <button onClick={handleSave}
-          className="flex-1 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] text-sm font-semibold py-2.5 rounded-full hover:opacity-90 transition-opacity">
-          {editingId ? "Guardar cambios" : "Añadir servicio"}
-        </button>
-        <button onClick={resetForm}
-          className="px-4 py-2.5 text-sm text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
-          Cancelar
-        </button>
-      </div>
-    </div>
-  );
+  const handleDeleteRow = async (modKey: string, rowIdx: number) => {
+    const mod = modules.find((m) => m.module_key === modKey);
+    if (!mod) return;
 
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(p);
+    const updated = { ...mod, rows: mod.rows.filter((_, i) => i !== rowIdx) };
+    setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
+    await saveModule(updated);
+  };
 
-  return (
-    <div className="space-y-4 sm:space-y-6 max-w-5xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">
-            Tabla de Costos
-          </h1>
-          <p className="text-xs sm:text-sm text-[hsl(var(--dash-text-muted))]">
-            {items.length} servicio{items.length !== 1 ? "s" : ""} registrado{items.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] text-sm font-semibold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity">
-          <Plus size={16} /> Nuevo servicio
-        </button>
-      </div>
+  const handleNotesBlur = async (modKey: string) => {
+    const mod = modules.find((m) => m.module_key === modKey);
+    if (!mod) return;
 
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[hsl(var(--dash-text-muted))]" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[hsl(var(--dash-card-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl pl-9 pr-3 py-2.5 text-sm text-[hsl(var(--dash-text))] placeholder:text-[hsl(var(--dash-text-muted))]"
-            placeholder="Buscar servicio..." />
-        </div>
-        <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)}
-          className="bg-[hsl(var(--dash-card-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-3 py-2.5 text-sm text-[hsl(var(--dash-text))]">
-          <option value="">Todas las categorías</option>
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </div>
+    const updated = { ...mod, notes: editNotes[modKey] || null };
+    setModules((prev) => prev.map((m) => (m.id === mod.id ? updated : m)));
+    await saveModule(updated);
+  };
 
-      {/* Form */}
-      {isMobile ? (
-        <Drawer open={showForm} onOpenChange={(open) => { if (!open) resetForm(); }}>
-          <DrawerContent className="max-h-[90vh]">
-            <DrawerHeader>
-              <DrawerTitle>{editingId ? "Editar" : "Nuevo"} servicio</DrawerTitle>
-              <DrawerDescription>Completa los datos del servicio</DrawerDescription>
-            </DrawerHeader>
-            <div className="px-4 pb-6 overflow-y-auto">{formContent}</div>
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        showForm && (
-          <div className="dash-tile p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-[hsl(var(--dash-text))]">
-                {editingId ? "Editar servicio" : "Nuevo servicio"}
-              </h2>
-              <button onClick={resetForm} className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]">
-                <X size={18} />
-              </button>
-            </div>
-            {formContent}
-          </div>
-        )
-      )}
+  const computeTotal = (mod: CostModule) => {
+    if (mod.module_key !== "nomina" && mod.module_key !== "freelance") return null;
+    const totals = mod.columns.slice(1).map((_, colIdx) =>
+      mod.rows.reduce((sum, row) => sum + parseNum(row[colIdx + 1]), 0)
+    );
+    return totals;
+  };
 
-      {/* Table */}
-      {Object.keys(grouped).length === 0 ? (
-        <div className="dash-tile p-8 text-center">
-          <p className="text-[hsl(var(--dash-text-muted))] text-sm">
-            {items.length === 0 ? "No hay servicios registrados aún." : "No se encontraron resultados."}
-          </p>
-        </div>
-      ) : (
-        Object.entries(grouped).map(([cat, catItems]) => (
-          <div key={cat} className="space-y-2">
-            <h3 className="text-xs font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider px-1">
-              {cat}
-            </h3>
-            {/* Desktop table */}
-            <div className="hidden sm:block dash-tile overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[hsl(var(--dash-card-border))]">
-                    <th className="text-left py-3 px-4 text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Servicio</th>
-                    <th className="text-left py-3 px-4 text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Descripción</th>
-                    <th className="text-right py-3 px-4 text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Precio</th>
-                    <th className="text-left py-3 px-4 text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Unidad</th>
-                    <th className="py-3 px-4 w-20"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {catItems.map((item) => (
-                    <tr key={item.id} className="border-b border-[hsl(var(--dash-card-border))] last:border-0 hover:bg-[hsl(var(--dash-bg))] transition-colors">
-                      <td className="py-3 px-4 font-medium text-[hsl(var(--dash-text))]">{item.service}</td>
-                      <td className="py-3 px-4 text-[hsl(var(--dash-text-muted))]">{item.description || "—"}</td>
-                      <td className="py-3 px-4 text-right font-semibold text-[hsl(var(--dash-text))]">{formatPrice(item.price)}</td>
-                      <td className="py-3 px-4 text-[hsl(var(--dash-text-muted))]">{item.unit}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-1 justify-end">
-                          <button onClick={() => handleEdit(item)} className="p-1.5 rounded-lg hover:bg-[hsl(var(--dash-bg))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--primary))] transition-colors">
-                            <Edit2 size={14} />
-                          </button>
-                          <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-[hsl(var(--dash-text-muted))] hover:text-red-500 transition-colors">
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+  const renderTable = (mod: CostModule) => {
+    const totals = computeTotal(mod);
+    const isProjectsModule = mod.module_key === "proyectos";
+
+    return (
+      <div className="space-y-4">
+        {mod.subtitle && (
+          <p className="text-xs text-[hsl(var(--dash-text-muted))] italic">{mod.subtitle}</p>
+        )}
+
+        {/* Desktop table */}
+        <div className="hidden sm:block dash-tile overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[hsl(var(--dash-card-border))]">
+                  {mod.columns.map((col, i) => (
+                    <th key={i} className={`py-3 px-4 text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider ${i === 0 ? "text-left" : "text-right"}`}>
+                      {col}
+                    </th>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                  <th className="py-3 px-2 w-10"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {mod.rows.map((row, ri) => (
+                  <tr key={ri} className="border-b border-[hsl(var(--dash-card-border))] last:border-0 hover:bg-[hsl(var(--dash-bg))] transition-colors">
+                    {row.map((cell, ci) => (
+                      <td key={ci}
+                        className={`py-2.5 px-4 ${ci === 0 ? "text-left font-medium text-[hsl(var(--dash-text))]" : "text-right"} cursor-pointer`}
+                        onClick={() => handleCellClick(mod.module_key, ri, ci, cell)}
+                      >
+                        {editCell?.modKey === mod.module_key && editCell.row === ri && editCell.col === ci ? (
+                          <input
+                            ref={inputRef}
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onBlur={handleCellBlur}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleCellBlur(); if (e.key === "Escape") setEditCell(null); }}
+                            className={`w-full bg-transparent border-b-2 border-[hsl(var(--primary))] outline-none text-sm py-0.5 ${ci === 0 ? "text-left" : "text-right"}`}
+                          />
+                        ) : (
+                          <span className={ci > 0 && !isProjectsModule && isNumeric(cell) ? "font-semibold text-[hsl(var(--dash-text))]" : "text-[hsl(var(--dash-text-muted))]"}>
+                            {ci > 0 && !isProjectsModule && isNumeric(cell) ? formatCOP(parseNum(cell)) : cell || "—"}
+                          </span>
+                        )}
+                      </td>
+                    ))}
+                    <td className="py-2.5 px-2">
+                      <button onClick={() => handleDeleteRow(mod.module_key, ri)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-[hsl(var(--dash-text-muted))] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                        style={{ opacity: 1 }}>
+                        <Trash2 size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {totals && (
+                  <tr className="bg-[hsl(var(--dash-bg))] font-bold">
+                    <td className="py-3 px-4 text-[hsl(var(--dash-text))]">
+                      {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : "TOTAL MÍNIMO FACTURAR"}
+                    </td>
+                    {totals.map((t, i) => (
+                      <td key={i} className="py-3 px-4 text-right text-[hsl(var(--primary))]">{formatCOP(t)}</td>
+                    ))}
+                    <td className="py-3 px-2"></td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-            {/* Mobile cards */}
-            <div className="sm:hidden space-y-2">
-              {catItems.map((item) => (
-                <div key={item.id} className="dash-tile p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm text-[hsl(var(--dash-text))]">{item.service}</p>
-                      {item.description && (
-                        <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5 truncate">{item.description}</p>
-                      )}
-                      <p className="text-sm font-bold text-[hsl(var(--primary))] mt-1.5">{formatPrice(item.price)}</p>
-                      <p className="text-[10px] text-[hsl(var(--dash-text-muted))] uppercase">{item.unit}</p>
+        {/* Mobile cards */}
+        <div className="sm:hidden space-y-2">
+          {mod.rows.map((row, ri) => (
+            <div key={ri} className="dash-tile p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-sm text-[hsl(var(--dash-text))]">{row[0] || "—"}</p>
+                  {row.slice(1).map((cell, ci) => (
+                    <div key={ci} className="flex justify-between mt-1.5">
+                      <span className="text-[10px] text-[hsl(var(--dash-text-muted))] uppercase">{mod.columns[ci + 1]}</span>
+                      <span className="text-xs font-semibold text-[hsl(var(--dash-text))]"
+                        onClick={() => handleCellClick(mod.module_key, ri, ci + 1, cell)}>
+                        {!isProjectsModule && isNumeric(cell) ? formatCOP(parseNum(cell)) : cell || "—"}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => handleEdit(item)} className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--primary))]">
-                        <Edit2 size={16} />
-                      </button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-red-500">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
+                  ))}
+                </div>
+                <button onClick={() => handleDeleteRow(mod.module_key, ri)}
+                  className="p-2 rounded-lg text-[hsl(var(--dash-text-muted))] hover:text-red-500">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+          {totals && (
+            <div className="dash-tile p-4 bg-[hsl(var(--dash-bg))]">
+              <p className="font-bold text-sm text-[hsl(var(--dash-text))] mb-2">
+                {mod.module_key === "nomina" ? "TOTAL INVERSIÓN EMPRESA" : "TOTAL MÍNIMO FACTURAR"}
+              </p>
+              {totals.map((t, i) => (
+                <div key={i} className="flex justify-between mt-1">
+                  <span className="text-[10px] text-[hsl(var(--dash-text-muted))] uppercase">{mod.columns[i + 1]}</span>
+                  <span className="text-sm font-bold text-[hsl(var(--primary))]">{formatCOP(t)}</span>
                 </div>
               ))}
             </div>
-          </div>
-        ))
-      )}
+          )}
+        </div>
+
+        {/* Add row + Notes */}
+        <div className="flex items-center gap-3">
+          <button onClick={() => handleAddRow(mod.module_key)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--primary))] hover:opacity-80 transition-opacity">
+            <Plus size={14} /> Agregar fila
+          </button>
+          <button onClick={() => setExpandedNotes((p) => ({ ...p, [mod.module_key]: !p[mod.module_key] }))}
+            className="flex items-center gap-1.5 text-xs text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+            <FileText size={13} /> Notas
+            {expandedNotes[mod.module_key] ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        </div>
+
+        {expandedNotes[mod.module_key] && (
+          <textarea
+            value={editNotes[mod.module_key] || ""}
+            onChange={(e) => setEditNotes((p) => ({ ...p, [mod.module_key]: e.target.value }))}
+            onBlur={() => handleNotesBlur(mod.module_key)}
+            className="w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl px-4 py-3 text-xs text-[hsl(var(--dash-text-muted))] min-h-[80px] resize-y outline-none focus:border-[hsl(var(--primary))] transition-colors"
+            placeholder="Notas aclaratorias..."
+          />
+        )}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--primary))]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-6 max-w-6xl">
+      {/* Header */}
+      <div>
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">
+          Estructura de Costos Profesionales
+        </h1>
+        <p className="text-xs sm:text-sm text-[hsl(var(--dash-text-muted))]">
+          Creativo Audiovisual — 2026
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="nomina" className="w-full">
+        <TabsList className="w-full justify-start bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-xl p-1 gap-1 flex-wrap h-auto">
+          {modules.map((m) => (
+            <TabsTrigger key={m.module_key} value={m.module_key}
+              className="text-xs sm:text-sm font-semibold rounded-lg data-[state=active]:bg-[hsl(var(--dash-card-bg))] data-[state=active]:text-[hsl(var(--dash-text))] data-[state=active]:shadow-sm text-[hsl(var(--dash-text-muted))] px-3 py-2">
+              {TAB_LABELS[m.module_key] || m.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {modules.map((m) => (
+          <TabsContent key={m.module_key} value={m.module_key} className="mt-4">
+            <h2 className="text-sm sm:text-base font-bold text-[hsl(var(--dash-text))] mb-3">
+              {m.title}
+            </h2>
+            {renderTable(m)}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };
