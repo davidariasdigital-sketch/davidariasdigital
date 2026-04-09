@@ -322,9 +322,11 @@ const MonthlyCalendar = () => {
             )}
             </div>
 
-            {/* Add event form */}
+            {/* Add/Edit event form */}
             <div className="px-6 py-4 border-t border-[hsl(var(--dash-card-border))] space-y-3">
-              <p className="text-xs font-bold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Añadir actividad</p>
+              <p className="text-xs font-bold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">
+                {editingId ? "Editar actividad" : "Añadir actividad"}
+              </p>
               <input
               placeholder="Título *"
               value={form.title}
@@ -353,11 +355,17 @@ const MonthlyCalendar = () => {
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={handleSubmit} disabled={!form.title} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
-                  Agendar
+                  {editingId ? "Guardar" : "Agendar"}
                 </button>
-                <button onClick={() => setShowPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
-                  Cancelar
-                </button>
+                {editingId ? (
+                  <button onClick={cancelEdit} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                    Cancelar edición
+                  </button>
+                ) : (
+                  <button onClick={() => setShowPopup(false)} className="text-sm px-4 py-2.5 rounded-full text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)] transition-colors">
+                    Cancelar
+                  </button>
+                )}
               </div>
             </div>
           </div>
