@@ -31,9 +31,14 @@ interface Props {
 }
 
 const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
-  const { state } = useSidebar();
+  const { state, setOpenMobile, isMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+
+  const handleNavClick = (view: View) => {
+    onViewChange(view);
+    if (isMobile) setOpenMobile(false);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -79,7 +84,7 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
                   return (
                     <SidebarMenuItem key={item.view}>
                       <SidebarMenuButton
-                        onClick={() => onViewChange(item.view)}
+                        onClick={() => handleNavClick(item.view)}
                         className={`cursor-pointer transition-all py-2.5 ${
                           isActive
                             ? "dash-sidebar-active"
