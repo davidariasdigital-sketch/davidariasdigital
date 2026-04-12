@@ -74,38 +74,38 @@ const DEFAULT_MODULES: Omit<CostModule, "id" | "user_id" | "created_at">[] = [
     subtitle: "Listado completo de equipos con su valor de adquisición. Total calculado automáticamente.",
     sort_order: 3,
     notes: "Mantén actualizado el inventario para calcular correctamente la depreciación y tarifas de alquiler.",
-    columns: ["Item", "Valor"],
+    columns: ["Item", "Valor", "Alquiler/Día"],
     rows: [
-      ["Kit camera", "10000000"],
-      ["Lente sigma 28-70", "3000000"],
-      ["Iphone 15 pro", "4300000"],
-      ["Kit Ronin Rs3 mini", "1500000"],
-      ["Tripod camera", "500000"],
-      ["Amaran 300C", "3000000"],
-      ["Amaran 60D", "500000"],
-      ["Flex", "80000"],
-      ["Octabox armado manual", "200000"],
-      ["Softbox armado rapido", "200000"],
-      ["C-Stand", "700000"],
-      ["Tripode plateado", "300000"],
-      ["PC", "6770000"],
-      ["HDD disk portatil", "200000"],
-      ["Maquina de humo", "220000"],
-      ["Viltrox 20mm lens", "680000"],
-      ["Adapter ND anillos", "150000"],
-      ["Magic arm", "150000"],
-      ["Bag pack camera", "300000"],
-      ["Monitor Feelworld f7 plus", "800000"],
-      ["Transmisores TP MAX", "550000"],
-      ["Equipment car", "800000"],
-      ["Camera cage", "780000"],
-      ["Paneles acustico", "800000"],
-      ["Escritorio", "500000"],
-      ["Wacom tableta", "300000"],
-      ["Dji mic mini", "400000"],
-      ["SSD 2 TB", "950000"],
-      ["Macbook air M4 512 gbs", "5000000"],
-      ["Davinci resolve", "1200000"],
+      ["Kit camera", "10000000", ""],
+      ["Lente sigma 28-70", "3000000", ""],
+      ["Iphone 15 pro", "4300000", ""],
+      ["Kit Ronin Rs3 mini", "1500000", ""],
+      ["Tripod camera", "500000", ""],
+      ["Amaran 300C", "3000000", ""],
+      ["Amaran 60D", "500000", ""],
+      ["Flex", "80000", ""],
+      ["Octabox armado manual", "200000", ""],
+      ["Softbox armado rapido", "200000", ""],
+      ["C-Stand", "700000", ""],
+      ["Tripode plateado", "300000", ""],
+      ["PC", "6770000", ""],
+      ["HDD disk portatil", "200000", ""],
+      ["Maquina de humo", "220000", ""],
+      ["Viltrox 20mm lens", "680000", ""],
+      ["Adapter ND anillos", "150000", ""],
+      ["Magic arm", "150000", ""],
+      ["Bag pack camera", "300000", ""],
+      ["Monitor Feelworld f7 plus", "800000", ""],
+      ["Transmisores TP MAX", "550000", ""],
+      ["Equipment car", "800000", ""],
+      ["Camera cage", "780000", ""],
+      ["Paneles acustico", "800000", ""],
+      ["Escritorio", "500000", ""],
+      ["Wacom tableta", "300000", ""],
+      ["Dji mic mini", "400000", ""],
+      ["SSD 2 TB", "950000", ""],
+      ["Macbook air M4 512 gbs", "5000000", ""],
+      ["Davinci resolve", "1200000", ""],
     ],
   },
   {
@@ -200,6 +200,17 @@ const recalculateModule = (mod: CostModule): string[][] => {
     }
   }
 
+  if (mod.module_key === "equipos_av") {
+    for (let ri = 0; ri < rows.length; ri++) {
+      const valor = parseNum(rows[ri][1]);
+      if (valor > 0) {
+        // Depreciación a 3 años (36 meses), alquiler por día (22 días hábiles/mes)
+        const alqDia = Math.round(valor / 36 / 22);
+        rows[ri][2] = alqDia.toString();
+      }
+    }
+  }
+
   return rows;
 };
 
@@ -242,6 +253,26 @@ const ServiceCostsView = () => {
         await supabase.from("cost_modules").insert(inserts);
         fetchModules();
         return;
+      }
+
+      // Upgrade existing modules with new columns (e.g. equipos_av gained Alquiler/Día)
+      const upgrades: CostModule[] = [];
+      for (const mod of parsed) {
+        const def = DEFAULT_MODULES.find((d) => d.module_key === mod.module_key);
+        if (def && def.columns.length > mod.columns.length) {
+          mod.columns = [...def.columns];
+          mod.rows = mod.rows.map((row) => {
+            while (row.length < def.columns.length) row.push("");
+            return row;
+          });
+          mod.rows = recalculateModule(mod);
+          upgrades.push(mod);
+        }
+      }
+      if (upgrades.length > 0) {
+        for (const u of upgrades) {
+          await supabase.from("cost_modules").update({ columns: u.columns as any, rows: u.rows as any }).eq("id", u.id);
+        }
       }
 
       setModules(parsed);
