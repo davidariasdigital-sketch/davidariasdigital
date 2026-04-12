@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           column_index: number
           created_at: string
+          description: string | null
           format: string | null
           id: string
           is_idea: boolean
@@ -63,6 +64,7 @@ export type Database = {
         Insert: {
           column_index?: number
           created_at?: string
+          description?: string | null
           format?: string | null
           id?: string
           is_idea?: boolean
@@ -75,6 +77,7 @@ export type Database = {
         Update: {
           column_index?: number
           created_at?: string
+          description?: string | null
           format?: string | null
           id?: string
           is_idea?: boolean
