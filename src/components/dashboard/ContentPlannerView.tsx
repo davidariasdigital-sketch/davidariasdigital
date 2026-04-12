@@ -220,7 +220,7 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          onClick={() => { if (editingId !== item.id) onOpenScript(item); }}
+          onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
           className={`group relative rounded-xl px-3 py-3 text-xs cursor-grab active:cursor-grabbing transition-all border ${
             item.published
               ? `${publishedClass} text-emerald-800`
