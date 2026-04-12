@@ -176,7 +176,7 @@ const ContentPlannerView = () => {
             placeholder="Escribe el guion del video aquí..."
             value={scriptValue}
             onChange={(e) => setScriptValue(e.target.value)}
-            className="min-h-[200px] text-sm bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400"
+            className="min-h-[400px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
           />
         </DialogContent>
       </Dialog>

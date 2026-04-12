@@ -74,7 +74,7 @@ const DEFAULT_MODULES: Omit<CostModule, "id" | "user_id" | "created_at">[] = [
     subtitle: "Listado completo de equipos con su valor de adquisición. Total calculado automáticamente.",
     sort_order: 3,
     notes: "Mantén actualizado el inventario para calcular correctamente la depreciación y tarifas de alquiler.",
-    columns: ["Item", "Valor"],
+    columns: ["Item", "Valor", "Alquiler/Día"],
     rows: [
       ["Kit camera", "10000000"],
       ["Lente sigma 28-70", "3000000"],
