@@ -255,6 +255,26 @@ const ServiceCostsView = () => {
         return;
       }
 
+      // Upgrade existing modules with new columns (e.g. equipos_av gained Alquiler/Día)
+      const upgrades: CostModule[] = [];
+      for (const mod of parsed) {
+        const def = DEFAULT_MODULES.find((d) => d.module_key === mod.module_key);
+        if (def && def.columns.length > mod.columns.length) {
+          mod.columns = [...def.columns];
+          mod.rows = mod.rows.map((row) => {
+            while (row.length < def.columns.length) row.push("");
+            return row;
+          });
+          mod.rows = recalculateModule(mod);
+          upgrades.push(mod);
+        }
+      }
+      if (upgrades.length > 0) {
+        for (const u of upgrades) {
+          await supabase.from("cost_modules").update({ columns: u.columns as any, rows: u.rows as any }).eq("id", u.id);
+        }
+      }
+
       setModules(parsed);
       const notes: Record<string, string> = {};
       parsed.forEach((m: CostModule) => { notes[m.module_key] = m.notes || ""; });
