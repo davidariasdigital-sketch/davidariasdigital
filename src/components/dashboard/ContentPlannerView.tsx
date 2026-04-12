@@ -168,9 +168,9 @@ const ContentPlannerView = () => {
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-lg bg-white text-gray-900 border-gray-200">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] bg-white text-gray-900 border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-sm font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
+            <DialogTitle className="text-base font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
           </DialogHeader>
           <Textarea
             placeholder="Escribe el guion del video aquí..."
