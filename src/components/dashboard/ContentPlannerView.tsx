@@ -1,16 +1,20 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Lightbulb, Instagram, Sun, Check } from "lucide-react";
+import { Plus, X, Lightbulb, Instagram, Sun, Check, Video } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
+const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
 
 interface ContentItem {
   id: string; title: string; month: string; column_index: number;
   row_index: number; is_idea: boolean; format: string | null; published: boolean;
+  description: string;
 }
 
-type Section = "instagram" | "ideas" | "solar";
+type Section = "instagram" | "ideas" | "solar" | "tiktok";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -18,6 +22,8 @@ const ContentPlannerView = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [dragItem, setDragItem] = useState<ContentItem | null>(null);
+  const [scriptItem, setScriptItem] = useState<ContentItem | null>(null);
+  const [scriptValue, setScriptValue] = useState("");
 
   const fetchItems = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -30,7 +36,14 @@ const ContentPlannerView = () => {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  const sectionKey = (section: Section) => section === "instagram" ? "IG" : section === "solar" ? "SOLAR" : "IDEAS";
+  const sectionKey = (section: Section) => {
+    switch (section) {
+      case "instagram": return "IG";
+      case "solar": return "SOLAR";
+      case "ideas": return "IDEAS";
+      case "tiktok": return "TIKTOK";
+    }
+  };
 
   const addItem = async (section: Section, colIndex: number) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -85,6 +98,19 @@ const ContentPlannerView = () => {
     setDragItem(null);
   };
 
+  const openScript = (item: ContentItem) => {
+    setScriptItem(item);
+    setScriptValue(item.description || "");
+  };
+
+  const saveScript = async () => {
+    if (!scriptItem) return;
+    const { error } = await supabase.from("content_items").update({ description: scriptValue }).eq("id", scriptItem.id);
+    if (error) { toast.error("Error al guardar guion"); return; }
+    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description: scriptValue } : i));
+    setScriptItem(null);
+  };
+
   const getSlotItems = (section: Section, colIndex: number) =>
     items.filter((i) => i.month === sectionKey(section) && i.column_index === colIndex).sort((a, b) => a.row_index - b.row_index);
 
@@ -105,7 +131,17 @@ const ContentPlannerView = () => {
         <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-pink-50 hover:bg-pink-100" showFormat />
+            <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
+          ))}
+        </div>
+      </div>
+
+      {/* TikTok */}
+      <div>
+        <SectionHeader icon={<Video className="h-5 w-5" />} label="TikTok" colorClass="text-[hsl(var(--dash-text))]" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          {[0, 1, 2, 3].map((colIdx) => (
+            <ContentColumn key={`tiktok-${colIdx}`} section="tiktok" colIndex={colIdx} items={getSlotItems("tiktok", colIdx)} onAdd={() => addItem("tiktok", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-gray-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
           ))}
         </div>
       </div>
@@ -115,7 +151,7 @@ const ContentPlannerView = () => {
         <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
-            <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-amber-50 hover:bg-amber-100" showFormat />
+            <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
           ))}
         </div>
       </div>
@@ -125,10 +161,25 @@ const ContentPlannerView = () => {
         <SectionHeader icon={<Sun className="h-5 w-5" />} label="Solar" colorClass="text-orange-500" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn key={`solar-${colIdx}`} section="solar" colIndex={colIdx} items={getSlotItems("solar", colIdx)} onAdd={() => addItem("solar", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} accentClass="border-orange-200" publishedClass="bg-emerald-50 border-emerald-200" chipClass="bg-orange-50 hover:bg-orange-100" showFormat />
+            <ContentColumn key={`solar-${colIdx}`} section="solar" colIndex={colIdx} items={getSlotItems("solar", colIdx)} onAdd={() => addItem("solar", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-orange-200" publishedClass="bg-emerald-50 border-emerald-200" formats={SOLAR_FORMATS} showFormat />
           ))}
         </div>
       </div>
+
+      {/* Script Dialog */}
+      <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-semibold">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder="Escribe el guion del video aquí..."
+            value={scriptValue}
+            onChange={(e) => setScriptValue(e.target.value)}
+            className="min-h-[200px] text-sm"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
@@ -146,13 +197,14 @@ interface ContentColumnProps {
   editingId: string | null; editValue: string; onEditStart: (id: string, title: string) => void;
   onEditChange: (val: string) => void; onEditSave: (id: string) => void; onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
-  accentClass: string; publishedClass: string; chipClass: string; showFormat?: boolean;
+  onOpenScript: (item: ContentItem) => void;
+  accentClass: string; publishedClass: string; formats: string[]; showFormat?: boolean;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, accentClass, publishedClass, chipClass, showFormat,
+  onFormatChange, onTogglePublished, onOpenScript, accentClass, publishedClass, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
 
@@ -168,6 +220,7 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
+          onClick={() => { if (editingId !== item.id) onOpenScript(item); }}
           className={`group relative rounded-xl px-3 py-3 text-xs cursor-grab active:cursor-grabbing transition-all border ${
             item.published
               ? `${publishedClass} text-emerald-800`
@@ -180,6 +233,7 @@ const ContentColumn = ({
               onChange={(e) => onEditChange(e.target.value)}
               onBlur={() => onEditSave(item.id)}
               onKeyDown={(e) => { if (e.key === "Enter") onEditSave(item.id); if (e.key === "Escape") { onEditChange(item.title); onEditSave(item.id); } }}
+              onClick={(e) => e.stopPropagation()}
               className="w-full bg-transparent outline-none text-xs text-center font-medium"
             />
           ) : (
@@ -188,8 +242,9 @@ const ContentColumn = ({
                 <button onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }} className={`rounded-full p-0.5 transition-all ${item.published ? "text-emerald-600 opacity-100" : "hover:bg-[hsl(0,0%,96%)]"}`}><Check className="h-2.5 w-2.5" /></button>
                 <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-50 transition-all"><X className="h-2.5 w-2.5" /></button>
               </div>
-              <span className="text-[11px] leading-snug font-medium cursor-text text-center w-full" onClick={() => onEditStart(item.id, item.title)}>{item.title || "Sin título"}</span>
-              {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} />}
+              <span className="text-[11px] leading-snug font-medium text-center w-full" onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}>{item.title || "Sin título"}</span>
+              {item.description && <span className="text-[9px] text-[hsl(var(--dash-text-muted))] truncate max-w-full">📝 Guion</span>}
+              {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
             </div>
           )}
         </div>
@@ -203,15 +258,15 @@ const ContentColumn = ({
   );
 };
 
-const FormatSelector = ({ value, onChange }: { value: string | null; onChange: (f: string) => void }) => (
+const FormatSelector = ({ value, onChange, formats }: { value: string | null; onChange: (f: string) => void; formats: string[] }) => (
   <select
     value={value ?? ""}
     onClick={(e) => e.stopPropagation()}
-    onChange={(e) => onChange(e.target.value)}
+    onChange={(e) => { e.stopPropagation(); onChange(e.target.value); }}
     className="text-[10px] opacity-80 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] outline-none"
   >
     <option value="" disabled>Formato</option>
-    {FORMATS.map((f) => <option key={f} value={f}>{f}</option>)}
+    {formats.map((f) => <option key={f} value={f}>{f}</option>)}
   </select>
 );
 
