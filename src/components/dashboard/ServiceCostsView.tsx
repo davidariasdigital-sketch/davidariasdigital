@@ -200,6 +200,17 @@ const recalculateModule = (mod: CostModule): string[][] => {
     }
   }
 
+  if (mod.module_key === "equipos_av") {
+    for (let ri = 0; ri < rows.length; ri++) {
+      const valor = parseNum(rows[ri][1]);
+      if (valor > 0) {
+        // Depreciación a 3 años (36 meses), alquiler por día (22 días hábiles/mes)
+        const alqDia = Math.round(valor / 36 / 22);
+        rows[ri][2] = alqDia.toString();
+      }
+    }
+  }
+
   return rows;
 };
 
