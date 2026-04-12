@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Lightbulb, Instagram, Sun, Check, Video } from "lucide-react";
+import { Plus, X, Lightbulb, Instagram, Sun, Check, Video, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -168,15 +168,15 @@ const ContentPlannerView = () => {
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-white text-gray-900 border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-sm font-semibold">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
+            <DialogTitle className="text-sm font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
           </DialogHeader>
           <Textarea
             placeholder="Escribe el guion del video aquí..."
             value={scriptValue}
             onChange={(e) => setScriptValue(e.target.value)}
-            className="min-h-[200px] text-sm"
+            className="min-h-[200px] text-sm bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400"
           />
         </DialogContent>
       </Dialog>
@@ -239,6 +239,7 @@ const ContentColumn = ({
           ) : (
             <div className="flex flex-col items-center gap-1.5 relative">
               <div className="absolute -top-1 -right-1 flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={(e) => { e.stopPropagation(); onOpenScript(item); }} className="rounded-full p-0.5 hover:bg-blue-50 transition-all text-blue-500" title="Guion"><FileText className="h-2.5 w-2.5" /></button>
                 <button onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }} className={`rounded-full p-0.5 transition-all ${item.published ? "text-emerald-600 opacity-100" : "hover:bg-[hsl(0,0%,96%)]"}`}><Check className="h-2.5 w-2.5" /></button>
                 <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-50 transition-all"><X className="h-2.5 w-2.5" /></button>
               </div>
