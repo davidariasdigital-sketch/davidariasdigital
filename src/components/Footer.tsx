@@ -9,7 +9,7 @@ const links = [
 
 const Footer = () => {
   return (
-    <footer id="contacto" className="pt-6 md:pt-16 pb-8 md:pb-10 px-4 md:px-12 relative">
+    <footer id="contacto" className="pt-2 md:pt-4 pb-8 md:pb-10 px-4 md:px-12 relative">
       <div className="max-w-5xl mx-auto relative z-10">
         {/* CTA Card */}
         <div className="liquid-glass-rainbow rounded-[var(--radius)] p-7 md:p-16 text-center mb-12 md:mb-20 glow-soft">
