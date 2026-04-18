@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Clock, X, Check, CalendarIcon } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 import PrioritiesSection from "./PrioritiesSection";
+import WeeklyView from "./WeeklyView";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
