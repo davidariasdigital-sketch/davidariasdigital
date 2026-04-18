@@ -15,12 +15,12 @@ const HeroSection = () => {
 
           {/* Left: Text content */}
           <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-5">
-            <div className="flex flex-col items-center md:items-start gap-0">
-              <h1 className="leading-none tracking-[-0.03em] flex flex-col items-center md:items-start gap-2">
-                <span className="text-foreground font-medium text-lg md:text-2xl leading-none">David Arias</span>
+            <div className="flex flex-col items-center md:items-start">
+              <h1 className="leading-none tracking-[-0.03em] flex flex-col items-center md:items-start">
+                <span className="text-foreground font-medium text-base md:text-xl leading-none mb-2 md:mb-3">David Arias</span>
                 <img alt="DIGITAL" className="block w-full max-w-[260px] sm:max-w-[340px] md:max-w-[480px] h-auto" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" loading="eager" />
               </h1>
-              <p className="text-muted-foreground text-sm md:text-xl max-w-md leading-none font-light mt-1 md:mt-2">Creativo Audiovisual</p>
+              <p className="text-muted-foreground text-xs md:text-base max-w-md leading-none font-light tracking-[0.2em] uppercase mt-3 md:mt-4">Creativo Audiovisual</p>
             </div>
 
             <div className="flex flex-col gap-1.5 md:gap-2 items-center md:items-start">
