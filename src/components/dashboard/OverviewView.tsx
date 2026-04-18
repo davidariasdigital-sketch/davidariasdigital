@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, DragEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Clock, X, Check, CalendarIcon } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
+import PrioritiesSection from "./PrioritiesSection";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
@@ -143,6 +144,7 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   return (
     <div className="space-y-4">
+      <PrioritiesSection />
       <MonthlyCalendar />
 
       {/* Actividades pendientes — grid */}
