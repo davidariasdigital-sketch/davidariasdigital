@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Clock, X, Check, CalendarIcon } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 import PrioritiesSection from "./PrioritiesSection";
+import WeeklyView from "./WeeklyView";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
@@ -146,6 +147,7 @@ const OverviewView = ({ onNavigate }: Props) => {
     <div className="space-y-4">
       <PrioritiesSection />
       <MonthlyCalendar />
+      <WeeklyView />
 
       {/* Actividades pendientes — grid */}
       <div className="dash-tile rounded-2xl p-4 sm:p-6">
