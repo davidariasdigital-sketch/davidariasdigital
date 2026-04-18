@@ -1,81 +1,70 @@
 
+Plan: agregar un módulo de "Prioridades" al dashboard con tres tarjetas predefinidas (Colombina, Solar, Digital) editables.
 
-## Plan: Estructura de Costos Profesionales — Vista por Módulos Editables
+## Qué se construye
 
-### Resumen
+Una nueva sección en el **Overview** del dashboard llamada "Prioridades" que muestra tres tarjetas con la información de cada cliente/proyecto recurrente:
 
-Reemplazar la vista actual de "Costos" (tabla simple de servicios) con una vista modular que refleje las 4 secciones del PDF, cada una con su propia tabla editable inline. Los datos se almacenan como JSONB para manejar las diferentes estructuras de columnas por módulo.
+- **Colombina** — Lunes a viernes, 8:00 am - 5:00 pm
+- **Solar** — Una producción cada dos meses
+- **Digital** — Contenido semanal en Instagram y TikTok
 
-### 1. Migración de base de datos — Nueva tabla `cost_modules`
+Cada tarjeta es editable (título, descripción de frecuencia/horario) y se pueden agregar/eliminar prioridades nuevas.
 
-Crear una tabla flexible con JSONB para columnas y filas:
+## Diseño de la UI
 
-```sql
-CREATE TABLE public.cost_modules (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  module_key text NOT NULL,
-  title text NOT NULL,
-  subtitle text,
-  columns jsonb NOT NULL DEFAULT '[]',
-  rows jsonb NOT NULL DEFAULT '[]',
-  notes text,
-  sort_order integer DEFAULT 0,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  UNIQUE(user_id, module_key)
-);
+Sección dentro de `OverviewView.tsx` con un grid de 3 columnas en desktop / 1 columna en móvil:
 
-ALTER TABLE public.cost_modules ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users manage own cost modules"
-  ON public.cost_modules FOR ALL
-  TO authenticated
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+```text
+┌─────────────── PRIORIDADES ───────────────────[+ Agregar]┐
+│ ┌──────────┐  ┌──────────┐  ┌──────────┐                │
+│ │COLOMBINA │  │  SOLAR   │  │ DIGITAL  │                │
+│ │ Lun-Vie  │  │ 1 prod / │  │Semanal IG│                │
+│ │ 8am-5pm  │  │ 2 meses  │  │ + TikTok │                │
+│ │  [edit]  │  │  [edit]  │  │  [edit]  │                │
+│ └──────────┘  └──────────┘  └──────────┘                │
+└─────────────────────────────────────────────────────────┘
 ```
 
-Cada módulo tiene:
-- `module_key`: "nomina", "freelance", "equipos", "proyectos"
-- `columns`: array de nombres de columna (ej. `["Concepto", "Servicio Completo", "Servicio Básico", "Solo Edición"]`)
-- `rows`: array de arrays con los valores de cada fila
-- `notes`: texto libre para notas aclaratorias
+Cada tarjeta:
+- Icono distintivo (Briefcase / Film / Smartphone) con color de acento
+- Título en mayúsculas (editable inline al hacer clic)
+- Descripción de frecuencia (editable inline)
+- Botón de eliminar al hover
 
-### 2. Reescribir `ServiceCostsView.tsx` completamente
+## Implementación técnica
 
-La nueva vista tendrá:
+**1. Nueva tabla `priorities` (migración SQL):**
 
-**Header**: "Estructura de Costos Profesionales 2026" con subtítulo "Creativo Audiovisual"
+```sql
+CREATE TABLE public.priorities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  title text NOT NULL,
+  description text,
+  icon text DEFAULT 'briefcase',
+  color text DEFAULT 'primary',
+  sort_order integer DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.priorities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own priorities" ON public.priorities
+  FOR ALL TO authenticated
+  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+```
 
-**4 módulos en tabs o secciones colapsables**, cada uno con:
-- Titulo del módulo y descripción
-- Tabla renderizada dinámicamente desde el JSONB (columnas y filas)
-- Celdas editables inline (click para editar el valor)
-- Botones para agregar/eliminar filas
-- Fila de totales calculada automáticamente (donde aplique)
-- Notas editables al pie de cada módulo
+**2. Inicialización automática:** al cargar `OverviewView` por primera vez sin prioridades, se insertan las 3 por defecto (Colombina, Solar, Digital).
 
-**Los 4 módulos (precargados con la data del PDF):**
+**3. Componente nuevo:** `src/components/dashboard/PrioritiesSection.tsx`
+- Fetch de `priorities` desde Supabase
+- Edición inline de `title` y `description` con auto-guardado al blur
+- Botón "+ Agregar" para nuevas prioridades
+- Botón eliminar por tarjeta (con confirmación ligera)
 
-1. **Nómina (Contrato Laboral)** — 10 filas x 4 columnas (Concepto, Servicio Completo R-III, Servicio Básico R-III, Solo Edición R-I), con fila de total
-2. **Prestación de Servicios (Freelance)** — 10 filas x 4 columnas, misma estructura, con total mínimo a facturar
-3. **Alquiler de Equipos (Por Día)** — 3 filas x 4 columnas (Escenario, Valor Activo, Depreciación Mensual, Alquiler/Día)
-4. **Proyectos y Servicios Específicos** — 5 filas x 4 columnas (Tipo, Despliegue de Costos, Margen, Valor Referencia)
+**4. Integración:** se inserta `<PrioritiesSection />` en `OverviewView.tsx` debajo del header de bienvenida.
 
-**Funcionalidad de edición:**
-- Click en cualquier celda para editarla inline
-- Botón "Agregar fila" al final de cada tabla
-- Botón eliminar (icono) por fila
-- Auto-guardado al salir de la celda (blur)
-- Sección de notas editable con textarea
+## Archivos a crear/modificar
 
-**Inicialización:** Al abrir la vista por primera vez y no tener datos, se crean los 4 módulos con la data del PDF como valores por defecto.
-
-### 3. Mantener tabla `service_costs` existente
-
-La tabla `service_costs` sigue existiendo para el tarifario rápido de servicios individuales. La nueva vista mostrará ambas cosas: los módulos de estructura de costos arriba, y abajo (opcionalmente en un tab separado) el listado de servicios individuales existente.
-
-### Archivos a modificar/crear:
-1. **Migración SQL** — crear tabla `cost_modules` con RLS
-2. **Reescribir** `src/components/dashboard/ServiceCostsView.tsx` — nueva UI con módulos + tablas editables + tabs
-3. Sin cambios en sidebar ni routing (ya existe la ruta "service-costs")
-
+1. **Migración SQL** — crear tabla `priorities` con RLS
+2. **Crear** `src/components/dashboard/PrioritiesSection.tsx`
+3. **Editar** `src/components/dashboard/OverviewView.tsx` — montar la nueva sección
