@@ -147,6 +147,7 @@ const OverviewView = ({ onNavigate }: Props) => {
     <div className="space-y-4">
       <PrioritiesSection />
       <MonthlyCalendar />
+      <WeeklyView />
 
       {/* Actividades pendientes — grid */}
       <div className="dash-tile rounded-2xl p-4 sm:p-6">
