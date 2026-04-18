@@ -1,70 +1,53 @@
 
-Plan: agregar un módulo de "Prioridades" al dashboard con tres tarjetas predefinidas (Colombina, Solar, Digital) editables.
+Plan: Añadir vista semanal interactiva debajo del calendario mensual.
 
 ## Qué se construye
 
-Una nueva sección en el **Overview** del dashboard llamada "Prioridades" que muestra tres tarjetas con la información de cada cliente/proyecto recurrente:
+Una nueva sección **"Esta Semana"** debajo de `MonthlyCalendar` en el Overview que muestra los 7 días de la semana actual (lunes a domingo) con sus eventos y permite:
+- Ver eventos de cada día
+- Arrastrar eventos para moverlos entre días
+- Arrastrar tareas pendientes desde el grid existente al día deseado
+- Añadir eventos rápidos haciendo clic en un día
 
-- **Colombina** — Lunes a viernes, 8:00 am - 5:00 pm
-- **Solar** — Una producción cada dos meses
-- **Digital** — Contenido semanal en Instagram y TikTok
-
-Cada tarjeta es editable (título, descripción de frecuencia/horario) y se pueden agregar/eliminar prioridades nuevas.
-
-## Diseño de la UI
-
-Sección dentro de `OverviewView.tsx` con un grid de 3 columnas en desktop / 1 columna en móvil:
+## Diseño UI
 
 ```text
-┌─────────────── PRIORIDADES ───────────────────[+ Agregar]┐
-│ ┌──────────┐  ┌──────────┐  ┌──────────┐                │
-│ │COLOMBINA │  │  SOLAR   │  │ DIGITAL  │                │
-│ │ Lun-Vie  │  │ 1 prod / │  │Semanal IG│                │
-│ │ 8am-5pm  │  │ 2 meses  │  │ + TikTok │                │
-│ │  [edit]  │  │  [edit]  │  │  [edit]  │                │
-│ └──────────┘  └──────────┘  └──────────┘                │
-└─────────────────────────────────────────────────────────┘
+┌─── ESTA SEMANA ──── [< Sem actual >] ──────────────┐
+│ ┌────┬────┬────┬────┬────┬────┬────┐               │
+│ │LUN │MAR │MIÉ │JUE │VIE │SÁB │DOM │               │
+│ │ 21 │ 22 │ 23 │ 24 │ 25 │ 26 │ 27 │               │
+│ ├────┼────┼────┼────┼────┼────┼────┤               │
+│ │📌  │    │📌  │    │📌  │    │    │  hoy: highlight│
+│ │evt │ +  │evt │ +  │evt │ +  │ +  │               │
+│ │evt │    │    │    │    │    │    │               │
+│ └────┴────┴────┴────┴────┴────┴────┘               │
+└────────────────────────────────────────────────────┘
 ```
 
-Cada tarjeta:
-- Icono distintivo (Briefcase / Film / Smartphone) con color de acento
-- Título en mayúsculas (editable inline al hacer clic)
-- Descripción de frecuencia (editable inline)
-- Botón de eliminar al hover
+- Día actual con borde de acento (amber)
+- Cada evento es una píldora coloreada (usa `event.color`)
+- Drop zones por día para reordenar / añadir
+- Click en día vacío → popup rápido para crear evento
+- Botón flechas para navegar semana anterior/siguiente
 
 ## Implementación técnica
 
-**1. Nueva tabla `priorities` (migración SQL):**
+**1. Nuevo componente:** `src/components/dashboard/WeeklyView.tsx`
+- Calcula los 7 días desde el lunes de la semana actual usando `date-fns` o lógica nativa
+- Fetch de `events` filtrados entre `weekStart` y `weekEnd`
+- Estado local para semana visible (permite navegar adelante/atrás)
+- Drag & drop:
+  - Eventos existentes (`dataTransfer.setData("eventDrag", id)`) → drop en otro día actualiza `event_date`
+  - Tareas del grid (ya emiten `taskDrag`) → drop crea un nuevo evento con título de la tarea
+- Popup de creación rápida reutilizando el patrón de `OverviewView`
 
-```sql
-CREATE TABLE public.priorities (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  title text NOT NULL,
-  description text,
-  icon text DEFAULT 'briefcase',
-  color text DEFAULT 'primary',
-  sort_order integer DEFAULT 0,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE public.priorities ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users manage own priorities" ON public.priorities
-  FOR ALL TO authenticated
-  USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-```
+**2. Integración en `OverviewView.tsx`:**
+- Insertar `<WeeklyView />` justo después de `<MonthlyCalendar />`
+- No requiere cambios de schema (usa la tabla `events` existente)
 
-**2. Inicialización automática:** al cargar `OverviewView` por primera vez sin prioridades, se insertan las 3 por defecto (Colombina, Solar, Digital).
+**3. Sin migraciones de DB:** La tabla `events` ya tiene `event_date`, `title`, `color`, `description`, `event_time` — todo lo necesario.
 
-**3. Componente nuevo:** `src/components/dashboard/PrioritiesSection.tsx`
-- Fetch de `priorities` desde Supabase
-- Edición inline de `title` y `description` con auto-guardado al blur
-- Botón "+ Agregar" para nuevas prioridades
-- Botón eliminar por tarjeta (con confirmación ligera)
+## Archivos
 
-**4. Integración:** se inserta `<PrioritiesSection />` en `OverviewView.tsx` debajo del header de bienvenida.
-
-## Archivos a crear/modificar
-
-1. **Migración SQL** — crear tabla `priorities` con RLS
-2. **Crear** `src/components/dashboard/PrioritiesSection.tsx`
-3. **Editar** `src/components/dashboard/OverviewView.tsx` — montar la nueva sección
+1. **Crear** `src/components/dashboard/WeeklyView.tsx`
+2. **Editar** `src/components/dashboard/OverviewView.tsx` — montar componente
