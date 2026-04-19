@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, FileText, DollarSign, CalendarRange, LogOut, Palette, Receipt } from "lucide-react";
+import { LayoutDashboard, FileText, DollarSign, CalendarRange, LogOut, Palette, Receipt } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -14,11 +14,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import davidImg from "@/assets/david-navbar.jpg";
 
-type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner" | "service-costs";
+type View = "overview" | "quotations" | "invoices" | "content-planner" | "service-costs";
 
 const items = [
   { title: "Dashboard", view: "overview" as View, icon: LayoutDashboard },
-  { title: "Clientes", view: "clients" as View, icon: Users },
   { title: "Cotizaciones", view: "quotations" as View, icon: FileText },
   { title: "Cuentas de Cobro", view: "invoices" as View, icon: DollarSign },
   { title: "Planeador", view: "content-planner" as View, icon: CalendarRange },
