@@ -51,7 +51,7 @@ const Dashboard = () => {
   };
 
   return (
-    <SidebarProvider>
+    <SidebarProvider style={{ ["--sidebar-width" as any]: "4rem" }}>
       <div className="min-h-screen flex w-full bg-[hsl(var(--dash-bg))]">
         <DashboardSidebar currentView={view} onViewChange={setView} />
         <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
@@ -60,7 +60,7 @@ const Dashboard = () => {
             <SidebarTrigger className="text-[hsl(var(--dash-text))] h-8 w-8" />
           </header>
           {/* Content */}
-          <main className="flex-1 px-3 py-4 sm:px-6 md:px-8 md:py-6 overflow-auto">
+          <main className="flex-1 px-3 py-4 sm:px-6 md:px-6 md:py-6 overflow-auto">
             <motion.div
               key={view}
               initial={{ opacity: 0 }}
