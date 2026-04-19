@@ -315,7 +315,7 @@ const WeeklyView = () => {
             <div
               key={h}
               style={{ height: SLOT_HEIGHT }}
-              className="text-[9px] font-semibold text-[hsl(var(--dash-text-muted))] text-right pr-1.5 -mt-1.5"
+              className="text-[9px] font-semibold text-[hsl(var(--dash-text-muted))] text-right pr-1.5 flex items-start justify-end pt-0 leading-none"
             >
               {formatHourLabel(h)}
             </div>
