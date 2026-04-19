@@ -46,7 +46,7 @@ const DEFAULTS = [
   { title: "Digital", description: "", icon: "smartphone", color: "blue", sort_order: 2 },
 ];
 
-const SLOTS = 3;
+const SLOTS = 1;
 
 const formatDue = (iso: string) =>
   new Date(iso + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short" });
