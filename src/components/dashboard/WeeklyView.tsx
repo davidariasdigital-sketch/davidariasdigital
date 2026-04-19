@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, DragEvent, MouseEvent as ReactMouseEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, X, Trash2, Copy, CalendarOff, Calendar as CalendarIcon } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EventItem {
   id: string;
@@ -36,7 +37,8 @@ const DAY_NAMES = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
 const START_HOUR = 7;
 const END_HOUR = 22;
 const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
-const SLOT_HEIGHT = 48; // px per hour
+const SLOT_HEIGHT_DESKTOP = 48; // px per hour
+const SLOT_HEIGHT_MOBILE = 56; // px per hour on mobile (single day view)
 
 const toISO = (d: Date) => {
   const y = d.getFullYear();
@@ -71,6 +73,8 @@ const padTime = (h: number, m: number) =>
   `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
 const WeeklyView = () => {
+  const isMobile = useIsMobile();
+  const SLOT_HEIGHT = isMobile ? SLOT_HEIGHT_MOBILE : SLOT_HEIGHT_DESKTOP;
   const [weekStart, setWeekStart] = useState<Date>(() => getMonday(new Date()));
   const [events, setEvents] = useState<EventItem[]>([]);
   const [dragOverSlot, setDragOverSlot] = useState<string | null>(null);
@@ -93,6 +97,17 @@ const WeeklyView = () => {
   });
   const weekEnd = days[6];
   const todayISO = toISO(new Date());
+
+  // Mobile: which day is selected (0-6 within current week)
+  const todayInWeek = days.findIndex(d => toISO(d) === todayISO);
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number>(todayInWeek >= 0 ? todayInWeek : 0);
+
+  // When week changes, reset selected day to today (if in week) or first day
+  useEffect(() => {
+    const idx = days.findIndex(d => toISO(d) === todayISO);
+    setSelectedDayIndex(idx >= 0 ? idx : 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weekStart]);
 
   const fetchEvents = async () => {
     const { data } = await supabase
