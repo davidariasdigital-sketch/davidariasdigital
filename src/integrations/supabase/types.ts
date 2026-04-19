@@ -424,6 +424,7 @@ export type Database = {
           estimated_time: number | null
           id: string
           priority: Database["public"]["Enums"]["task_priority"]
+          priority_id: string | null
           project_id: string | null
           title: string
           user_id: string
@@ -437,6 +438,7 @@ export type Database = {
           estimated_time?: number | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          priority_id?: string | null
           project_id?: string | null
           title: string
           user_id: string
@@ -450,11 +452,19 @@ export type Database = {
           estimated_time?: number | null
           id?: string
           priority?: Database["public"]["Enums"]["task_priority"]
+          priority_id?: string | null
           project_id?: string | null
           title?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_priority_id_fkey"
+            columns: ["priority_id"]
+            isOneToOne: false
+            referencedRelation: "priorities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_project_id_fkey"
             columns: ["project_id"]
