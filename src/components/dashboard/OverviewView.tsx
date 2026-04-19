@@ -4,6 +4,7 @@ import { Plus, Clock, X, Check, CalendarIcon } from "lucide-react";
 import MonthlyCalendar from "./MonthlyCalendar";
 import PrioritiesSection from "./PrioritiesSection";
 import WeeklyView from "./WeeklyView";
+import RoutineSection from "./RoutineSection";
 
 type View = "overview" | "clients" | "quotations" | "invoices" | "content-planner";
 
@@ -150,8 +151,9 @@ const OverviewView = ({ onNavigate }: Props) => {
         <div className="lg:col-span-2">
           <WeeklyView />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-4">
           <PrioritiesSection />
+          <RoutineSection />
         </div>
       </div>
       <MonthlyCalendar />
