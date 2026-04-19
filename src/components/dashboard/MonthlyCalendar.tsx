@@ -240,12 +240,12 @@ const MonthlyCalendar = () => {
                   onClick={() => day && openDayPopup(dateStr)}
                   onDragOver={day ? onDragOver : undefined}
                   onDrop={day ? (e) => onDrop(e, dateStr) : undefined}
-                  className={`relative min-h-[60px] sm:min-h-[100px] p-1 sm:p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
+                  className={`relative min-h-[78px] sm:min-h-[100px] p-1.5 border-b border-r border-[hsl(var(--dash-card-border))] text-left transition-colors group ${day ? "hover:bg-[hsl(0,0%,97%)] cursor-pointer" : ""}`}>
                   
                   {day &&
                   <div className="h-full flex flex-col">
                     {/* Day number */}
-                    <span className={`text-[9px] sm:text-[10px] font-medium inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full mb-0.5 sm:mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
+                    <span className={`text-[11px] sm:text-[10px] font-semibold inline-flex items-center justify-center w-5 h-5 rounded-full mb-1 ${isToday(day) ? "bg-primary text-primary-foreground font-bold" : "text-[hsl(var(--dash-text))]"}`}>
                       {day}
                     </span>
 
@@ -258,12 +258,12 @@ const MonthlyCalendar = () => {
                               key={ev.id}
                               draggable
                               onDragStart={(e) => {e.stopPropagation();onDragStart(e, ev.id);}}
-                              className={`${evStyle.bg} ${evStyle.border} border rounded-md sm:rounded-lg px-1 py-0.5 sm:p-1.5 relative cursor-grab active:cursor-grabbing group/event`}>
-                              <p className={`text-[7px] sm:text-[9px] font-bold leading-tight ${evStyle.text} truncate`}>
+                              className={`${evStyle.bg} ${evStyle.border} border rounded-md sm:rounded-lg px-1.5 py-1 sm:p-1.5 relative cursor-grab active:cursor-grabbing group/event`}>
+                              <p className={`text-[9px] sm:text-[9px] font-bold leading-tight ${evStyle.text} truncate`}>
                                 {ev.title}
                               </p>
                               {ev.event_time &&
-                                <p className={`text-[6px] sm:text-[8px] font-bold uppercase tracking-wider ${evStyle.label}`}>
+                                <p className={`text-[8px] sm:text-[8px] font-bold uppercase tracking-wider ${evStyle.label}`}>
                                   {ev.event_time.slice(0, 5)}
                                 </p>
                               }
