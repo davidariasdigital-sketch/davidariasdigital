@@ -153,9 +153,7 @@ const OverviewView = ({ onNavigate }: Props) => {
         </div>
         <div className="lg:col-span-1 flex flex-col gap-4">
           <PrioritiesSection />
-          <div className="flex-1 min-h-0">
-            <RoutineSection />
-          </div>
+          <RoutineSection />
         </div>
       </div>
       <MonthlyCalendar />

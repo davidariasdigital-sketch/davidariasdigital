@@ -98,7 +98,7 @@ const RoutineSection = () => {
     setProgress((p) => ({ ...p, [key]: (p[key] ?? 0) > 0 ? 0 : 1 }));
 
   return (
-    <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-purple-50 border-purple-200 flex flex-col h-full">
+    <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-purple-50 border-purple-200 flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-display font-bold text-base uppercase tracking-wide text-black">
           Rutina
