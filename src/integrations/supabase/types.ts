@@ -182,6 +182,7 @@ export type Database = {
         Row: {
           amount: number
           client_id: string | null
+          client_name: string | null
           concept: string
           created_at: string
           due_date: string | null
@@ -195,6 +196,7 @@ export type Database = {
         Insert: {
           amount?: number
           client_id?: string | null
+          client_name?: string | null
           concept: string
           created_at?: string
           due_date?: string | null
@@ -208,6 +210,7 @@ export type Database = {
         Update: {
           amount?: number
           client_id?: string | null
+          client_name?: string | null
           concept?: string
           created_at?: string
           due_date?: string | null
@@ -328,6 +331,7 @@ export type Database = {
       quotations: {
         Row: {
           client_id: string | null
+          client_name: string | null
           conditions: Json
           costos: Json
           created_at: string
@@ -343,6 +347,7 @@ export type Database = {
         }
         Insert: {
           client_id?: string | null
+          client_name?: string | null
           conditions?: Json
           costos?: Json
           created_at?: string
@@ -358,6 +363,7 @@ export type Database = {
         }
         Update: {
           client_id?: string | null
+          client_name?: string | null
           conditions?: Json
           costos?: Json
           created_at?: string
