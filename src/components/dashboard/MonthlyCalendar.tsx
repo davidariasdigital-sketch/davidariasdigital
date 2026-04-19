@@ -36,6 +36,16 @@ const colorClasses: Record<string, string> = {
   purple: "bg-purple-50 text-purple-700 border-purple-200"
 };
 
+const to12h = (t: string | null | undefined) => {
+  if (!t) return "";
+  const [hStr, mStr] = t.split(":");
+  const h = parseInt(hStr, 10);
+  const m = parseInt(mStr || "0", 10);
+  const period = h >= 12 ? "pm" : "am";
+  const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return m === 0 ? `${display}${period}` : `${display}:${String(m).padStart(2, "0")}${period}`;
+};
+
 const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
 const DAYS_FULL = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -264,7 +274,7 @@ const MonthlyCalendar = () => {
                               </p>
                               {ev.event_time &&
                                 <p className={`text-[6px] sm:text-[8px] font-bold uppercase tracking-wider ${evStyle.label}`}>
-                                  {ev.event_time.slice(0, 5)}
+                                  {to12h(ev.event_time)}
                                 </p>
                               }
                             </div>
@@ -304,7 +314,7 @@ const MonthlyCalendar = () => {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold truncate">{ev.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      {ev.event_time && <span className="text-xs opacity-75">{ev.event_time.slice(0, 5)}</span>}
+                      {ev.event_time && <span className="text-xs opacity-75">{to12h(ev.event_time)}</span>}
                       {(ev as any).clients?.name && <span className="text-xs opacity-75">• {(ev as any).clients.name}</span>}
                     </div>
                     {ev.description && <p className="text-xs opacity-60 mt-1">{ev.description}</p>}
