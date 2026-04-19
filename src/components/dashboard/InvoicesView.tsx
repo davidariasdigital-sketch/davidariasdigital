@@ -14,12 +14,11 @@ import {
 interface Invoice {
   id: string; concept: string; amount: number; status: string;
   due_date: string | null; paid_date: string | null; notes: string | null;
-  client_id: string | null; quotation_id: string | null; created_at: string;
+  client_id: string | null; client_name: string | null; quotation_id: string | null; created_at: string;
   clients?: { name: string } | null;
 }
 
-interface Client { id: string; name: string; }
-interface Quotation { id: string; title: string; total: number; description: string | null; client_id: string | null; items: any; clients?: { name: string } | null; }
+interface Quotation { id: string; title: string; total: number; description: string | null; client_id: string | null; client_name: string | null; items: any; clients?: { name: string } | null; }
 
 const statusLabels: Record<string, string> = { pendiente: "Pendiente", pagada: "Pagada", vencida: "Vencida" };
 const statusColors: Record<string, string> = {
