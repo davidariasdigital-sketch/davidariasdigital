@@ -46,7 +46,7 @@ const DEFAULTS = [
   { title: "Digital", description: "", icon: "smartphone", color: "blue", sort_order: 2 },
 ];
 
-const SLOTS = 3;
+const SLOTS = 1;
 
 const formatDue = (iso: string) =>
   new Date(iso + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short" });
@@ -154,20 +154,8 @@ const PrioritiesSection = () => {
 
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
-      <div className="flex items-center justify-end mb-3">
-        <button
-          onClick={addPriority}
-          className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"
-          title="Agregar prioridad"
-        >
-          <Plus size={14} />
-        </button>
-      </div>
-
       {loading ? (
         <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-6">Cargando...</p>
-      ) : items.length === 0 ? (
-        <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-6">Sin prioridades. Agrega una para empezar.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {items.map((item) => {
@@ -291,6 +279,16 @@ const PrioritiesSection = () => {
               </div>
             );
           })}
+
+          {/* Add new priority tile */}
+          <button
+            onClick={addPriority}
+            title="Agregar prioridad"
+            className="rounded-2xl border border-dashed border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:border-[hsl(var(--dash-text))]/40 hover:bg-white/40 transition-all flex flex-col items-center justify-center gap-1 min-h-[120px]"
+          >
+            <Plus size={18} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Nueva prioridad</span>
+          </button>
         </div>
       )}
     </div>
