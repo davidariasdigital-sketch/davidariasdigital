@@ -56,10 +56,9 @@ interface QuotationsViewProps {
 
 const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: QuotationsViewProps = {}) => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
+  const [form, setForm] = useState({ title: "", description: "", client_name: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0, entregables: [] }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
@@ -71,12 +70,8 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   const isMobile = useIsMobile();
 
   const fetchData = async () => {
-    const [q, c] = await Promise.all([
-      supabase.from("quotations").select("*, clients(name)").order("created_at", { ascending: false }),
-      supabase.from("clients").select("id, name"),
-    ]);
+    const q = await supabase.from("quotations").select("*, clients(name)").order("created_at", { ascending: false });
     if (q.data) setQuotations(q.data as unknown as Quotation[]);
-    if (c.data) setClients(c.data);
   };
 
   useEffect(() => { fetchData(); }, []);
