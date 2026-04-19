@@ -138,6 +138,7 @@ export type Database = {
           event_date: string
           event_time: string | null
           id: string
+          show_in_monthly: boolean
           title: string
           user_id: string
         }
@@ -150,6 +151,7 @@ export type Database = {
           event_date: string
           event_time?: string | null
           id?: string
+          show_in_monthly?: boolean
           title: string
           user_id: string
         }
@@ -162,6 +164,7 @@ export type Database = {
           event_date?: string
           event_time?: string | null
           id?: string
+          show_in_monthly?: boolean
           title?: string
           user_id?: string
         }

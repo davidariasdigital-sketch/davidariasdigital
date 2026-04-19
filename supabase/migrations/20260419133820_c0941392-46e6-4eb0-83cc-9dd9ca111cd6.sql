@@ -1,0 +1,1 @@
+ALTER TABLE public.events ADD COLUMN IF NOT EXISTS show_in_monthly boolean NOT NULL DEFAULT true;
