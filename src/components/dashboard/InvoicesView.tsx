@@ -215,12 +215,12 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
               </div>
               <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">{formatCOP(Number(inv.amount))}</span>
-                {inv.clients?.name && <span>• {inv.clients.name}</span>}
+                {(inv.client_name || inv.clients?.name) && <span>• {inv.client_name || inv.clients?.name}</span>}
                 {inv.due_date && <span className="hidden sm:inline">• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.clients?.name ?? "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.client_name || inv.clients?.name || "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
