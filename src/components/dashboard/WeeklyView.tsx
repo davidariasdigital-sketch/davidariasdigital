@@ -175,7 +175,7 @@ const WeeklyView = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("events").insert({
-      title: `${ev.title} (copia)`,
+      title: ev.title,
       description: ev.description,
       event_date: ev.event_date,
       event_time: ev.event_time,
