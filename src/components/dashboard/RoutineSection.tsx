@@ -36,7 +36,7 @@ const ProgressRing = ({ value, goal }: ProgressRingProps) => {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(45 100% 90%)"
+          stroke="hsl(270 60% 90%)"
           strokeWidth={stroke}
         />
         <circle
@@ -44,7 +44,7 @@ const ProgressRing = ({ value, goal }: ProgressRingProps) => {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(0 0% 0%)"
+          stroke="hsl(270 70% 45%)"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -75,8 +75,8 @@ const CheckCircle = ({ done, onToggle }: CheckCircleProps) => (
     aria-label={done ? "Desmarcar" : "Marcar como hecho"}
     className={`relative shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
       done
-        ? "bg-black text-yellow-400 scale-100"
-        : "bg-yellow-100 border-2 border-dashed border-yellow-300 text-black/30 hover:border-black/40 hover:text-black/60"
+        ? "bg-purple-600 text-white scale-100"
+        : "bg-purple-100 border-2 border-dashed border-purple-300 text-purple-400 hover:border-purple-500 hover:text-purple-600"
     }`}
   >
     <Check size={done ? 30 : 24} strokeWidth={3} className="transition-all" />
@@ -98,7 +98,7 @@ const RoutineSection = () => {
     setProgress((p) => ({ ...p, [key]: (p[key] ?? 0) > 0 ? 0 : 1 }));
 
   return (
-    <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-yellow-50 border-yellow-200 flex flex-col h-full">
+    <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-purple-50 border-purple-200 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-display font-bold text-base uppercase tracking-wide text-black">
           Rutina
@@ -114,7 +114,7 @@ const RoutineSection = () => {
           return (
             <div
               key={title}
-              className="flex-1 bg-white border border-yellow-200 rounded-2xl p-3 flex items-center gap-3 transition-shadow hover:shadow-md"
+              className="flex-1 bg-white border border-purple-200 rounded-2xl p-3 flex items-center gap-3 transition-shadow hover:shadow-md"
             >
               {type === "check" ? (
                 <CheckCircle done={done} onToggle={() => toggle(title)} />
@@ -139,14 +139,14 @@ const RoutineSection = () => {
                   <button
                     onClick={() => inc(title, goal)}
                     aria-label="Sumar"
-                    className="w-7 h-7 rounded-full bg-black text-yellow-400 hover:scale-110 flex items-center justify-center transition-transform"
+                    className="w-7 h-7 rounded-full bg-purple-600 text-white hover:scale-110 flex items-center justify-center transition-transform"
                   >
                     <Plus size={13} strokeWidth={3} />
                   </button>
                   <button
                     onClick={() => dec(title)}
                     aria-label="Restar"
-                    className="w-7 h-7 rounded-full bg-yellow-200 text-black hover:bg-yellow-300 flex items-center justify-center transition-colors"
+                    className="w-7 h-7 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 flex items-center justify-center transition-colors"
                   >
                     <Minus size={13} strokeWidth={3} />
                   </button>
