@@ -17,7 +17,7 @@ interface QuotationItem { description: string; amount: number; entregables?: str
 
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
-  total: number; status: string; client_id: string | null; created_at: string;
+  total: number; status: string; client_id: string | null; client_name: string | null; created_at: string;
   clients?: { name: string } | null; conditions?: string[]; costos?: string[];
   requisitos?: string[];
 }
@@ -39,7 +39,7 @@ const COSTOS_OPTIONS = [
   "Seguro de riesgo",
 ];
 
-interface Client { id: string; name: string; }
+
 
 const statusColors: Record<string, string> = {
   borrador: "bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] border-[hsl(var(--dash-card-border))]",
@@ -56,10 +56,9 @@ interface QuotationsViewProps {
 
 const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: QuotationsViewProps = {}) => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", client_id: "", status: "borrador" as string, delivery_date: "" });
+  const [form, setForm] = useState({ title: "", description: "", client_name: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0, entregables: [] }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
@@ -71,12 +70,8 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   const isMobile = useIsMobile();
 
   const fetchData = async () => {
-    const [q, c] = await Promise.all([
-      supabase.from("quotations").select("*, clients(name)").order("created_at", { ascending: false }),
-      supabase.from("clients").select("id, name"),
-    ]);
+    const q = await supabase.from("quotations").select("*, clients(name)").order("created_at", { ascending: false });
     if (q.data) setQuotations(q.data as unknown as Quotation[]);
-    if (c.data) setClients(c.data);
   };
 
   useEffect(() => { fetchData(); }, []);
@@ -95,7 +90,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
       const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
       const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
       const payload = {
-        title: form.title, description: form.description || null, client_id: form.client_id || null,
+        title: form.title, description: form.description || null, client_id: null, client_name: form.client_name.trim() || null,
         status: form.status as any, items: items as any, total, conditions: conditions as any,
         costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
       };
@@ -118,7 +113,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   };
 
   const resetForm = () => {
-    setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
+    setForm({ title: "", description: "", client_name: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0, entregables: [] }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
@@ -133,7 +128,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
 
   const handleEdit = (q: Quotation) => {
     setEditing(q);
-    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
+    setForm({ title: q.title, description: q.description ?? "", client_name: q.client_name ?? q.clients?.name ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     const parsedItems = q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }];
     setItems(parsedItems);
     setEntregableInputs(parsedItems.map(() => ""));
@@ -163,10 +158,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
     <div className="space-y-3 sm:space-y-4">
       {/* Title & Client */}
       <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={inputCls} />
-      <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
-        <option value="">Sin cliente</option>
-        {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-      </select>
+      <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
 
       <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo" className={`${inputCls} min-h-[50px]`} rows={2} />
       <QuotationAIAssistant
@@ -356,7 +348,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
               </div>
               <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">${Number(q.total).toLocaleString()} COP</span>
-                {q.clients?.name && <span>• {q.clients.name}</span>}
+                {(q.client_name || q.clients?.name) && <span>• {q.client_name || q.clients?.name}</span>}
                 {(q as any).delivery_date && <span className="hidden sm:inline">• {new Date((q as any).delivery_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>

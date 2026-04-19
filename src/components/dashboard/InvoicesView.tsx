@@ -14,12 +14,11 @@ import {
 interface Invoice {
   id: string; concept: string; amount: number; status: string;
   due_date: string | null; paid_date: string | null; notes: string | null;
-  client_id: string | null; quotation_id: string | null; created_at: string;
+  client_id: string | null; client_name: string | null; quotation_id: string | null; created_at: string;
   clients?: { name: string } | null;
 }
 
-interface Client { id: string; name: string; }
-interface Quotation { id: string; title: string; total: number; description: string | null; client_id: string | null; items: any; clients?: { name: string } | null; }
+interface Quotation { id: string; title: string; total: number; description: string | null; client_id: string | null; client_name: string | null; items: any; clients?: { name: string } | null; }
 
 const statusLabels: Record<string, string> = { pendiente: "Pendiente", pagada: "Pagada", vencida: "Vencida" };
 const statusColors: Record<string, string> = {
@@ -37,26 +36,23 @@ interface InvoicesViewProps {
 const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesViewProps = {}) => {
   const isMobile = useIsMobile();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "",
+    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "",
   });
 
   const formatCOP = (v: number) =>
     new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
 
   const fetchAll = async () => {
-    const [inv, cl, qt] = await Promise.all([
+    const [inv, qt] = await Promise.all([
       supabase.from("invoices").select("*, clients(name)").order("created_at", { ascending: false }),
-      supabase.from("clients").select("id, name").order("name"),
-      supabase.from("quotations").select("id, title, total, description, client_id, items, clients(name)").order("created_at", { ascending: false }),
+      supabase.from("quotations").select("id, title, total, description, client_id, client_name, items, clients(name)").order("created_at", { ascending: false }),
     ]);
     setInvoices((inv.data as any) ?? []);
-    setClients(cl.data ?? []);
-    setQuotations(qt.data ?? []);
+    setQuotations((qt.data as any) ?? []);
   };
 
   useEffect(() => { fetchAll(); }, []);
@@ -67,7 +63,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
   }, [triggerNew]);
 
   const resetForm = () => {
-    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "" });
+    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "" });
     setEditingId(null);
     setShowForm(false);
   };
@@ -79,7 +75,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     const payload = {
       concept: form.concept, amount: parseFloat(form.amount), status: form.status as any,
       due_date: form.due_date || null, paid_date: form.paid_date || null, notes: form.notes || null,
-      client_id: form.client_id || null, quotation_id: form.quotation_id || null, user_id: user.id,
+      client_id: null, client_name: form.client_name.trim() || null, quotation_id: form.quotation_id || null, user_id: user.id,
     };
     if (editingId) { await supabase.from("invoices").update(payload).eq("id", editingId); }
     else { await supabase.from("invoices").insert(payload); }
@@ -92,7 +88,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     setForm({
       concept: inv.concept, amount: String(inv.amount), status: inv.status,
       due_date: inv.due_date ?? "", paid_date: inv.paid_date ?? "", notes: inv.notes ?? "",
-      client_id: inv.client_id ?? "", quotation_id: inv.quotation_id ?? "",
+      client_name: inv.client_name ?? inv.clients?.name ?? "", quotation_id: inv.quotation_id ?? "",
     });
     setEditingId(inv.id);
     setShowForm(true);
@@ -155,10 +151,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
                 <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
               </div>
             </div>
-            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
-              <option value="">Sin cliente</option>
-              {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
             <select value={form.quotation_id} onChange={(e) => {
               const qId = e.target.value;
               const qt = quotations.find((q) => q.id === qId);
@@ -166,7 +159,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
                 const itemsSummary = Array.isArray(qt.items)
                   ? (qt.items as any[]).map((it: any) => it.concept || it.title || "").filter(Boolean).join(", ")
                   : "";
-                setForm({ ...form, quotation_id: qId, concept: itemsSummary || qt.title, amount: String(qt.total), client_id: qt.client_id ?? "" });
+                setForm({ ...form, quotation_id: qId, concept: itemsSummary || qt.title, amount: String(qt.total), client_name: qt.client_name ?? qt.clients?.name ?? form.client_name });
               } else {
                 setForm({ ...form, quotation_id: qId });
               }
@@ -222,12 +215,12 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
               </div>
               <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">{formatCOP(Number(inv.amount))}</span>
-                {inv.clients?.name && <span>• {inv.clients.name}</span>}
+                {(inv.client_name || inv.clients?.name) && <span>• {inv.client_name || inv.clients?.name}</span>}
                 {inv.due_date && <span className="hidden sm:inline">• Vence: {new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.clients?.name ?? "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.client_name || inv.clients?.name || "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
