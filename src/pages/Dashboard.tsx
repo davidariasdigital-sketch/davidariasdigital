@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import OverviewView from "@/components/dashboard/OverviewView";
 import ClientsView from "@/components/dashboard/ClientsView";
 import QuotationsView from "@/components/dashboard/QuotationsView";
@@ -53,14 +54,13 @@ const Dashboard = () => {
   return (
     <SidebarProvider style={{ ["--sidebar-width" as any]: "4rem" }}>
       <div className="min-h-screen flex w-full bg-[hsl(var(--dash-bg))]">
-        <DashboardSidebar currentView={view} onViewChange={setView} />
+        {/* Desktop sidebar (hidden on mobile) */}
+        <div className="hidden md:block">
+          <DashboardSidebar currentView={view} onViewChange={setView} />
+        </div>
         <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-          {/* Mobile header with sidebar trigger */}
-          <header className="md:hidden flex items-center h-14 px-4 border-b border-[hsl(var(--dash-card-border))] bg-[hsl(var(--dash-card-bg))]">
-            <SidebarTrigger className="text-[hsl(var(--dash-text))] h-8 w-8" />
-          </header>
           {/* Content */}
-          <main className="flex-1 px-3 py-4 sm:px-6 md:px-6 md:py-6 overflow-auto">
+          <main className="flex-1 px-3 py-4 sm:px-6 md:px-6 md:py-6 overflow-auto pb-24 md:pb-6">
             <motion.div
               key={view}
               initial={{ opacity: 0 }}
@@ -71,6 +71,8 @@ const Dashboard = () => {
             </motion.div>
           </main>
         </div>
+        {/* Mobile bottom nav */}
+        <MobileBottomNav currentView={view} onViewChange={setView} />
       </div>
     </SidebarProvider>);
 
