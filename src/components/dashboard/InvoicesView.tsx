@@ -28,7 +28,13 @@ const statusColors: Record<string, string> = {
   vencida: "bg-red-50 text-red-700 border-red-200",
 };
 
-const InvoicesView = () => {
+interface InvoicesViewProps {
+  embedded?: boolean;
+  triggerNew?: number;
+  onMutate?: () => void;
+}
+
+const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesViewProps = {}) => {
   const isMobile = useIsMobile();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -54,6 +60,11 @@ const InvoicesView = () => {
   };
 
   useEffect(() => { fetchAll(); }, []);
+
+  useEffect(() => {
+    if (triggerNew > 0) { resetForm(); setShowForm(true); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerNew]);
 
   const resetForm = () => {
     setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "" });
