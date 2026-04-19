@@ -48,7 +48,13 @@ const statusColors: Record<string, string> = {
   rechazada: "bg-red-50 text-red-700 border-red-200",
 };
 
-const QuotationsView = () => {
+interface QuotationsViewProps {
+  embedded?: boolean;
+  triggerNew?: number;
+  onMutate?: () => void;
+}
+
+const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: QuotationsViewProps = {}) => {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -74,6 +80,11 @@ const QuotationsView = () => {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+  useEffect(() => {
+    if (triggerNew > 0) { resetForm(); setShowForm(true); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerNew]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
