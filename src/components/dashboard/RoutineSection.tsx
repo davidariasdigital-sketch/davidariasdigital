@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { Dumbbell, BookOpen, Film, Plus, Minus } from "lucide-react";
+import { Dumbbell, BookOpen, Film, Plus, Minus, Check } from "lucide-react";
 
 interface Routine {
   icon: any;
   title: string;
   unit: string;
   goal: number;
+  type: "counter" | "check";
 }
 
 const ROUTINES: Routine[] = [
-  { icon: Dumbbell, title: "GYM", unit: "días / sem", goal: 4 },
-  { icon: BookOpen, title: "LEER", unit: "min / día", goal: 30 },
-  { icon: Film, title: "CINE", unit: "película / sem", goal: 1 },
+  { icon: Dumbbell, title: "GYM", unit: "días / sem", goal: 4, type: "counter" },
+  { icon: BookOpen, title: "LEER", unit: "30 min / día", goal: 1, type: "check" },
+  { icon: Film, title: "CINE", unit: "película / sem", goal: 1, type: "counter" },
 ];
 
 interface ProgressRingProps {
@@ -63,6 +64,25 @@ const ProgressRing = ({ value, goal }: ProgressRingProps) => {
   );
 };
 
+interface CheckCircleProps {
+  done: boolean;
+  onToggle: () => void;
+}
+
+const CheckCircle = ({ done, onToggle }: CheckCircleProps) => (
+  <button
+    onClick={onToggle}
+    aria-label={done ? "Desmarcar" : "Marcar como hecho"}
+    className={`relative shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+      done
+        ? "bg-black text-yellow-400 scale-100"
+        : "bg-yellow-100 border-2 border-dashed border-yellow-300 text-black/30 hover:border-black/40 hover:text-black/60"
+    }`}
+  >
+    <Check size={done ? 30 : 24} strokeWidth={3} className="transition-all" />
+  </button>
+);
+
 const RoutineSection = () => {
   const [progress, setProgress] = useState<Record<string, number>>({
     GYM: 0,
@@ -74,6 +94,8 @@ const RoutineSection = () => {
     setProgress((p) => ({ ...p, [key]: Math.min(max, (p[key] ?? 0) + 1) }));
   const dec = (key: string) =>
     setProgress((p) => ({ ...p, [key]: Math.max(0, (p[key] ?? 0) - 1) }));
+  const toggle = (key: string) =>
+    setProgress((p) => ({ ...p, [key]: (p[key] ?? 0) > 0 ? 0 : 1 }));
 
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-yellow-50 border-yellow-200 flex flex-col h-full">
@@ -86,14 +108,19 @@ const RoutineSection = () => {
         </span>
       </div>
       <div className="flex-1 flex flex-col gap-3">
-        {ROUTINES.map(({ icon: Icon, title, unit, goal }) => {
+        {ROUTINES.map(({ icon: Icon, title, unit, goal, type }) => {
           const current = progress[title] ?? 0;
+          const done = current > 0;
           return (
             <div
               key={title}
               className="flex-1 bg-white border border-yellow-200 rounded-2xl p-3 flex items-center gap-3 transition-shadow hover:shadow-md"
             >
-              <ProgressRing value={current} goal={goal} />
+              {type === "check" ? (
+                <CheckCircle done={done} onToggle={() => toggle(title)} />
+              ) : (
+                <ProgressRing value={current} goal={goal} />
+              )}
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
@@ -107,22 +134,24 @@ const RoutineSection = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-1 shrink-0">
-                <button
-                  onClick={() => inc(title, goal)}
-                  aria-label="Sumar"
-                  className="w-7 h-7 rounded-full bg-black text-yellow-400 hover:scale-110 flex items-center justify-center transition-transform"
-                >
-                  <Plus size={13} strokeWidth={3} />
-                </button>
-                <button
-                  onClick={() => dec(title)}
-                  aria-label="Restar"
-                  className="w-7 h-7 rounded-full bg-yellow-200 text-black hover:bg-yellow-300 flex items-center justify-center transition-colors"
-                >
-                  <Minus size={13} strokeWidth={3} />
-                </button>
-              </div>
+              {type === "counter" && (
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button
+                    onClick={() => inc(title, goal)}
+                    aria-label="Sumar"
+                    className="w-7 h-7 rounded-full bg-black text-yellow-400 hover:scale-110 flex items-center justify-center transition-transform"
+                  >
+                    <Plus size={13} strokeWidth={3} />
+                  </button>
+                  <button
+                    onClick={() => dec(title)}
+                    aria-label="Restar"
+                    className="w-7 h-7 rounded-full bg-yellow-200 text-black hover:bg-yellow-300 flex items-center justify-center transition-colors"
+                  >
+                    <Minus size={13} strokeWidth={3} />
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
