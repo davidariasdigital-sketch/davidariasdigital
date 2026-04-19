@@ -85,6 +85,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     else { await supabase.from("invoices").insert(payload); }
     resetForm();
     fetchAll();
+    onMutate?.();
   };
 
   const handleEdit = (inv: Invoice) => {
@@ -100,6 +101,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
   const handleDelete = async (id: string) => {
     await supabase.from("invoices").delete().eq("id", id);
     fetchAll();
+    onMutate?.();
   };
 
   const totalPending = invoices.filter((i) => i.status === "pendiente").reduce((s, i) => s + Number(i.amount), 0);
