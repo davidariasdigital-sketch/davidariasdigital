@@ -9,7 +9,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,8 +31,7 @@ interface Props {
 }
 
 const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
-  const { state, setOpenMobile, isMobile } = useSidebar();
-  const collapsed = state === "collapsed";
+  const { setOpenMobile, isMobile } = useSidebar();
   const navigate = useNavigate();
 
   const handleNavClick = (view: View) => {
@@ -47,53 +45,40 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
   };
 
   return (
-    <Sidebar collapsible="offcanvas" className="border-none md:[&[data-collapsible]]:collapsible-icon">
-      <SidebarContent className="dash-sidebar flex flex-col justify-between py-2 border-r border-[hsl(var(--dash-card-border))]">
-        <div>
-          {/* Brand */}
-          <div className="px-4 pt-5 pb-8 flex items-center gap-3">
-            {!collapsed ? (
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={davidImg} alt="David Arias" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">DA</AvatarFallback>
-                </Avatar>
-                <div>
-                  <span className="text-sm font-display font-extrabold text-[hsl(0,0%,10%)] leading-tight block">
-                    David Arias
-                  </span>
-                  <p className="text-[9px] text-[hsl(var(--dash-text-muted))] font-medium uppercase tracking-wider whitespace-nowrap">
-                    Creativo Audiovisual
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <Avatar className="h-8 w-8 mx-auto">
-                <AvatarImage src={davidImg} alt="DA" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">DA</AvatarFallback>
-              </Avatar>
-            )}
-            
+    <Sidebar
+      collapsible="offcanvas"
+      // Override default 16rem width → narrow icon-only rail on desktop
+      style={{ ["--sidebar-width" as any]: "4rem" }}
+      className="border-none"
+    >
+      <SidebarContent className="dash-sidebar flex flex-col justify-between py-2 border-r border-[hsl(var(--dash-card-border))] items-center">
+        <div className="w-full flex flex-col items-center">
+          {/* Brand: avatar only */}
+          <div className="pt-4 pb-6 flex justify-center">
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={davidImg} alt="DA" />
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">DA</AvatarFallback>
+            </Avatar>
           </div>
 
-          {/* Nav */}
-          <SidebarGroup>
+          {/* Nav: icon-only */}
+          <SidebarGroup className="w-full">
             <SidebarGroupContent>
-              <SidebarMenu className="px-3 space-y-1">
+              <SidebarMenu className="px-2 space-y-1">
                 {items.map((item) => {
                   const isActive = currentView === item.view;
                   return (
                     <SidebarMenuItem key={item.view}>
                       <SidebarMenuButton
                         onClick={() => handleNavClick(item.view)}
-                        className={`cursor-pointer transition-all py-2.5 ${
+                        tooltip={item.title}
+                        className={`cursor-pointer transition-all justify-center !w-10 !h-10 mx-auto p-0 rounded-xl ${
                           isActive
                             ? "dash-sidebar-active"
-                            : "text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl"
+                            : "text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)]"
                         }`}
                       >
-                        <item.icon className="h-[18px] w-[18px]" strokeWidth={isActive ? 2.5 : 1.5} />
-                        {!collapsed && <span className="text-sm">{item.title}</span>}
+                        <item.icon className="!h-[18px] !w-[18px]" strokeWidth={isActive ? 2.5 : 1.5} />
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -104,23 +89,26 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
         </div>
 
         {/* Bottom */}
-        <div className="px-3 pb-4 space-y-1">
+        <div className="w-full px-2 pb-3 space-y-1">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl">
+              <SidebarMenuButton
+                asChild
+                tooltip="Guía de Estilo"
+                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl justify-center !w-10 !h-10 mx-auto p-0"
+              >
                 <Link to="/style-guide">
-                  <Palette className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                  {!collapsed && <span className="text-sm">Guía de Estilo</span>}
+                  <Palette className="!h-[18px] !w-[18px]" strokeWidth={1.5} />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={handleLogout}
-                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl cursor-pointer"
+                tooltip="Cerrar Sesión"
+                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl cursor-pointer justify-center !w-10 !h-10 mx-auto p-0"
               >
-                <LogOut className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                {!collapsed && <span className="text-sm">Cerrar Sesión</span>}
+                <LogOut className="!h-[18px] !w-[18px]" strokeWidth={1.5} />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
