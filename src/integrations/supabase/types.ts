@@ -47,6 +47,36 @@ export type Database = {
         }
         Relationships: []
       }
+      content_goals: {
+        Row: {
+          created_at: string
+          ideas_goal: number
+          ig_goal: number
+          solar_goal: number
+          tiktok_goal: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ideas_goal?: number
+          ig_goal?: number
+          solar_goal?: number
+          tiktok_goal?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ideas_goal?: number
+          ig_goal?: number
+          solar_goal?: number
+          tiktok_goal?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_items: {
         Row: {
           column_index: number
@@ -177,6 +207,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      follower_snapshots: {
+        Row: {
+          count: number
+          created_at: string
+          id: string
+          platform: string
+          snapshot_date: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          created_at?: string
+          id?: string
+          platform: string
+          snapshot_date?: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          created_at?: string
+          id?: string
+          platform?: string
+          snapshot_date?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       invoices: {
         Row: {

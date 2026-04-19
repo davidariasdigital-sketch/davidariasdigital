@@ -1,20 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Lightbulb, Instagram, Sun, Check, Video, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-
-const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
-const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
-
-interface ContentItem {
-  id: string; title: string; month: string; column_index: number;
-  row_index: number; is_idea: boolean; format: string | null; published: boolean;
-  description: string;
-}
-
-type Section = "instagram" | "ideas" | "solar" | "tiktok";
+import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
+import ContentGoalsCard from "./content/ContentGoalsCard";
+import FormatDistributionCard from "./content/FormatDistributionCard";
+import FollowerGrowthSection from "./content/FollowerGrowthSection";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -35,15 +27,6 @@ const ContentPlannerView = () => {
   }, []);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
-
-  const sectionKey = (section: Section) => {
-    switch (section) {
-      case "instagram": return "IG";
-      case "solar": return "SOLAR";
-      case "ideas": return "IDEAS";
-      case "tiktok": return "TIKTOK";
-    }
-  };
 
   const addItem = async (section: Section, colIndex: number) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -111,9 +94,6 @@ const ContentPlannerView = () => {
     setScriptItem(null);
   };
 
-  const getSlotItems = (section: Section, colIndex: number) =>
-    items.filter((i) => i.month === sectionKey(section) && i.column_index === colIndex).sort((a, b) => a.row_index - b.row_index);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -123,48 +103,42 @@ const ContentPlannerView = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Planeador de Contenido</h1>
-
-      {/* Instagram */}
+    <div className="space-y-5 sm:space-y-6">
       <div>
-        <SectionHeader icon={<Instagram className="h-5 w-5" />} label="Instagram" colorClass="text-pink-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn key={colIdx} section="instagram" colIndex={colIdx} items={getSlotItems("instagram", colIdx)} onAdd={() => addItem("instagram", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-pink-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
-          ))}
-        </div>
+        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Centro de Contenido</h1>
+        <p className="text-xs sm:text-sm text-[hsl(var(--dash-text-muted))] mt-0.5">Planea, publica y mide el crecimiento de tus cuentas.</p>
       </div>
 
-      {/* TikTok */}
-      <div>
-        <SectionHeader icon={<Video className="h-5 w-5" />} label="TikTok" colorClass="text-[hsl(var(--dash-text))]" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn key={`tiktok-${colIdx}`} section="tiktok" colIndex={colIdx} items={getSlotItems("tiktok", colIdx)} onAdd={() => addItem("tiktok", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-gray-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
-          ))}
+      {/* 2-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5">
+        {/* Left: planner */}
+        <div className="min-w-0">
+          <PlannerGrid
+            items={items}
+            editingId={editingId}
+            editValue={editValue}
+            onAdd={addItem}
+            onDragStart={handleDragStart}
+            onDrop={handleDrop}
+            onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }}
+            onEditChange={setEditValue}
+            onEditSave={saveEdit}
+            onDelete={deleteItem}
+            onFormatChange={updateFormat}
+            onTogglePublished={togglePublished}
+            onOpenScript={openScript}
+          />
         </div>
+
+        {/* Right: goals sidebar */}
+        <aside className="space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <ContentGoalsCard items={items} />
+          <FormatDistributionCard items={items} />
+        </aside>
       </div>
 
-      {/* Ideas Futuras */}
-      <div>
-        <SectionHeader icon={<Lightbulb className="h-5 w-5" />} label="Ideas Futuras" colorClass="text-amber-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {[0, 1, 2, 3, 4, 5, 6, 7].map((colIdx) => (
-            <ContentColumn key={`idea-${colIdx}`} section="ideas" colIndex={colIdx} items={getSlotItems("ideas", colIdx)} onAdd={() => addItem("ideas", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-amber-200" publishedClass="bg-emerald-50 border-emerald-200" formats={FORMATS} showFormat />
-          ))}
-        </div>
-      </div>
-
-      {/* Solar */}
-      <div>
-        <SectionHeader icon={<Sun className="h-5 w-5" />} label="Solar" colorClass="text-orange-500" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {[0, 1, 2, 3].map((colIdx) => (
-            <ContentColumn key={`solar-${colIdx}`} section="solar" colIndex={colIdx} items={getSlotItems("solar", colIdx)} onAdd={() => addItem("solar", colIdx)} onDrop={handleDrop} onDragStart={handleDragStart} editingId={editingId} editValue={editValue} onEditStart={(id, title) => { setEditingId(id); setEditValue(title); }} onEditChange={setEditValue} onEditSave={saveEdit} onDelete={deleteItem} onFormatChange={updateFormat} onTogglePublished={togglePublished} onOpenScript={openScript} accentClass="border-orange-200" publishedClass="bg-emerald-50 border-emerald-200" formats={SOLAR_FORMATS} showFormat />
-          ))}
-        </div>
-      </div>
+      {/* Bottom: follower growth */}
+      <FollowerGrowthSection />
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
@@ -183,92 +157,5 @@ const ContentPlannerView = () => {
     </div>
   );
 };
-
-const SectionHeader = ({ icon, label, colorClass }: { icon: React.ReactNode; label: string; colorClass: string }) => (
-  <div className="flex items-center gap-2 mb-3">
-    <span className={colorClass}>{icon}</span>
-    <h2 className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">{label}</h2>
-  </div>
-);
-
-interface ContentColumnProps {
-  section: Section; colIndex: number; items: ContentItem[]; onAdd: () => void;
-  onDrop: (section: Section, colIndex: number) => void; onDragStart: (item: ContentItem) => void;
-  editingId: string | null; editValue: string; onEditStart: (id: string, title: string) => void;
-  onEditChange: (val: string) => void; onEditSave: (id: string) => void; onDelete: (id: string) => void;
-  onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
-  onOpenScript: (item: ContentItem) => void;
-  accentClass: string; publishedClass: string; formats: string[]; showFormat?: boolean;
-}
-
-const ContentColumn = ({
-  section, colIndex, items, onAdd, onDrop, onDragStart,
-  editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, onOpenScript, accentClass, publishedClass, formats, showFormat,
-}: ContentColumnProps) => {
-  const [dragOver, setDragOver] = useState(false);
-
-  return (
-    <div
-      className={`group/col dash-tile rounded-2xl min-h-[100px] p-3 flex flex-col gap-2.5 transition-all ${dragOver ? "scale-[1.01] ring-1 ring-primary/30" : ""}`}
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
-    >
-      {items.map((item) => (
-        <div
-          key={item.id}
-          draggable
-          onDragStart={() => onDragStart(item)}
-          onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
-          className={`group relative rounded-xl px-3 py-3 text-xs cursor-grab active:cursor-grabbing transition-all border ${
-            item.published
-              ? `${publishedClass} text-emerald-800`
-              : "bg-[hsl(var(--dash-bg))] border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] hover:border-primary/20"
-          }`}
-        >
-          {editingId === item.id ? (
-            <input
-              autoFocus value={editValue}
-              onChange={(e) => onEditChange(e.target.value)}
-              onBlur={() => onEditSave(item.id)}
-              onKeyDown={(e) => { if (e.key === "Enter") onEditSave(item.id); if (e.key === "Escape") { onEditChange(item.title); onEditSave(item.id); } }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full bg-transparent outline-none text-xs text-center font-medium"
-            />
-          ) : (
-            <div className="flex flex-col items-center gap-1.5 relative">
-              <div className="absolute -top-1 -right-1 flex items-center gap-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={(e) => { e.stopPropagation(); onOpenScript(item); }} className="rounded-full p-0.5 hover:bg-blue-50 transition-all text-blue-500" title="Guion"><FileText className="h-2.5 w-2.5" /></button>
-                <button onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }} className={`rounded-full p-0.5 transition-all ${item.published ? "text-emerald-600 opacity-100" : "hover:bg-[hsl(0,0%,96%)]"}`}><Check className="h-2.5 w-2.5" /></button>
-                <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-0.5 hover:bg-red-50 transition-all"><X className="h-2.5 w-2.5" /></button>
-              </div>
-              <span className="text-[11px] leading-snug font-medium text-center w-full" onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}>{item.title || "Sin título"}</span>
-              {item.description && <span className="text-[9px] text-[hsl(var(--dash-text-muted))] truncate max-w-full">📝 Guion</span>}
-              {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
-            </div>
-          )}
-        </div>
-      ))}
-      {items.length === 0 && (
-        <button onClick={onAdd} className="flex-1 flex items-center justify-center text-[hsl(var(--dash-text-muted))] rounded-xl hover:bg-[hsl(0,0%,96%)] opacity-30 hover:opacity-80 transition-all">
-          <Plus className="h-5 w-5" />
-        </button>
-      )}
-    </div>
-  );
-};
-
-const FormatSelector = ({ value, onChange, formats }: { value: string | null; onChange: (f: string) => void; formats: string[] }) => (
-  <select
-    value={value ?? ""}
-    onClick={(e) => e.stopPropagation()}
-    onChange={(e) => { e.stopPropagation(); onChange(e.target.value); }}
-    className="text-[10px] opacity-80 hover:opacity-100 transition-opacity rounded-full px-2 py-0.5 bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] outline-none"
-  >
-    <option value="" disabled>Formato</option>
-    {formats.map((f) => <option key={f} value={f}>{f}</option>)}
-  </select>
-);
 
 export default ContentPlannerView;
