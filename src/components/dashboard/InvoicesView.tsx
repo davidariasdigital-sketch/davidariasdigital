@@ -151,10 +151,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
                 <input type="date" value={form.paid_date} onChange={(e) => setForm({ ...form, paid_date: e.target.value })} className={inputCls} />
               </div>
             </div>
-            <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
-              <option value="">Sin cliente</option>
-              {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
             <select value={form.quotation_id} onChange={(e) => {
               const qId = e.target.value;
               const qt = quotations.find((q) => q.id === qId);
@@ -162,7 +159,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
                 const itemsSummary = Array.isArray(qt.items)
                   ? (qt.items as any[]).map((it: any) => it.concept || it.title || "").filter(Boolean).join(", ")
                   : "";
-                setForm({ ...form, quotation_id: qId, concept: itemsSummary || qt.title, amount: String(qt.total), client_id: qt.client_id ?? "" });
+                setForm({ ...form, quotation_id: qId, concept: itemsSummary || qt.title, amount: String(qt.total), client_name: qt.client_name ?? qt.clients?.name ?? form.client_name });
               } else {
                 setForm({ ...form, quotation_id: qId });
               }
