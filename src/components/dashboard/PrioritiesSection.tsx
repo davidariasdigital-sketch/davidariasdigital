@@ -280,15 +280,17 @@ const PrioritiesSection = () => {
             );
           })}
 
-          {/* Add new priority tile */}
-          <button
-            onClick={addPriority}
-            title="Agregar prioridad"
-            className="rounded-2xl border border-dashed border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:border-[hsl(var(--dash-text))]/40 hover:bg-white/40 transition-all flex flex-col items-center justify-center gap-1 min-h-[120px]"
-          >
-            <Plus size={18} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider">Nueva prioridad</span>
-          </button>
+          {/* Add new priority tile (max 3) */}
+          {items.length < 3 && (
+            <button
+              onClick={addPriority}
+              title="Agregar prioridad"
+              className="rounded-2xl border border-dashed border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:border-[hsl(var(--dash-text))]/40 hover:bg-white/40 transition-all flex flex-col items-center justify-center gap-1 min-h-[120px]"
+            >
+              <Plus size={18} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider">Nueva prioridad</span>
+            </button>
+          )}
         </div>
       )}
     </div>
