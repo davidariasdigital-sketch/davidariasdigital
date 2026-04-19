@@ -154,11 +154,7 @@ const PrioritiesSection = () => {
 
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Prioridades & Pendientes</p>
-          <p className="text-[10px] text-[hsl(var(--dash-text-muted))] italic mt-0.5">Hasta {SLOTS} tareas pendientes por prioridad</p>
-        </div>
+      <div className="flex items-center justify-end mb-3">
         <button
           onClick={addPriority}
           className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"

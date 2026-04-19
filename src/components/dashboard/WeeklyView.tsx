@@ -273,11 +273,8 @@ const WeeklyView = () => {
 
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Esta Semana</p>
-          <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize mt-0.5">{monthLabel} · 7am – 10pm</p>
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize">{monthLabel}</p>
         <div className="flex items-center gap-1">
           <button onClick={() => shiftWeek(-1)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
             <ChevronLeft size={14} />
@@ -311,7 +308,7 @@ const WeeklyView = () => {
       </div>
 
       {/* Hour grid */}
-      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 overflow-x-auto">
+      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1">
         {/* Hour labels column */}
         <div className="flex flex-col">
           {HOURS.map((h) => (
