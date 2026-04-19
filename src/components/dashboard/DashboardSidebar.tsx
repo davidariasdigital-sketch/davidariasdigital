@@ -45,16 +45,11 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
   };
 
   return (
-    <Sidebar
-      collapsible="offcanvas"
-      // Override default 16rem width → narrow icon-only rail on desktop
-      style={{ ["--sidebar-width" as any]: "4rem" }}
-      className="border-none"
-    >
-      <SidebarContent className="dash-sidebar flex flex-col justify-between py-2 border-r border-[hsl(var(--dash-card-border))] items-center">
-        <div className="w-full flex flex-col items-center">
+    <Sidebar collapsible="offcanvas" className="border-none">
+      <SidebarContent className="dash-sidebar flex flex-col justify-between py-3 border-r border-[hsl(var(--dash-card-border))]">
+        <div className="flex flex-col items-center w-full">
           {/* Brand: avatar only */}
-          <div className="pt-4 pb-6 flex justify-center">
+          <div className="pt-1 pb-5 flex justify-center w-full">
             <Avatar className="h-9 w-9">
               <AvatarImage src={davidImg} alt="DA" />
               <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">DA</AvatarFallback>
@@ -62,23 +57,23 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
           </div>
 
           {/* Nav: icon-only */}
-          <SidebarGroup className="w-full">
+          <SidebarGroup className="w-full p-0">
             <SidebarGroupContent>
-              <SidebarMenu className="px-2 space-y-1">
+              <SidebarMenu className="space-y-1 items-center">
                 {items.map((item) => {
                   const isActive = currentView === item.view;
                   return (
-                    <SidebarMenuItem key={item.view}>
+                    <SidebarMenuItem key={item.view} className="w-auto">
                       <SidebarMenuButton
                         onClick={() => handleNavClick(item.view)}
                         tooltip={item.title}
-                        className={`cursor-pointer transition-all justify-center !w-10 !h-10 mx-auto p-0 rounded-xl ${
+                        className={`cursor-pointer transition-all !w-10 !h-10 !p-0 flex items-center justify-center rounded-xl ${
                           isActive
                             ? "dash-sidebar-active"
                             : "text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)]"
                         }`}
                       >
-                        <item.icon className="!h-[18px] !w-[18px]" strokeWidth={isActive ? 2.5 : 1.5} />
+                        <item.icon className="!h-[18px] !w-[18px] shrink-0" strokeWidth={isActive ? 2.5 : 1.5} />
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -89,26 +84,26 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
         </div>
 
         {/* Bottom */}
-        <div className="w-full px-2 pb-3 space-y-1">
-          <SidebarMenu>
-            <SidebarMenuItem>
+        <div className="w-full pb-1">
+          <SidebarMenu className="space-y-1 items-center">
+            <SidebarMenuItem className="w-auto">
               <SidebarMenuButton
                 asChild
                 tooltip="Guía de Estilo"
-                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl justify-center !w-10 !h-10 mx-auto p-0"
+                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl !w-10 !h-10 !p-0 flex items-center justify-center"
               >
                 <Link to="/style-guide">
-                  <Palette className="!h-[18px] !w-[18px]" strokeWidth={1.5} />
+                  <Palette className="!h-[18px] !w-[18px] shrink-0" strokeWidth={1.5} />
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="w-auto">
               <SidebarMenuButton
                 onClick={handleLogout}
                 tooltip="Cerrar Sesión"
-                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl cursor-pointer justify-center !w-10 !h-10 mx-auto p-0"
+                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl cursor-pointer !w-10 !h-10 !p-0 flex items-center justify-center"
               >
-                <LogOut className="!h-[18px] !w-[18px]" strokeWidth={1.5} />
+                <LogOut className="!h-[18px] !w-[18px] shrink-0" strokeWidth={1.5} />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
