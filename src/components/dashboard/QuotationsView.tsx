@@ -39,7 +39,7 @@ const COSTOS_OPTIONS = [
   "Seguro de riesgo",
 ];
 
-interface Client { id: string; name: string; }
+
 
 const statusColors: Record<string, string> = {
   borrador: "bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] border-[hsl(var(--dash-card-border))]",
