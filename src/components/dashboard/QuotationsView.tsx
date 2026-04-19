@@ -17,7 +17,7 @@ interface QuotationItem { description: string; amount: number; entregables?: str
 
 interface Quotation {
   id: string; title: string; description: string | null; items: QuotationItem[];
-  total: number; status: string; client_id: string | null; created_at: string;
+  total: number; status: string; client_id: string | null; client_name: string | null; created_at: string;
   clients?: { name: string } | null; conditions?: string[]; costos?: string[];
   requisitos?: string[];
 }
