@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, DragEvent } from "react";
+import { useEffect, useState, useRef, DragEvent, MouseEvent as ReactMouseEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, Plus, X, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
 
 interface EventItem {
   id: string;
@@ -8,15 +8,16 @@ interface EventItem {
   description: string | null;
   event_date: string;
   event_time: string | null;
+  end_time: string | null;
   color: string;
 }
 
-const colorTile: Record<string, { bg: string; text: string; border: string }> = {
-  primary: { bg: "bg-amber-100", text: "text-amber-900", border: "border-amber-200" },
-  blue: { bg: "bg-blue-100", text: "text-blue-900", border: "border-blue-200" },
-  green: { bg: "bg-green-100", text: "text-green-900", border: "border-green-200" },
-  red: { bg: "bg-pink-100", text: "text-pink-900", border: "border-pink-200" },
-  purple: { bg: "bg-purple-100", text: "text-purple-900", border: "border-purple-200" },
+const colorTile: Record<string, { bg: string; text: string; border: string; ring: string }> = {
+  primary: { bg: "bg-amber-100", text: "text-amber-900", border: "border-amber-300", ring: "ring-amber-400" },
+  blue: { bg: "bg-blue-100", text: "text-blue-900", border: "border-blue-300", ring: "ring-blue-400" },
+  green: { bg: "bg-green-100", text: "text-green-900", border: "border-green-300", ring: "ring-green-400" },
+  red: { bg: "bg-pink-100", text: "text-pink-900", border: "border-pink-300", ring: "ring-pink-400" },
+  purple: { bg: "bg-purple-100", text: "text-purple-900", border: "border-purple-300", ring: "ring-purple-400" },
 };
 
 const COLORS = ["primary", "blue", "green", "red", "purple"];
@@ -30,6 +31,12 @@ const colorDots: Record<string, string> = {
 
 const DAY_NAMES = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
 
+// Hour grid 7:00 → 21:00 (last slot = 20-21). 14 slots of 1h.
+const START_HOUR = 7;
+const END_HOUR = 21;
+const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
+const SLOT_HEIGHT = 48; // px per hour
+
 const toISO = (d: Date) => {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -40,19 +47,41 @@ const toISO = (d: Date) => {
 const getMonday = (date: Date) => {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
-  const dow = d.getDay(); // 0=Sun..6=Sat
+  const dow = d.getDay();
   const diff = dow === 0 ? -6 : 1 - dow;
   d.setDate(d.getDate() + diff);
   return d;
 };
 
+// "HH:MM[:SS]" → decimal hours (e.g. "08:30" → 8.5)
+const timeToHours = (t: string | null): number | null => {
+  if (!t) return null;
+  const [h, m] = t.split(":").map(Number);
+  return h + (m || 0) / 60;
+};
+
+const formatHourLabel = (h: number) => {
+  const period = h >= 12 ? "pm" : "am";
+  const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${display}${period}`;
+};
+
+const padTime = (h: number, m: number) =>
+  `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+
 const WeeklyView = () => {
   const [weekStart, setWeekStart] = useState<Date>(() => getMonday(new Date()));
   const [events, setEvents] = useState<EventItem[]>([]);
-  const [dragOverDay, setDragOverDay] = useState<string | null>(null);
-  const [popupDay, setPopupDay] = useState<string | null>(null);
+  const [dragOverSlot, setDragOverSlot] = useState<string | null>(null);
+  const [popupOpen, setPopupOpen] = useState(false);
   const [editing, setEditing] = useState<EventItem | null>(null);
-  const [form, setForm] = useState({ title: "", event_time: "", color: "primary" });
+  const [form, setForm] = useState({
+    title: "",
+    event_date: "",
+    event_time: "",
+    end_time: "",
+    color: "primary",
+  });
   const popupRef = useRef<HTMLDivElement>(null);
 
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -79,54 +108,58 @@ const WeeklyView = () => {
   }, [weekStart]);
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: globalThis.MouseEvent) => {
       if (popupRef.current && !popupRef.current.contains(e.target as Node)) closePopup();
     };
-    if (popupDay) document.addEventListener("mousedown", handler);
+    if (popupOpen) document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [popupDay]);
+  }, [popupOpen]);
 
   const closePopup = () => {
-    setPopupDay(null);
+    setPopupOpen(false);
     setEditing(null);
-    setForm({ title: "", event_time: "", color: "primary" });
+    setForm({ title: "", event_date: "", event_time: "", end_time: "", color: "primary" });
   };
 
-  const openCreate = (dayISO: string) => {
+  const openCreate = (dayISO: string, hour: number) => {
     setEditing(null);
-    setForm({ title: "", event_time: "", color: "primary" });
-    setPopupDay(dayISO);
+    setForm({
+      title: "",
+      event_date: dayISO,
+      event_time: padTime(hour, 0),
+      end_time: padTime(hour + 1, 0),
+      color: "primary",
+    });
+    setPopupOpen(true);
   };
 
   const openEdit = (ev: EventItem) => {
     setEditing(ev);
     setForm({
       title: ev.title,
+      event_date: ev.event_date,
       event_time: ev.event_time ? ev.event_time.slice(0, 5) : "",
+      end_time: ev.end_time ? ev.end_time.slice(0, 5) : "",
       color: ev.color || "primary",
     });
-    setPopupDay(ev.event_date);
+    setPopupOpen(true);
   };
 
   const handleSubmit = async () => {
-    if (!form.title.trim() || !popupDay) return;
+    if (!form.title.trim() || !form.event_date) return;
+    const payload = {
+      title: form.title.trim(),
+      event_date: form.event_date,
+      event_time: form.event_time || null,
+      end_time: form.end_time || null,
+      color: form.color,
+    };
     if (editing) {
-      await supabase.from("events").update({
-        title: form.title.trim(),
-        event_time: form.event_time || null,
-        color: form.color,
-        event_date: popupDay,
-      } as any).eq("id", editing.id);
+      await supabase.from("events").update(payload as any).eq("id", editing.id);
     } else {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      await supabase.from("events").insert({
-        title: form.title.trim(),
-        event_date: popupDay,
-        event_time: form.event_time || null,
-        color: form.color,
-        user_id: user.id,
-      } as any);
+      await supabase.from("events").insert({ ...payload, user_id: user.id } as any);
     }
     closePopup();
     fetchEvents();
@@ -140,27 +173,47 @@ const WeeklyView = () => {
   };
 
   const onDragStartEvent = (e: DragEvent, ev: EventItem) => {
+    e.stopPropagation();
     e.dataTransfer.setData("eventDrag", ev.id);
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const onDayDrop = async (e: DragEvent, dayISO: string) => {
+  const onSlotDrop = async (e: DragEvent, dayISO: string, hour: number) => {
     e.preventDefault();
-    setDragOverDay(null);
+    setDragOverSlot(null);
     const eventId = e.dataTransfer.getData("eventDrag");
     const taskRaw = e.dataTransfer.getData("taskDrag");
 
+    const newStart = padTime(hour, 0);
+    const newEnd = padTime(hour + 1, 0);
+
     if (eventId) {
-      await supabase.from("events").update({ event_date: dayISO } as any).eq("id", eventId);
+      const ev = events.find(x => x.id === eventId);
+      // Preserve duration when moving
+      let endTime: string | null = newEnd;
+      if (ev?.event_time && ev?.end_time) {
+        const dur = (timeToHours(ev.end_time)! - timeToHours(ev.event_time)!);
+        endTime = padTime(Math.min(END_HOUR, hour + Math.max(1, Math.round(dur))), 0);
+      }
+      await supabase.from("events").update({
+        event_date: dayISO,
+        event_time: newStart,
+        end_time: endTime,
+      } as any).eq("id", eventId);
       fetchEvents();
     } else if (taskRaw) {
       try {
         const task = JSON.parse(taskRaw);
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
+        const durHours = task.estimated_time
+          ? Math.max(1, Math.round(task.estimated_time / 60))
+          : 1;
         await supabase.from("events").insert({
           title: task.title,
           event_date: dayISO,
+          event_time: newStart,
+          end_time: padTime(Math.min(END_HOUR, hour + durHours), 0),
           color: task.color || "primary",
           user_id: user.id,
         } as any);
@@ -179,12 +232,23 @@ const WeeklyView = () => {
 
   const monthLabel = weekStart.toLocaleDateString("es-CO", { month: "long", year: "numeric" });
 
+  // Compute pixel position of an event within the day column
+  const getEventGeometry = (ev: EventItem) => {
+    const startH = timeToHours(ev.event_time) ?? START_HOUR;
+    const endH = timeToHours(ev.end_time) ?? startH + 1;
+    const clampedStart = Math.max(START_HOUR, Math.min(END_HOUR, startH));
+    const clampedEnd = Math.max(clampedStart + 0.5, Math.min(END_HOUR, endH));
+    const top = (clampedStart - START_HOUR) * SLOT_HEIGHT;
+    const height = (clampedEnd - clampedStart) * SLOT_HEIGHT;
+    return { top, height };
+  };
+
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Esta Semana</p>
-          <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize mt-0.5">{monthLabel}</p>
+          <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize mt-0.5">{monthLabel} · 7am – 9pm</p>
         </div>
         <div className="flex items-center gap-1">
           <button onClick={() => shiftWeek(-1)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
@@ -199,73 +263,104 @@ const WeeklyView = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-2">
+      {/* Day headers */}
+      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 mb-1">
+        <div />
         {days.map((d, i) => {
           const dayISO = toISO(d);
           const isToday = dayISO === todayISO;
-          const dayEvents = events.filter(ev => ev.event_date === dayISO);
-          const isOver = dragOverDay === dayISO;
-
           return (
-            <div
-              key={dayISO}
-              onDragOver={(e) => { e.preventDefault(); setDragOverDay(dayISO); }}
-              onDragLeave={() => setDragOverDay(null)}
-              onDrop={(e) => onDayDrop(e, dayISO)}
-              className={`rounded-xl border min-h-[120px] p-2 flex flex-col gap-1.5 transition-all ${
-                isToday ? "border-amber-400 bg-amber-50/40" : "border-[hsl(var(--dash-card-border))] bg-white/40"
-              } ${isOver ? "ring-2 ring-amber-400 bg-amber-50" : ""}`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <div>
-                  <p className={`text-[9px] font-bold uppercase tracking-widest ${isToday ? "text-amber-600" : "text-[hsl(var(--dash-text-muted))]"}`}>
-                    {DAY_NAMES[i]}
-                  </p>
-                  <p className={`text-base font-bold leading-none ${isToday ? "text-amber-700" : "text-[hsl(var(--dash-text))]"}`}>
-                    {d.getDate()}
-                  </p>
-                </div>
-                <button
-                  onClick={() => openCreate(dayISO)}
-                  className="p-1 rounded-md hover:bg-white text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"
-                  title="Añadir"
-                >
-                  <Plus size={11} />
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-1 flex-1">
-                {dayEvents.map(ev => {
-                  const c = colorTile[ev.color] ?? colorTile.primary;
-                  return (
-                    <div
-                      key={ev.id}
-                      draggable
-                      onDragStart={(e) => onDragStartEvent(e, ev)}
-                      onClick={() => openEdit(ev)}
-                      className={`${c.bg} ${c.border} ${c.text} border rounded-lg px-1.5 py-1 cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow`}
-                      title={ev.title}
-                    >
-                      {ev.event_time && (
-                        <p className="text-[8px] font-bold opacity-70 leading-tight">
-                          {ev.event_time.slice(0, 5)}
-                        </p>
-                      )}
-                      <p className="text-[10px] font-semibold leading-tight line-clamp-2">{ev.title}</p>
-                    </div>
-                  );
-                })}
-              </div>
+            <div key={dayISO} className={`text-center py-1 rounded-lg ${isToday ? "bg-amber-50" : ""}`}>
+              <p className={`text-[9px] font-bold uppercase tracking-widest ${isToday ? "text-amber-600" : "text-[hsl(var(--dash-text-muted))]"}`}>
+                {DAY_NAMES[i]}
+              </p>
+              <p className={`text-sm font-bold leading-none mt-0.5 ${isToday ? "text-amber-700" : "text-[hsl(var(--dash-text))]"}`}>
+                {d.getDate()}
+              </p>
             </div>
           );
         })}
       </div>
 
-      {popupDay && (
+      {/* Hour grid */}
+      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 overflow-x-auto">
+        {/* Hour labels column */}
+        <div className="flex flex-col">
+          {HOURS.map((h) => (
+            <div
+              key={h}
+              style={{ height: SLOT_HEIGHT }}
+              className="text-[9px] font-semibold text-[hsl(var(--dash-text-muted))] text-right pr-1.5 -mt-1.5"
+            >
+              {formatHourLabel(h)}
+            </div>
+          ))}
+        </div>
+
+        {/* Day columns */}
+        {days.map((d) => {
+          const dayISO = toISO(d);
+          const isToday = dayISO === todayISO;
+          const dayEvents = events.filter(ev => ev.event_date === dayISO);
+
+          return (
+            <div
+              key={dayISO}
+              className={`relative rounded-lg border ${isToday ? "border-amber-300 bg-amber-50/30" : "border-[hsl(var(--dash-card-border))] bg-white/30"}`}
+              style={{ height: HOURS.length * SLOT_HEIGHT }}
+            >
+              {/* Slot drop targets */}
+              {HOURS.map((h, idx) => {
+                const slotKey = `${dayISO}-${h}`;
+                const isOver = dragOverSlot === slotKey;
+                return (
+                  <div
+                    key={h}
+                    onDragOver={(e) => { e.preventDefault(); setDragOverSlot(slotKey); }}
+                    onDragLeave={() => setDragOverSlot(null)}
+                    onDrop={(e) => onSlotDrop(e, dayISO, h)}
+                    onClick={() => openCreate(dayISO, h)}
+                    style={{ height: SLOT_HEIGHT, top: idx * SLOT_HEIGHT }}
+                    className={`absolute left-0 right-0 cursor-pointer transition-colors ${
+                      idx > 0 ? "border-t border-dashed border-[hsl(var(--dash-card-border))]" : ""
+                    } ${isOver ? "bg-amber-200/50" : "hover:bg-amber-50/50"}`}
+                  />
+                );
+              })}
+
+              {/* Events overlay */}
+              {dayEvents.map(ev => {
+                const c = colorTile[ev.color] ?? colorTile.primary;
+                const { top, height } = getEventGeometry(ev);
+                return (
+                  <div
+                    key={ev.id}
+                    draggable
+                    onDragStart={(e) => onDragStartEvent(e, ev)}
+                    onClick={(e: ReactMouseEvent) => { e.stopPropagation(); openEdit(ev); }}
+                    style={{ top, height: Math.max(height - 2, 18), left: 2, right: 2 }}
+                    className={`${c.bg} ${c.border} ${c.text} border-l-4 absolute rounded-md px-1.5 py-1 cursor-grab active:cursor-grabbing hover:shadow-md hover:ring-2 hover:${c.ring} transition-all overflow-hidden z-10`}
+                    title={ev.title}
+                  >
+                    {ev.event_time && (
+                      <p className="text-[8px] font-bold opacity-70 leading-tight">
+                        {ev.event_time.slice(0, 5)}{ev.end_time ? `–${ev.end_time.slice(0, 5)}` : ""}
+                      </p>
+                    )}
+                    <p className="text-[10px] font-semibold leading-tight line-clamp-2">{ev.title}</p>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {popupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div ref={popupRef} className="bg-[hsl(var(--dash-card-bg))] rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(var(--dash-card-border))]">
-              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editing ? "Editar Evento" : "Nuevo Evento"}</h3>
+              <h3 className="font-display font-bold text-[hsl(var(--dash-text))]">{editing ? "Editar Actividad" : "Nueva Actividad"}</h3>
               <button onClick={closePopup} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
                 <X size={18} />
               </button>
@@ -278,19 +373,31 @@ const WeeklyView = () => {
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full dash-input rounded-lg px-3 py-2 text-sm"
               />
+              <input
+                type="date"
+                value={form.event_date}
+                onChange={(e) => setForm({ ...form, event_date: e.target.value })}
+                className="w-full dash-input rounded-lg px-3 py-2 text-sm"
+              />
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="time"
-                  value={form.event_time}
-                  onChange={(e) => setForm({ ...form, event_time: e.target.value })}
-                  className="w-full dash-input rounded-lg px-3 py-2 text-sm"
-                />
-                <input
-                  type="date"
-                  value={popupDay}
-                  onChange={(e) => setPopupDay(e.target.value)}
-                  className="w-full dash-input rounded-lg px-3 py-2 text-sm"
-                />
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Inicio</label>
+                  <input
+                    type="time"
+                    value={form.event_time}
+                    onChange={(e) => setForm({ ...form, event_time: e.target.value })}
+                    className="w-full dash-input rounded-lg px-3 py-2 text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Fin</label>
+                  <input
+                    type="time"
+                    value={form.end_time}
+                    onChange={(e) => setForm({ ...form, end_time: e.target.value })}
+                    className="w-full dash-input rounded-lg px-3 py-2 text-sm mt-1"
+                  />
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[hsl(var(--dash-text-muted))]">Color:</span>
