@@ -128,7 +128,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
 
   const handleEdit = (q: Quotation) => {
     setEditing(q);
-    setForm({ title: q.title, description: q.description ?? "", client_id: q.client_id ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
+    setForm({ title: q.title, description: q.description ?? "", client_name: q.client_name ?? q.clients?.name ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     const parsedItems = q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }];
     setItems(parsedItems);
     setEntregableInputs(parsedItems.map(() => ""));
