@@ -348,7 +348,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
               </div>
               <div className="flex items-center gap-2 sm:gap-3 mt-1 text-[11px] sm:text-xs text-[hsl(var(--dash-text-muted))] flex-wrap">
                 <span className="font-bold text-[hsl(var(--dash-text))]">${Number(q.total).toLocaleString()} COP</span>
-                {q.clients?.name && <span>• {q.clients.name}</span>}
+                {(q.client_name || q.clients?.name) && <span>• {q.client_name || q.clients?.name}</span>}
                 {(q as any).delivery_date && <span className="hidden sm:inline">• {new Date((q as any).delivery_date + "T00:00:00").toLocaleDateString("es-CO")}</span>}
               </div>
             </div>
