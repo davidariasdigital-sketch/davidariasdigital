@@ -437,6 +437,34 @@ const WeeklyView = () => {
                   />
                 ))}
               </div>
+
+              {/* Toggle: show in monthly calendar */}
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, show_in_monthly: !form.show_in_monthly })}
+                className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border transition-colors ${
+                  form.show_in_monthly
+                    ? "bg-amber-50 border-amber-200 text-amber-800"
+                    : "bg-[hsl(0,0%,97%)] border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text-muted))]"
+                }`}
+              >
+                <span className="flex items-center gap-2 text-xs font-semibold">
+                  {form.show_in_monthly ? <CalendarIcon size={14} /> : <CalendarOff size={14} />}
+                  Mostrar en calendario mensual
+                </span>
+                <span
+                  className={`relative inline-block w-9 h-5 rounded-full transition-colors ${
+                    form.show_in_monthly ? "bg-amber-400" : "bg-[hsl(var(--dash-card-border))]"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                      form.show_in_monthly ? "translate-x-[18px]" : "translate-x-0.5"
+                    }`}
+                  />
+                </span>
+              </button>
+
               <div className="flex items-center gap-2 pt-1">
                 <button onClick={handleSubmit} disabled={!form.title.trim()} className="btn-dark text-sm px-5 py-2.5 disabled:opacity-40">
                   {editing ? "Guardar" : "Crear"}
@@ -445,9 +473,14 @@ const WeeklyView = () => {
                   Cancelar
                 </button>
                 {editing && (
-                  <button onClick={deleteEvent} className="ml-auto p-2 rounded-lg text-pink-600 hover:bg-pink-50 transition-colors" title="Eliminar">
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="ml-auto flex items-center gap-1">
+                    <button onClick={duplicateFromPopup} className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors" title="Duplicar">
+                      <Copy size={16} />
+                    </button>
+                    <button onClick={deleteEvent} className="p-2 rounded-lg text-pink-600 hover:bg-pink-50 transition-colors" title="Eliminar">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
