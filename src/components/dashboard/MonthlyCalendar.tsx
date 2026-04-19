@@ -60,7 +60,9 @@ const MonthlyCalendar = () => {
     supabase.from("events").select("*, clients(name)").gte("event_date", startDate).lte("event_date", endStr).order("event_date"),
     supabase.from("clients").select("id, name").order("name")]
     );
-    setEvents(ev.data as any ?? []);
+    // Only show events flagged to appear in the monthly calendar (default true)
+    const filtered = (ev.data as any ?? []).filter((e: any) => e.show_in_monthly !== false);
+    setEvents(filtered);
     setClients(cl.data ?? []);
   };
 

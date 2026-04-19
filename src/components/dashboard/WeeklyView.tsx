@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, DragEvent, MouseEvent as ReactMouseEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight, X, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2, Copy, CalendarOff, Calendar as CalendarIcon } from "lucide-react";
 
 interface EventItem {
   id: string;
@@ -10,6 +10,7 @@ interface EventItem {
   event_time: string | null;
   end_time: string | null;
   color: string;
+  show_in_monthly?: boolean;
 }
 
 const colorTile: Record<string, { bg: string; text: string; border: string; ring: string }> = {
@@ -81,6 +82,7 @@ const WeeklyView = () => {
     event_time: "",
     end_time: "",
     color: "primary",
+    show_in_monthly: true,
   });
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -118,7 +120,7 @@ const WeeklyView = () => {
   const closePopup = () => {
     setPopupOpen(false);
     setEditing(null);
-    setForm({ title: "", event_date: "", event_time: "", end_time: "", color: "primary" });
+    setForm({ title: "", event_date: "", event_time: "", end_time: "", color: "primary", show_in_monthly: true });
   };
 
   const openCreate = (dayISO: string, hour: number) => {
@@ -129,6 +131,7 @@ const WeeklyView = () => {
       event_time: padTime(hour, 0),
       end_time: padTime(hour + 1, 0),
       color: "primary",
+      show_in_monthly: true,
     });
     setPopupOpen(true);
   };
@@ -141,6 +144,7 @@ const WeeklyView = () => {
       event_time: ev.event_time ? ev.event_time.slice(0, 5) : "",
       end_time: ev.end_time ? ev.end_time.slice(0, 5) : "",
       color: ev.color || "primary",
+      show_in_monthly: ev.show_in_monthly !== false,
     });
     setPopupOpen(true);
   };
@@ -153,6 +157,7 @@ const WeeklyView = () => {
       event_time: form.event_time || null,
       end_time: form.end_time || null,
       color: form.color,
+      show_in_monthly: form.show_in_monthly,
     };
     if (editing) {
       await supabase.from("events").update(payload as any).eq("id", editing.id);
@@ -163,6 +168,29 @@ const WeeklyView = () => {
     }
     closePopup();
     fetchEvents();
+  };
+
+  const duplicateEvent = async (ev: EventItem, e?: ReactMouseEvent) => {
+    e?.stopPropagation();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("events").insert({
+      title: `${ev.title} (copia)`,
+      description: ev.description,
+      event_date: ev.event_date,
+      event_time: ev.event_time,
+      end_time: ev.end_time,
+      color: ev.color,
+      show_in_monthly: ev.show_in_monthly !== false,
+      user_id: user.id,
+    } as any);
+    fetchEvents();
+  };
+
+  const duplicateFromPopup = async () => {
+    if (!editing) return;
+    await duplicateEvent(editing);
+    closePopup();
   };
 
   const deleteEvent = async () => {
