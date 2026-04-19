@@ -88,7 +88,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     setForm({
       concept: inv.concept, amount: String(inv.amount), status: inv.status,
       due_date: inv.due_date ?? "", paid_date: inv.paid_date ?? "", notes: inv.notes ?? "",
-      client_id: inv.client_id ?? "", quotation_id: inv.quotation_id ?? "",
+      client_name: inv.client_name ?? inv.clients?.name ?? "", quotation_id: inv.quotation_id ?? "",
     });
     setEditingId(inv.id);
     setShowForm(true);
