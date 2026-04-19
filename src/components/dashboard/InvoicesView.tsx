@@ -63,7 +63,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
   }, [triggerNew]);
 
   const resetForm = () => {
-    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "" });
+    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "" });
     setEditingId(null);
     setShowForm(false);
   };
