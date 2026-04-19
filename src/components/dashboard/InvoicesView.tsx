@@ -36,26 +36,23 @@ interface InvoicesViewProps {
 const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesViewProps = {}) => {
   const isMobile = useIsMobile();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "",
+    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "",
   });
 
   const formatCOP = (v: number) =>
     new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(v);
 
   const fetchAll = async () => {
-    const [inv, cl, qt] = await Promise.all([
+    const [inv, qt] = await Promise.all([
       supabase.from("invoices").select("*, clients(name)").order("created_at", { ascending: false }),
-      supabase.from("clients").select("id, name").order("name"),
-      supabase.from("quotations").select("id, title, total, description, client_id, items, clients(name)").order("created_at", { ascending: false }),
+      supabase.from("quotations").select("id, title, total, description, client_id, client_name, items, clients(name)").order("created_at", { ascending: false }),
     ]);
     setInvoices((inv.data as any) ?? []);
-    setClients(cl.data ?? []);
-    setQuotations(qt.data ?? []);
+    setQuotations((qt.data as any) ?? []);
   };
 
   useEffect(() => { fetchAll(); }, []);
