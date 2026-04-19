@@ -146,8 +146,8 @@ const OverviewView = ({ onNavigate }: Props) => {
   return (
     <div className="space-y-4">
       <PrioritiesSection />
-      <MonthlyCalendar />
       <WeeklyView />
+      <MonthlyCalendar />
 
       {/* Add task popup */}
       {showPopup && (

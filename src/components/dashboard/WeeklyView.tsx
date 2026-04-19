@@ -32,9 +32,9 @@ const colorDots: Record<string, string> = {
 
 const DAY_NAMES = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
 
-// Hour grid 7:00 → 21:00 (last slot = 20-21). 14 slots of 1h.
+// Hour grid 7:00 → 22:00 (last slot = 21-22). 15 slots of 1h.
 const START_HOUR = 7;
-const END_HOUR = 21;
+const END_HOUR = 22;
 const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
 const SLOT_HEIGHT = 48; // px per hour
 
@@ -276,7 +276,7 @@ const WeeklyView = () => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Esta Semana</p>
-          <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize mt-0.5">{monthLabel} · 7am – 9pm</p>
+          <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize mt-0.5">{monthLabel} · 7am – 10pm</p>
         </div>
         <div className="flex items-center gap-1">
           <button onClick={() => shiftWeek(-1)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
