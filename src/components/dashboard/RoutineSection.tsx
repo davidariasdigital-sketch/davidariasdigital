@@ -107,42 +107,38 @@ const RoutineSection = () => {
           Hábitos
         </span>
       </div>
-      <div className="flex-1 flex flex-col gap-3">
+      <div className="flex-1 grid grid-cols-3 gap-2 sm:gap-3">
         {ROUTINES.map(({ icon: Icon, title, unit, goal, type }) => {
           const current = progress[title] ?? 0;
           const done = current > 0;
           return (
             <div
               key={title}
-              className="flex-1 bg-white border border-purple-200 rounded-2xl p-3 flex items-center gap-3 transition-shadow hover:shadow-md"
+              className="bg-white border border-purple-200 rounded-2xl p-3 flex flex-col items-center justify-between gap-2 transition-shadow hover:shadow-md text-center"
             >
+              {/* Header: icon + title */}
+              <div className="flex flex-col items-center gap-1">
+                <Icon size={16} className="text-purple-700 shrink-0" strokeWidth={2.5} />
+                <p className="text-[11px] font-extrabold uppercase tracking-wide text-black leading-none">
+                  {title}
+                </p>
+              </div>
+
+              {/* Visual indicator */}
               {type === "check" ? (
                 <CheckCircle done={done} onToggle={() => toggle(title)} />
               ) : (
                 <ProgressRing value={current} goal={goal} />
               )}
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <Icon size={14} className="text-black shrink-0" strokeWidth={2.5} />
-                  <p className="text-sm font-extrabold uppercase tracking-wide text-black leading-none">
-                    {title}
-                  </p>
-                </div>
-                <p className="text-[11px] font-medium text-black/60 leading-tight truncate">
-                  {unit}
-                </p>
-              </div>
+              {/* Unit label */}
+              <p className="text-[10px] font-medium text-black/60 leading-tight">
+                {unit}
+              </p>
 
-              {type === "counter" && (
-                <div className="flex flex-col gap-1 shrink-0">
-                  <button
-                    onClick={() => inc(title, goal)}
-                    aria-label="Sumar"
-                    className="w-7 h-7 rounded-full bg-purple-600 text-white hover:scale-110 flex items-center justify-center transition-transform"
-                  >
-                    <Plus size={13} strokeWidth={3} />
-                  </button>
+              {/* Controls */}
+              {type === "counter" ? (
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={() => dec(title)}
                     aria-label="Restar"
@@ -150,7 +146,16 @@ const RoutineSection = () => {
                   >
                     <Minus size={13} strokeWidth={3} />
                   </button>
+                  <button
+                    onClick={() => inc(title, goal)}
+                    aria-label="Sumar"
+                    className="w-7 h-7 rounded-full bg-purple-600 text-white hover:scale-110 flex items-center justify-center transition-transform"
+                  >
+                    <Plus size={13} strokeWidth={3} />
+                  </button>
                 </div>
+              ) : (
+                <div className="h-7" />
               )}
             </div>
           );
