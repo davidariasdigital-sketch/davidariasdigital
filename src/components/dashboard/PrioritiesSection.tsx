@@ -157,7 +157,7 @@ const PrioritiesSection = () => {
       {loading ? (
         <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-6">Cargando...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {items.map((item) => {
             const style = tileStyles[item.color] ?? tileStyles.primary;
             const Icon = ICONS[item.icon] ?? Briefcase;
