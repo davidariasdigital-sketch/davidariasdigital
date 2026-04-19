@@ -113,7 +113,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   };
 
   const resetForm = () => {
-    setForm({ title: "", description: "", client_id: "", status: "borrador", delivery_date: "" });
+    setForm({ title: "", description: "", client_name: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0, entregables: [] }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
