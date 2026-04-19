@@ -116,7 +116,8 @@ export async function generateQuotationPDF(q: Quotation) {
   let y = 54;
 
   // ─── CLIENT INFO (right) ───
-  if (q.clients?.name) {
+  const clientDisplayName = (q as any).client_name || q.clients?.name;
+  if (clientDisplayName) {
     const boxX = pw / 2 + 10;
     const boxW = pw - margin - boxX;
     const boxY = 50;
@@ -132,7 +133,7 @@ export async function generateQuotationPDF(q: Quotation) {
     doc.setFontSize(11);
     useFont("bold");
     doc.setTextColor(...DARK);
-    doc.text(q.clients.name, boxX + 6, boxY + 13);
+    doc.text(clientDisplayName, boxX + 6, boxY + 13);
   }
 
   y += 6;
