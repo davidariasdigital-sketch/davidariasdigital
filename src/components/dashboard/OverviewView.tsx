@@ -149,66 +149,6 @@ const OverviewView = ({ onNavigate }: Props) => {
       <MonthlyCalendar />
       <WeeklyView />
 
-      {/* Actividades pendientes — grid */}
-      <div className="dash-tile rounded-2xl p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Actividades Pendientes</p>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-primary">{tasks.length}</span>
-            <button onClick={openAdd} className="p-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
-              <Plus size={14} />
-            </button>
-          </div>
-        </div>
-        <p className="text-[10px] text-[hsl(var(--dash-text-muted))] mb-4 italic">Arrastra una actividad al calendario para agendarla</p>
-
-        {tasks.length === 0 ? (
-          <p className="text-sm text-[hsl(var(--dash-text-muted))] text-center py-6">Sin actividades pendientes 🎉</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {tasks.map((task) => {
-              const style = tileStyles[task.color] ?? tileStyles.primary;
-              return (
-                <div
-                  key={task.id}
-                  draggable
-                  onDragStart={(e) => onTaskDragStart(e, task)}
-                  onClick={() => openEdit(task)}
-                  className={`${style.bg} ${style.border} border rounded-xl p-3 flex flex-col justify-between cursor-grab active:cursor-grabbing group relative transition-shadow hover:shadow-md min-h-[90px]`}
-                >
-                  {/* Complete button */}
-                  <button
-                    onClick={(e) => toggleTask(task.id, e)}
-                    title="Completar"
-                    className="absolute top-2 right-2 p-1 rounded-md bg-white/60 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Check size={10} className={style.text} />
-                  </button>
-
-                  <p className={`text-[11px] sm:text-xs font-bold leading-tight ${style.text} pr-6`}>
-                    {task.title}
-                  </p>
-
-                  <div className="flex items-center gap-2 mt-2">
-                    {task.due_date && (
-                      <span className={`text-[9px] font-semibold ${style.label} flex items-center gap-0.5`}>
-                        <CalendarIcon size={8} />
-                        {new Date(task.due_date + "T00:00:00").toLocaleDateString("es-CO", { day: "numeric", month: "short" })}
-                      </span>
-                    )}
-                    {task.estimated_time && (
-                      <span className={`text-[9px] font-semibold ${style.label} flex items-center gap-0.5`}>
-                        <Clock size={8} /> {formatTime(task.estimated_time)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
       {/* Add task popup */}
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
