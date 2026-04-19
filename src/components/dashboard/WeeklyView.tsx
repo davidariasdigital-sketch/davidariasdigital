@@ -286,51 +286,100 @@ const WeeklyView = () => {
     return { top, height };
   };
 
+  // Mobile: navigate single day (rolls week when crossing edges)
+  const shiftDay = (delta: number) => {
+    const next = selectedDayIndex + delta;
+    if (next < 0) {
+      shiftWeek(-1);
+      setSelectedDayIndex(6);
+    } else if (next > 6) {
+      shiftWeek(1);
+      setSelectedDayIndex(0);
+    } else {
+      setSelectedDayIndex(next);
+    }
+  };
+
+  // Days to render in the grid
+  const renderedDays = isMobile ? [days[selectedDayIndex]] : days;
+  const gridCols = isMobile ? "grid-cols-[52px_1fr]" : "grid-cols-[44px_repeat(7,1fr)]";
+
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs text-[hsl(var(--dash-text-muted))] capitalize">{monthLabel}</p>
         <div className="flex items-center gap-1">
-          <button onClick={() => shiftWeek(-1)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+          <button onClick={() => (isMobile ? shiftDay(-1) : shiftWeek(-1))} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
             <ChevronLeft size={14} />
           </button>
           <button onClick={goToday} className="text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
             Hoy
           </button>
-          <button onClick={() => shiftWeek(1)} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
+          <button onClick={() => (isMobile ? shiftDay(1) : shiftWeek(1))} className="p-1.5 rounded-lg hover:bg-[hsl(0,0%,96%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors">
             <ChevronRight size={14} />
           </button>
         </div>
       </div>
 
-      {/* Day headers */}
-      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 mb-1">
-        <div />
-        {days.map((d, i) => {
-          const dayISO = toISO(d);
-          const isToday = dayISO === todayISO;
-          return (
-            <div key={dayISO} className={`text-center py-1 rounded-lg ${isToday ? "bg-amber-50" : ""}`}>
-              <p className={`text-[9px] font-bold uppercase tracking-widest ${isToday ? "text-amber-600" : "text-[hsl(var(--dash-text-muted))]"}`}>
-                {DAY_NAMES[i]}
-              </p>
-              <p className={`text-sm font-bold leading-none mt-0.5 ${isToday ? "text-amber-700" : "text-[hsl(var(--dash-text))]"}`}>
-                {d.getDate()}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+      {/* Mobile: day pills selector */}
+      {isMobile && (
+        <div className="flex gap-1 mb-3 overflow-x-auto no-scrollbar -mx-1 px-1">
+          {days.map((d, i) => {
+            const dayISO = toISO(d);
+            const isToday = dayISO === todayISO;
+            const isSelected = selectedDayIndex === i;
+            return (
+              <button
+                key={dayISO}
+                onClick={() => setSelectedDayIndex(i)}
+                className={`flex-1 min-w-[40px] flex flex-col items-center py-1.5 rounded-lg transition-all ${
+                  isSelected
+                    ? "bg-[hsl(var(--dash-text))] text-[hsl(var(--dash-card-bg))]"
+                    : isToday
+                    ? "bg-amber-50 text-amber-700"
+                    : "text-[hsl(var(--dash-text-muted))] hover:bg-[hsl(0,0%,96%)]"
+                }`}
+              >
+                <span className="text-[9px] font-bold uppercase tracking-widest leading-none">
+                  {DAY_NAMES[i].charAt(0)}
+                </span>
+                <span className="text-sm font-bold leading-none mt-1">{d.getDate()}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Day headers (desktop only) */}
+      {!isMobile && (
+        <div className={`grid ${gridCols} gap-1 mb-1`}>
+          <div />
+          {days.map((d, i) => {
+            const dayISO = toISO(d);
+            const isToday = dayISO === todayISO;
+            return (
+              <div key={dayISO} className={`text-center py-1 rounded-lg ${isToday ? "bg-amber-50" : ""}`}>
+                <p className={`text-[9px] font-bold uppercase tracking-widest ${isToday ? "text-amber-600" : "text-[hsl(var(--dash-text-muted))]"}`}>
+                  {DAY_NAMES[i]}
+                </p>
+                <p className={`text-sm font-bold leading-none mt-0.5 ${isToday ? "text-amber-700" : "text-[hsl(var(--dash-text))]"}`}>
+                  {d.getDate()}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Hour grid */}
-      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1">
+      <div className={`grid ${gridCols} gap-1`}>
         {/* Hour labels column */}
         <div className="flex flex-col">
           {HOURS.map((h) => (
             <div
               key={h}
               style={{ height: SLOT_HEIGHT }}
-              className="text-[9px] font-semibold text-[hsl(var(--dash-text-muted))] text-right pr-1.5 flex items-start justify-end pt-0 leading-none"
+              className={`${isMobile ? "text-[11px]" : "text-[9px]"} font-semibold text-[hsl(var(--dash-text-muted))] text-right pr-1.5 flex items-start justify-end pt-0 leading-none`}
             >
               {formatHourLabel(h)}
             </div>
@@ -338,7 +387,7 @@ const WeeklyView = () => {
         </div>
 
         {/* Day columns */}
-        {days.map((d) => {
+        {renderedDays.map((d) => {
           const dayISO = toISO(d);
           const isToday = dayISO === todayISO;
           const dayEvents = events.filter(ev => ev.event_date === dayISO);
@@ -379,15 +428,15 @@ const WeeklyView = () => {
                     onDragStart={(e) => onDragStartEvent(e, ev)}
                     onClick={(e: ReactMouseEvent) => { e.stopPropagation(); openEdit(ev); }}
                     style={{ top, height: Math.max(height - 2, 18), left: 2, right: 2 }}
-                    className={`${c.bg} ${c.border} ${c.text} border-l-4 absolute rounded-md px-1.5 py-1 cursor-grab active:cursor-grabbing hover:shadow-md hover:ring-2 hover:${c.ring} transition-all overflow-hidden z-10`}
+                    className={`${c.bg} ${c.border} ${c.text} border-l-4 absolute rounded-md ${isMobile ? "px-2 py-1.5" : "px-1.5 py-1"} cursor-grab active:cursor-grabbing hover:shadow-md hover:ring-2 hover:${c.ring} transition-all overflow-hidden z-10`}
                     title={ev.title}
                   >
                     {ev.event_time && (
-                      <p className="text-[8px] font-bold opacity-70 leading-tight">
+                      <p className={`${isMobile ? "text-[10px]" : "text-[8px]"} font-bold opacity-70 leading-tight`}>
                         {ev.event_time.slice(0, 5)}{ev.end_time ? `–${ev.end_time.slice(0, 5)}` : ""}
                       </p>
                     )}
-                    <p className="text-[10px] font-semibold leading-tight line-clamp-2">{ev.title}</p>
+                    <p className={`${isMobile ? "text-xs" : "text-[10px]"} font-semibold leading-tight line-clamp-2`}>{ev.title}</p>
                   </div>
                 );
               })}
