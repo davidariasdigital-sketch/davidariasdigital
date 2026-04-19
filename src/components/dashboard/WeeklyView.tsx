@@ -311,7 +311,7 @@ const WeeklyView = () => {
       </div>
 
       {/* Hour grid */}
-      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1 overflow-x-auto">
+      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-1">
         {/* Hour labels column */}
         <div className="flex flex-col">
           {HOURS.map((h) => (
