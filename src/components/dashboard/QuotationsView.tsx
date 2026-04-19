@@ -158,10 +158,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
     <div className="space-y-3 sm:space-y-4">
       {/* Title & Client */}
       <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={inputCls} />
-      <select value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })} className={inputCls}>
-        <option value="">Sin cliente</option>
-        {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-      </select>
+      <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
 
       <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo" className={`${inputCls} min-h-[50px]`} rows={2} />
       <QuotationAIAssistant
