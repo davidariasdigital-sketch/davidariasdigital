@@ -8,12 +8,12 @@ const ROUTINES = [
 
 const RoutineSection = () => {
   return (
-    <div className="rounded-2xl p-4 sm:p-5 bg-yellow-400 border border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display font-black text-black uppercase tracking-wider text-sm">
+    <div className="dash-tile rounded-2xl p-4 sm:p-6 bg-yellow-50 border-yellow-200">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display font-bold text-sm uppercase tracking-wide text-black">
           Rutina
         </h3>
-        <span className="text-[10px] font-bold text-black/60 uppercase tracking-widest">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-black/50">
           Hábitos
         </span>
       </div>
@@ -21,16 +21,16 @@ const RoutineSection = () => {
         {ROUTINES.map(({ icon: Icon, title, detail }) => (
           <div
             key={title}
-            className="flex items-center gap-3 bg-black rounded-xl px-3 py-2.5 hover:translate-x-0.5 transition-transform"
+            className="flex items-center gap-3 bg-yellow-100/70 border border-yellow-200 rounded-xl px-3 py-2.5 transition-shadow hover:shadow-sm"
           >
-            <div className="w-8 h-8 rounded-lg bg-yellow-400 flex items-center justify-center shrink-0">
-              <Icon size={16} className="text-black" strokeWidth={2.5} />
+            <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0">
+              <Icon size={15} className="text-yellow-400" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-black text-yellow-400 uppercase tracking-wide leading-tight">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-black leading-tight">
                 {title}
               </p>
-              <p className="text-[10px] text-white/80 font-medium leading-tight truncate">
+              <p className="text-[10px] font-medium text-black/60 leading-tight truncate">
                 {detail}
               </p>
             </div>
