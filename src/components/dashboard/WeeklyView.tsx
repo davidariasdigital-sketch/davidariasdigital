@@ -70,17 +70,6 @@ const formatHourLabel = (h: number) => {
 const padTime = (h: number, m: number) =>
   `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
-// "HH:MM[:SS]" → "h:mmam/pm" (12h, lowercase, no leading zero on hour)
-const to12h = (t: string | null | undefined) => {
-  if (!t) return "";
-  const [hStr, mStr] = t.split(":");
-  const h = parseInt(hStr, 10);
-  const m = parseInt(mStr || "0", 10);
-  const period = h >= 12 ? "pm" : "am";
-  const display = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  return m === 0 ? `${display}${period}` : `${display}:${String(m).padStart(2, "0")}${period}`;
-};
-
 const WeeklyView = () => {
   const [weekStart, setWeekStart] = useState<Date>(() => getMonday(new Date()));
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -380,7 +369,7 @@ const WeeklyView = () => {
                   >
                     {ev.event_time && (
                       <p className="text-[8px] font-bold opacity-70 leading-tight">
-                        {to12h(ev.event_time)}{ev.end_time ? `–${to12h(ev.end_time)}` : ""}
+                        {ev.event_time.slice(0, 5)}{ev.end_time ? `–${ev.end_time.slice(0, 5)}` : ""}
                       </p>
                     )}
                     <p className="text-[10px] font-semibold leading-tight line-clamp-2">{ev.title}</p>

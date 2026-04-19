@@ -145,16 +145,16 @@ const OverviewView = ({ onNavigate }: Props) => {
 
   return (
     <div className="space-y-4">
-      {/* Weekly view + right column (priorities + monthly calendar) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
+      {/* Weekly + priorities side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <WeeklyView />
         </div>
-        <div className="lg:col-span-1 space-y-4">
+        <div className="lg:col-span-1">
           <PrioritiesSection />
-          <MonthlyCalendar />
         </div>
       </div>
+      <MonthlyCalendar />
 
       {/* Add task popup */}
       {showPopup && (
