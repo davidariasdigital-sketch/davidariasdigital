@@ -111,6 +111,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
       }
       resetForm();
       fetchData();
+      onMutate?.();
     } catch (err: any) {
       toast.error("Error inesperado: " + err.message);
     }
@@ -147,11 +148,13 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   const handleDelete = async (id: string) => {
     await supabase.from("quotations").delete().eq("id", id);
     fetchData();
+    onMutate?.();
   };
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("quotations").update({ status: status as any }).eq("id", id);
     fetchData();
+    onMutate?.();
   };
 
   const inputCls = "dash-input rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm w-full";
@@ -294,12 +297,14 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cotizaciones</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
-          <Plus size={14} /> Nueva
-        </button>
-      </div>
+      {!embedded && (
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cotizaciones</h1>
+          <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
+            <Plus size={14} /> Nueva
+          </button>
+        </div>
+      )}
 
       {/* Mobile: Drawer | Desktop: Inline form */}
       {isMobile ? (

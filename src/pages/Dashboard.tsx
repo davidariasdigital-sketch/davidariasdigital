@@ -5,13 +5,12 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import OverviewView from "@/components/dashboard/OverviewView";
-import QuotationsView from "@/components/dashboard/QuotationsView";
-import InvoicesView from "@/components/dashboard/InvoicesView";
+import FinanceView from "@/components/dashboard/FinanceView";
 import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import ServiceCostsView from "@/components/dashboard/ServiceCostsView";
 import { motion } from "framer-motion";
 
-type View = "overview" | "quotations" | "invoices" | "content-planner" | "service-costs";
+type View = "overview" | "finance" | "content-planner" | "service-costs";
 
 const Dashboard = () => {
   const [view, setView] = useState<View>("overview");
@@ -41,9 +40,8 @@ const Dashboard = () => {
 
   const renderView = () => {
     switch (view) {
-      case "overview":return <OverviewView onNavigate={setView} />;
-      case "quotations":return <QuotationsView />;
-      case "invoices":return <InvoicesView />;
+      case "overview":return <OverviewView onNavigate={setView as any} />;
+      case "finance":return <FinanceView />;
       case "content-planner":return <ContentPlannerView />;
       case "service-costs":return <ServiceCostsView />;
     }
