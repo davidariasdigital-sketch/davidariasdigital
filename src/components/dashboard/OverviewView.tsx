@@ -6,7 +6,7 @@ import PrioritiesSection from "./PrioritiesSection";
 import WeeklyView from "./WeeklyView";
 import RoutineSection from "./RoutineSection";
 
-type View = "overview" | "quotations" | "invoices" | "content-planner";
+type View = "overview" | "finance" | "content-planner" | "service-costs";
 
 interface Props {
   onNavigate: (view: View) => void;

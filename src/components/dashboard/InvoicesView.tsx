@@ -28,7 +28,13 @@ const statusColors: Record<string, string> = {
   vencida: "bg-red-50 text-red-700 border-red-200",
 };
 
-const InvoicesView = () => {
+interface InvoicesViewProps {
+  embedded?: boolean;
+  triggerNew?: number;
+  onMutate?: () => void;
+}
+
+const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesViewProps = {}) => {
   const isMobile = useIsMobile();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -55,6 +61,11 @@ const InvoicesView = () => {
 
   useEffect(() => { fetchAll(); }, []);
 
+  useEffect(() => {
+    if (triggerNew > 0) { resetForm(); setShowForm(true); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [triggerNew]);
+
   const resetForm = () => {
     setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_id: "", quotation_id: "" });
     setEditingId(null);
@@ -74,6 +85,7 @@ const InvoicesView = () => {
     else { await supabase.from("invoices").insert(payload); }
     resetForm();
     fetchAll();
+    onMutate?.();
   };
 
   const handleEdit = (inv: Invoice) => {
@@ -89,6 +101,7 @@ const InvoicesView = () => {
   const handleDelete = async (id: string) => {
     await supabase.from("invoices").delete().eq("id", id);
     fetchAll();
+    onMutate?.();
   };
 
   const totalPending = invoices.filter((i) => i.status === "pendiente").reduce((s, i) => s + Number(i.amount), 0);
@@ -98,24 +111,28 @@ const InvoicesView = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
-          <Plus size={14} /> Nueva
-        </button>
-      </div>
+      {!embedded && (
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Cuentas por Cobrar</h1>
+          <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0">
+            <Plus size={14} /> Nueva
+          </button>
+        </div>
+      )}
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="dash-tile-primary rounded-2xl p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Pendiente por cobrar</p>
-          <p className="text-2xl font-display font-extrabold mt-2">{formatCOP(totalPending)}</p>
+      {!embedded && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="dash-tile-primary rounded-2xl p-5">
+            <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Pendiente por cobrar</p>
+            <p className="text-2xl font-display font-extrabold mt-2">{formatCOP(totalPending)}</p>
+          </div>
+          <div className="dash-tile rounded-2xl p-5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Total cobrado</p>
+            <p className="text-2xl font-display font-extrabold mt-2 text-emerald-600">{formatCOP(totalPaid)}</p>
+          </div>
         </div>
-        <div className="dash-tile rounded-2xl p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Total cobrado</p>
-          <p className="text-2xl font-display font-extrabold mt-2 text-emerald-600">{formatCOP(totalPaid)}</p>
-        </div>
-      </div>
+      )}
 
       {/* Form content */}
       {(() => {
