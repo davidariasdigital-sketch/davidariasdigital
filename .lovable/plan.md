@@ -1,81 +1,103 @@
 
 
-## Plan: unificar Cotizaciones y Cuentas por Cobrar en una sola ventana "Finanzas"
+## Plan: Centro de Contenido — layout 2 columnas + estadísticas de seguidores
 
-### Diseño de la interfaz
-
-Una sola pantalla **Finanzas** con:
-
-1. **Header** con título "Finanzas" + botón "Nueva" (dropdown: Cotización / Cuenta por cobrar).
-2. **Resumen unificado** (3 tarjetas tipo bento, mismo estilo que ya usan los módulos):
-   - Pendiente por cobrar (de invoices)
-   - Total cobrado (de invoices)
-   - Cotizaciones aceptadas / total (de quotations)
-3. **Tabs** ("Cotizaciones" | "Cuentas por cobrar") usando el componente `Tabs` ya existente (`@/components/ui/tabs`) con estilo adaptado al dashboard (pill-style, no `bg-muted` plano).
-4. **Contenido de cada tab**: la lista + formulario actuales de cada módulo, sin cambios en la lógica de Supabase ni en los PDFs.
+### Diseño de la nueva interfaz
 
 ```text
-┌─ Finanzas ───────────────────────── [+ Nueva ▾] ┐
-│  ┌───────────┐ ┌───────────┐ ┌───────────┐     │
-│  │ Pendiente │ │ Cobrado   │ │ Cotiz. OK │     │
-│  └───────────┘ └───────────┘ └───────────┘     │
-│                                                 │
-│  ( Cotizaciones )  ( Cuentas por cobrar )      │
-│  ─────────────────────────────────────────     │
-│  [ Lista activa según tab ]                    │
-└─────────────────────────────────────────────────┘
+┌─ Centro de Contenido ──────────────────────────────────┐
+│                                                         │
+│  ┌──────────────────────────┐ ┌──────────────────────┐ │
+│  │  PLANEADOR (col izq)     │ │  OBJETIVOS (col der) │ │
+│  │                          │ │                      │ │
+│  │  Tabs: Planeador|Resumen │ │  ┌─ KPIs (2x2) ───┐  │ │
+│  │                          │ │  │ Pub │ Cola     │  │ │
+│  │  Instagram               │ │  │ Idea│ % publ.  │  │ │
+│  │  [4 columnas grid]       │ │  └────────────────┘  │ │
+│  │                          │ │                      │ │
+│  │  TikTok                  │ │  ┌─ Metas mes ───┐  │ │
+│  │  [4 columnas grid]       │ │  │ IG  8/15  ▓▓░│  │ │
+│  │                          │ │  │ TT  4/10  ▓░░│  │ │
+│  │  Ideas Futuras           │ │  │ Sol 1/3   ▓░░│  │ │
+│  │  [8 columnas grid]       │ │  │ [editar metas]│  │ │
+│  │                          │ │  └───────────────┘  │ │
+│  │  Solar                   │ │                      │ │
+│  │  [4 columnas grid]       │ │  ┌─ Distribución ┐  │ │
+│  │                          │ │  │ Donut formato │  │ │
+│  │                          │ │  └───────────────┘  │ │
+│  └──────────────────────────┘ └──────────────────────┘ │
+│                                                         │
+│  ┌─ Crecimiento de seguidores (full width) ──────────┐ │
+│  │  Tabs: Instagram | TikTok | Solar                  │ │
+│  │  ┌──────────────────────────────────────────────┐ │ │
+│  │  │  Línea/área chart — últimos 30 días          │ │ │
+│  │  │  Eje Y: seguidores  Eje X: día               │ │ │
+│  │  └──────────────────────────────────────────────┘ │ │
+│  │  [+ Registrar conteo de hoy]                      │ │
+│  │  Tabla compacta: fecha · cuenta · seguidores · Δ  │ │
+│  └────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
 ```
 
-### Cambios de archivos
+**Mobile (< lg)**: las 2 columnas se apilan (Planeador arriba, Objetivos debajo), y la tabla de seguidores siempre full-width.
 
-1. **Nuevo** `src/components/dashboard/FinanceView.tsx`
-   - Estado `tab: "quotations" | "invoices"`.
-   - Carga ligera de totales (pendiente, cobrado, # cotizaciones aceptadas) con dos queries `select` agregadas.
-   - Renderiza `<QuotationsView />` o `<InvoicesView />` según tab.
-   - Botón "Nueva" con menú simple (dropdown) que dispara el alta del módulo activo (vía prop `defaultOpenForm` opcional, o simplemente cambia de tab y abre el form).
+**Desktop (lg+)**: `grid-cols-[1fr_360px]` — planeador ocupa el espacio flexible, objetivos columna fija a la derecha sticky para que no se pierda al hacer scroll.
 
-2. **`QuotationsView.tsx` / `InvoicesView.tsx`**
-   - Aceptar prop opcional `embedded?: boolean` para **ocultar el header propio** (título + botón "Nueva") cuando se renderizan dentro de FinanceView, evitando duplicación. Resto intacto.
-   - Exponer un `ref` o prop `openFormSignal` para que el botón "Nueva" del header padre pueda abrir el form correspondiente. Implementación simple: prop `triggerNew: number` (contador) que un `useEffect` observa.
+### Componentes y datos
 
-3. **`src/pages/Dashboard.tsx`**
-   - Reemplazar las dos vistas (`quotations`, `invoices`) por una sola `finance`.
-   - `View` queda: `"overview" | "finance" | "content-planner" | "service-costs"`.
-   - `renderView` solo case `finance` → `<FinanceView />`.
+1. **Columna izquierda — Planeador**
+   - Reutiliza el grid actual (IG, TikTok, Ideas, Solar) sin cambios de lógica.
+   - Tabs internos pill-style: **Planeador** (grid actual) / **Resumen** (lista cronológica de últimos 10 publicados + próximos en cola).
 
-4. **`DashboardSidebar.tsx`** y **`MobileBottomNav.tsx`**
-   - Reemplazar los dos items "Cotizaciones" y "Cuentas de Cobro" por uno solo: **"Finanzas"** con icono `Wallet` (o `DollarSign`).
+2. **Columna derecha — Objetivos**
+   - **KPIs 2x2** (`dash-tile`, números grandes):
+     - Publicados este mes
+     - En cola
+     - Ideas
+     - Tasa de publicación %
+   - **Metas mensuales** (`dash-tile`):
+     - Barra de progreso por sección (IG, TikTok, Solar) usando datos del mes actual.
+     - Botón "Editar metas" → Dialog con inputs.
+     - Persistencia: nueva tabla `content_goals`.
+   - **Distribución por formato** (`dash-tile`):
+     - Donut con `recharts` agrupando items publicados por `format`.
+     - Leyenda compacta debajo.
 
-5. **`OverviewView.tsx`**
-   - Actualizar el tipo `View` local para usar `"finance"` en lugar de `"quotations" | "invoices"` (revisar si `onNavigate` se usa con esos valores; si no, solo limpiar el union).
+3. **Sección inferior — Crecimiento de seguidores** (full width, `dash-tile`)
+   - Tabs por plataforma: **Instagram / TikTok / Solar**.
+   - Gráfico de **área** (`AreaChart` de recharts) mostrando evolución de seguidores en el tiempo.
+   - Botón "+ Registrar conteo de hoy" → Dialog rápido (input numérico por plataforma).
+   - Tabla compacta debajo: fecha · plataforma · seguidores · Δ vs anterior.
+   - Persistencia: nueva tabla `follower_snapshots`.
 
-### Estilo de los Tabs (alineado con la estética actual)
+### Cambios técnicos
 
-Wrap manual en lugar del `TabsList` por defecto, para conservar el lenguaje "pill" del dashboard:
+- **Migración SQL**:
+  - `content_goals` (user_id PK, ig_goal int, tiktok_goal int, solar_goal int, ideas_goal int) — 1 fila por usuario, upsert.
+  - `follower_snapshots` (id, user_id, platform text, count int, snapshot_date date, created_at) — RLS estándar `auth.uid() = user_id`. Índice por (user_id, platform, snapshot_date).
 
-```tsx
-<div className="inline-flex gap-1 p-1 rounded-full bg-[hsl(0,0%,96%)] border border-[hsl(var(--dash-card-border))]">
-  {tabs.map(t => (
-    <button className={tab===t.id 
-      ? "bg-[hsl(var(--dash-card-bg))] text-[hsl(var(--dash-text))] shadow-sm rounded-full px-4 py-1.5 text-sm font-bold"
-      : "text-[hsl(var(--dash-text-muted))] rounded-full px-4 py-1.5 text-sm font-semibold"
-    }>{t.label}</button>
-  ))}
-</div>
-```
+- **`ContentPlannerView.tsx`**: refactor a layout `lg:grid-cols-[1fr_360px]` con header arriba, sección de seguidores debajo. Extraer el grid existente a sub-componente `<PlannerGrid />` para mantener el archivo legible.
 
-### Lo que NO cambia
-- Tablas Supabase (`quotations`, `invoices`, `clients`).
-- PDFs (`invoice-pdf.ts`, `quotation-pdf.ts`).
-- Lógica de creación/edición/eliminación.
-- Asistente IA de cotizaciones.
+- **Nuevos componentes**:
+  - `ContentGoalsCard.tsx` — KPIs + metas + dialog editar.
+  - `FormatDistributionCard.tsx` — donut.
+  - `FollowerGrowthSection.tsx` — chart + dialog registrar + tabla.
+
+- **Sin cambios** en lógica drag & drop, edición, formato, guion ni en `content_items`.
+
+### Estilo
+
+- Bento `gap-3 sm:gap-4`, `dash-tile rounded-2xl`.
+- Columna derecha `lg:sticky lg:top-4 lg:self-start` para que las métricas queden visibles.
+- Chart de seguidores con color primario (amarillo) + gradient suave, sin grid pesado, ejes minimalistas.
+- KPI numbers `text-2xl sm:text-3xl font-bold`, labels `text-xs uppercase tracking-wider text-muted`.
 
 ### Archivos tocados
-- Nuevo: `src/components/dashboard/FinanceView.tsx`
-- Editado: `src/components/dashboard/QuotationsView.tsx` (prop `embedded`, `triggerNew`)
-- Editado: `src/components/dashboard/InvoicesView.tsx` (prop `embedded`, `triggerNew`)
-- Editado: `src/pages/Dashboard.tsx`
-- Editado: `src/components/dashboard/DashboardSidebar.tsx`
-- Editado: `src/components/dashboard/MobileBottomNav.tsx`
-- Editado: `src/components/dashboard/OverviewView.tsx` (limpieza tipo `View`)
+
+- Editado: `src/components/dashboard/ContentPlannerView.tsx` (layout 2 cols + integración).
+- Nuevo: `src/components/dashboard/content/PlannerGrid.tsx` (extracción del grid actual).
+- Nuevo: `src/components/dashboard/content/ContentGoalsCard.tsx`.
+- Nuevo: `src/components/dashboard/content/FormatDistributionCard.tsx`.
+- Nuevo: `src/components/dashboard/content/FollowerGrowthSection.tsx`.
+- Nueva migración SQL: `content_goals` + `follower_snapshots` con RLS.
 
