@@ -75,7 +75,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     const payload = {
       concept: form.concept, amount: parseFloat(form.amount), status: form.status as any,
       due_date: form.due_date || null, paid_date: form.paid_date || null, notes: form.notes || null,
-      client_id: form.client_id || null, quotation_id: form.quotation_id || null, user_id: user.id,
+      client_id: null, client_name: form.client_name.trim() || null, quotation_id: form.quotation_id || null, user_id: user.id,
     };
     if (editingId) { await supabase.from("invoices").update(payload).eq("id", editingId); }
     else { await supabase.from("invoices").insert(payload); }
