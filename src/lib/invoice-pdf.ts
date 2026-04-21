@@ -101,8 +101,9 @@ function formatDateLong(dateStr: string): string {
   return `${months[d.getMonth()]} ${d.getDate()} de ${d.getFullYear()}`;
 }
 
-export function generateInvoicePDF(inv: InvoiceData) {
-  const doc = new jsPDF();
+export function buildInvoicePDF(inv: InvoiceData, existingDoc?: jsPDF): jsPDF {
+  const doc = existingDoc ?? new jsPDF();
+  if (existingDoc) doc.addPage();
   const pw = doc.internal.pageSize.getWidth();
   const ph = doc.internal.pageSize.getHeight();
   const margin = 25;
@@ -253,7 +254,13 @@ export function generateInvoicePDF(inv: InvoiceData) {
   doc.setTextColor(...LIGHT_GRAY);
   doc.text("Documento generado automáticamente", pw / 2, footerY + 10, { align: "center" });
 
-  // Save
-  const safeName = inv.clientName.toLowerCase().replace(/\s+/g, "-");
-  doc.save(`cuenta-de-cobro-${safeName}.pdf`);
+  if (!existingDoc) {
+    const safeName = inv.clientName.toLowerCase().replace(/\s+/g, "-");
+    doc.save(`cuenta-de-cobro-${safeName}.pdf`);
+  }
+  return doc;
+}
+
+export function generateInvoicePDF(inv: InvoiceData) {
+  return buildInvoicePDF(inv);
 }
