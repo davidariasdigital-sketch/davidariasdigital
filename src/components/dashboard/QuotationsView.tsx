@@ -153,6 +153,67 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
     onMutate?.();
   };
 
+  const handleGenerateInvoice = async (q: Quotation) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { toast.error("Debes iniciar sesión"); return; }
+
+      const clientName = q.client_name || q.clients?.name || "Cliente";
+      const concept = Array.isArray(q.items) && q.items.length > 0
+        ? q.items.map((it) => it.description).filter(Boolean).join(", ") || q.title
+        : q.title;
+
+      // Reuse existing invoice if already linked, otherwise create one
+      const { data: existing } = await supabase
+        .from("invoices")
+        .select("*")
+        .eq("quotation_id", q.id)
+        .maybeSingle();
+
+      let invoice = existing as any;
+      if (!invoice) {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        const payload = {
+          concept,
+          amount: Number(q.total),
+          status: "pendiente" as any,
+          due_date: dueDate.toISOString().slice(0, 10),
+          paid_date: null,
+          notes: `Generada automáticamente desde la cotización: ${q.title}`,
+          client_id: q.client_id,
+          client_name: clientName,
+          quotation_id: q.id,
+          user_id: user.id,
+        };
+        const { data: inserted, error } = await supabase
+          .from("invoices")
+          .insert(payload)
+          .select()
+          .single();
+        if (error) { toast.error("Error al crear la cuenta: " + error.message); return; }
+        invoice = inserted;
+        toast.success("Cuenta de cobro creada y vinculada");
+      } else {
+        toast.success("Usando cuenta de cobro existente");
+      }
+
+      await generateCombinedQuotationInvoicePDF(q, {
+        concept: invoice.concept,
+        amount: Number(invoice.amount),
+        clientName: invoice.client_name || clientName,
+        createdAt: invoice.created_at,
+        notes: invoice.notes,
+        due_date: invoice.due_date,
+      });
+
+      onMutate?.();
+    } catch (err: any) {
+      toast.error("Error inesperado: " + (err?.message ?? String(err)));
+    }
+  };
+
+
   const inputCls = "dash-input rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-sm w-full";
 
   const formContent = (
