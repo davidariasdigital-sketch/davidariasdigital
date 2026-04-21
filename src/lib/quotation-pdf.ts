@@ -63,8 +63,9 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export async function generateQuotationPDF(q: Quotation) {
-  const doc = new jsPDF();
+export async function buildQuotationPDF(q: Quotation, existingDoc?: jsPDF): Promise<jsPDF> {
+  const doc = existingDoc ?? new jsPDF();
+  if (existingDoc) doc.addPage();
   const pw = doc.internal.pageSize.getWidth();
   const ph = doc.internal.pageSize.getHeight();
   const margin = 20;
@@ -391,9 +392,16 @@ export async function generateQuotationPDF(q: Quotation) {
   doc.setTextColor(200, 200, 200);
   doc.text("Documento generado automáticamente", pw / 2, footerY, { align: "center" });
 
-  const safeTitle = q.title.toUpperCase().replace(/\s+/g, "_").replace(/[^A-Z0-9_ÁÉÍÓÚÑÜ]/gi, "");
-  const safeClient = (q.clients?.name || "SIN_CLIENTE").toUpperCase().replace(/\s+/g, "_").replace(/[^A-Z0-9_ÁÉÍÓÚÑÜ]/gi, "");
-  const d = new Date(q.created_at);
-  const fileDate = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  doc.save(`COTIZACION_${safeTitle}_${safeClient}_${fileDate}.pdf`);
+  if (!existingDoc) {
+    const safeTitle = q.title.toUpperCase().replace(/\s+/g, "_").replace(/[^A-Z0-9_ÁÉÍÓÚÑÜ]/gi, "");
+    const safeClient = (q.clients?.name || "SIN_CLIENTE").toUpperCase().replace(/\s+/g, "_").replace(/[^A-Z0-9_ÁÉÍÓÚÑÜ]/gi, "");
+    const d = new Date(q.created_at);
+    const fileDate = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+    doc.save(`COTIZACION_${safeTitle}_${safeClient}_${fileDate}.pdf`);
+  }
+  return doc;
+}
+
+export async function generateQuotationPDF(q: Quotation) {
+  return buildQuotationPDF(q);
 }
