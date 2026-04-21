@@ -63,8 +63,9 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export async function generateQuotationPDF(q: Quotation) {
-  const doc = new jsPDF();
+export async function buildQuotationPDF(q: Quotation, existingDoc?: jsPDF): Promise<jsPDF> {
+  const doc = existingDoc ?? new jsPDF();
+  if (existingDoc) doc.addPage();
   const pw = doc.internal.pageSize.getWidth();
   const ph = doc.internal.pageSize.getHeight();
   const margin = 20;
