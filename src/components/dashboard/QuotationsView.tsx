@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Trash2, Edit2, FileDown, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, X, Trash2, Edit2, FileDown, ChevronDown, ChevronUp, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { generateQuotationPDF } from "@/lib/quotation-pdf";
+import { generateCombinedQuotationInvoicePDF } from "@/lib/combined-pdf";
 import QuotationAIAssistant from "./QuotationAIAssistant";
 import {
   Drawer,
