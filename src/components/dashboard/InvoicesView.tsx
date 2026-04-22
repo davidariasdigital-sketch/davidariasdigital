@@ -40,7 +40,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "",
+    concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", client_tax_id: "", quotation_id: "",
   });
 
   const formatCOP = (v: number) =>
@@ -63,7 +63,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
   }, [triggerNew]);
 
   const resetForm = () => {
-    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", quotation_id: "" });
+    setForm({ concept: "", amount: "", status: "pendiente", due_date: "", paid_date: "", notes: "", client_name: "", client_tax_id: "", quotation_id: "" });
     setEditingId(null);
     setShowForm(false);
   };
@@ -72,9 +72,14 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     if (!form.concept || !form.amount) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    const taxId = form.client_tax_id.trim();
+    // El NIT/CC no tiene columna en la BD: lo guardamos al inicio del campo notes con un prefijo
+    // para que persista y sea editable, pero solo aparecerá en el PDF si está presente.
+    const baseNotes = (form.notes || "").replace(/^\[NIT\/CC:[^\]]*\]\s*/i, "").trim();
+    const composedNotes = taxId ? `[NIT/CC: ${taxId}] ${baseNotes}`.trim() : (baseNotes || null);
     const payload = {
       concept: form.concept, amount: parseFloat(form.amount), status: form.status as any,
-      due_date: form.due_date || null, paid_date: form.paid_date || null, notes: form.notes || null,
+      due_date: form.due_date || null, paid_date: form.paid_date || null, notes: composedNotes,
       client_id: null, client_name: form.client_name.trim() || null, quotation_id: form.quotation_id || null, user_id: user.id,
     };
     if (editingId) { await supabase.from("invoices").update(payload).eq("id", editingId); }
@@ -84,11 +89,19 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
     onMutate?.();
   };
 
+  const extractTaxId = (notes: string | null) => {
+    if (!notes) return { taxId: "", cleanNotes: "" };
+    const m = notes.match(/^\[NIT\/CC:\s*([^\]]+)\]\s*(.*)$/i);
+    if (m) return { taxId: m[1].trim(), cleanNotes: m[2].trim() };
+    return { taxId: "", cleanNotes: notes };
+  };
+
   const handleEdit = (inv: Invoice) => {
+    const { taxId, cleanNotes } = extractTaxId(inv.notes);
     setForm({
       concept: inv.concept, amount: String(inv.amount), status: inv.status,
-      due_date: inv.due_date ?? "", paid_date: inv.paid_date ?? "", notes: inv.notes ?? "",
-      client_name: inv.client_name ?? inv.clients?.name ?? "", quotation_id: inv.quotation_id ?? "",
+      due_date: inv.due_date ?? "", paid_date: inv.paid_date ?? "", notes: cleanNotes,
+      client_name: inv.client_name ?? inv.clients?.name ?? "", client_tax_id: taxId, quotation_id: inv.quotation_id ?? "",
     });
     setEditingId(inv.id);
     setShowForm(true);
