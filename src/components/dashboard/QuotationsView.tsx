@@ -435,7 +435,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => generateQuotationPDF(q)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar cotización (PDF)"><FileDown size={14} /></button>
+              <button onClick={() => { const { taxId, cleanDescription } = extractTaxId(q.description); generateQuotationPDF({ ...q, description: cleanDescription, client_tax_id: taxId || null } as any); }} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar cotización (PDF)"><FileDown size={14} /></button>
               <button onClick={() => handleGenerateInvoice(q)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Generar cuenta de cobro y descargar combinado"><FileText size={14} /></button>
               <button onClick={() => handleEdit(q)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(q.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
