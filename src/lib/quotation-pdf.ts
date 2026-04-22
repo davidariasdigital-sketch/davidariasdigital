@@ -13,6 +13,8 @@ interface Quotation {
   total: number;
   status: string;
   created_at: string;
+  client_name?: string | null;
+  client_tax_id?: string | null;
   clients?: { name: string } | null;
   conditions?: string[];
   delivery_date?: string | null;
@@ -118,14 +120,16 @@ export async function buildQuotationPDF(q: Quotation, existingDoc?: jsPDF): Prom
 
   // ─── CLIENT INFO (right) ───
   const clientDisplayName = (q as any).client_name || q.clients?.name;
+  const clientTaxId = q.client_tax_id?.trim();
   if (clientDisplayName) {
     const boxX = pw / 2 + 10;
     const boxW = pw - margin - boxX;
     const boxY = 50;
+    const boxH = clientTaxId ? 24 : 18;
     doc.setFillColor(...MUSTARD);
-    doc.rect(boxX, boxY, 2, 18, "F");
+    doc.rect(boxX, boxY, 2, boxH, "F");
     doc.setFillColor(250, 249, 245);
-    doc.rect(boxX + 2, boxY, boxW - 2, 18, "F");
+    doc.rect(boxX + 2, boxY, boxW - 2, boxH, "F");
 
     doc.setFontSize(7);
     useFont("light");
@@ -135,6 +139,13 @@ export async function buildQuotationPDF(q: Quotation, existingDoc?: jsPDF): Prom
     useFont("bold");
     doc.setTextColor(...DARK);
     doc.text(clientDisplayName, boxX + 6, boxY + 13);
+
+    if (clientTaxId) {
+      doc.setFontSize(8);
+      useFont("normal");
+      doc.setTextColor(...MID_GRAY);
+      doc.text(`NIT/CC: ${clientTaxId}`, boxX + 6, boxY + 20);
+    }
   }
 
   y += 6;

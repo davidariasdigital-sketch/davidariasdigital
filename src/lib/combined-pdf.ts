@@ -11,6 +11,7 @@ interface QuotationLike {
   status: string;
   created_at: string;
   client_name?: string | null;
+  client_tax_id?: string | null;
   clients?: { name: string } | null;
   conditions?: string[];
   delivery_date?: string | null;
@@ -22,6 +23,7 @@ interface InvoiceLike {
   concept: string;
   amount: number;
   clientName: string;
+  clientTaxId?: string | null;
   createdAt: string;
   notes: string | null;
   due_date: string | null;
