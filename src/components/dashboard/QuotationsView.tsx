@@ -82,6 +82,15 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerNew]);
 
+  // Helpers para guardar/extraer NIT/CC dentro del campo description (no hay columna dedicada)
+  const TAX_PREFIX_RE = /^\[NIT\/CC:\s*([^\]]+)\]\s*([\s\S]*)$/i;
+  const extractTaxId = (description: string | null | undefined) => {
+    if (!description) return { taxId: "", cleanDescription: "" };
+    const m = description.match(TAX_PREFIX_RE);
+    if (m) return { taxId: m[1].trim(), cleanDescription: m[2].trim() };
+    return { taxId: "", cleanDescription: description };
+  };
+
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
@@ -90,8 +99,13 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
       const total = items.reduce((s, i) => s + (Number(i.amount) || 0), 0);
       const conditions = DEFAULT_CONDITIONS.filter((_, i) => selectedConditions[i]);
       const costos = COSTOS_OPTIONS.filter((_, i) => selectedCostos[i]);
+      const taxId = form.client_tax_id.trim();
+      const baseDescription = (form.description || "").trim();
+      const composedDescription = taxId
+        ? `[NIT/CC: ${taxId}] ${baseDescription}`.trim()
+        : (baseDescription || null);
       const payload = {
-        title: form.title, description: form.description || null, client_id: null, client_name: form.client_name.trim() || null,
+        title: form.title, description: composedDescription, client_id: null, client_name: form.client_name.trim() || null,
         status: form.status as any, items: items as any, total, conditions: conditions as any,
         costos: costos as any, requisitos: requisitos as any, delivery_date: form.delivery_date || null, user_id: user.id,
       };
@@ -114,7 +128,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   };
 
   const resetForm = () => {
-    setForm({ title: "", description: "", client_name: "", status: "borrador", delivery_date: "" });
+    setForm({ title: "", description: "", client_name: "", client_tax_id: "", status: "borrador", delivery_date: "" });
     setItems([{ description: "", amount: 0, entregables: [] }]);
     setSelectedConditions(DEFAULT_CONDITIONS.map(() => true));
     setSelectedCostos(COSTOS_OPTIONS.map(() => false));
@@ -129,7 +143,8 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
 
   const handleEdit = (q: Quotation) => {
     setEditing(q);
-    setForm({ title: q.title, description: q.description ?? "", client_name: q.client_name ?? q.clients?.name ?? "", status: q.status, delivery_date: (q as any).delivery_date ?? "" });
+    const { taxId, cleanDescription } = extractTaxId(q.description);
+    setForm({ title: q.title, description: cleanDescription, client_name: q.client_name ?? q.clients?.name ?? "", client_tax_id: taxId, status: q.status, delivery_date: (q as any).delivery_date ?? "" });
     const parsedItems = q.items.length > 0 ? q.items.map(it => ({ ...it, entregables: it.entregables ?? [] })) : [{ description: "", amount: 0, entregables: [] }];
     setItems(parsedItems);
     setEntregableInputs(parsedItems.map(() => ""));
