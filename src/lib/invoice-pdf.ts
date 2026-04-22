@@ -4,6 +4,7 @@ interface InvoiceData {
   concept: string;
   amount: number;
   clientName: string;
+  clientTaxId?: string | null;
   createdAt: string;
   notes: string | null;
   due_date: string | null;
@@ -146,6 +147,13 @@ export function buildInvoicePDF(inv: InvoiceData, existingDoc?: jsPDF): jsPDF {
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
   doc.text(inv.clientName.toUpperCase(), margin + 10, y + 14);
+
+  if (inv.clientTaxId && inv.clientTaxId.trim()) {
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...MID_GRAY);
+    doc.text(`NIT/CC: ${inv.clientTaxId.trim()}`, margin + 10, y + 20);
+  }
 
   y += 38;
 
