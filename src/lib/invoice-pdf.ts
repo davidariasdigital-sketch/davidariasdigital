@@ -216,43 +216,56 @@ export function buildInvoicePDF(inv: InvoiceData, existingDoc?: jsPDF): jsPDF {
   const paymentLines = doc.splitTextToSize(paymentText, contentWidth - 16);
   doc.text(paymentLines, margin + 8, y + 4);
 
-  y += 34;
+  y += paymentLines.length * 4 + 12;
 
-  // ─── SIGNATURE ───
-  doc.setDrawColor(...DARK);
-  doc.setLineWidth(0.5);
-  doc.line(margin, y + 20, margin + 80, y + 20);
-
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...DARK);
-  doc.text("David Alejandro Arias Salazar", margin, y + 28);
-
-  y += 40;
-
-  // ─── FOOTER ───
-  const footerY = ph - 22;
-
-  doc.setDrawColor(...MUSTARD);
-  doc.setLineWidth(0.5);
-  doc.line(margin, footerY - 6, pw - margin, footerY - 6);
-
-  doc.setFontSize(7);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...MID_GRAY);
-  doc.text(ADDRESS, margin, footerY);
-  doc.text(CITY, margin, footerY + 4);
-
+  // ─── DUE DATE (above signature, full width) ───
   if (inv.due_date) {
     const dueStr = new Date(inv.due_date + "T00:00:00").toLocaleDateString("es-CO", {
       year: "numeric", month: "long", day: "numeric",
     });
-    doc.text(`El pago debe realizarse antes del ${dueStr}`, pw - margin, footerY, { align: "right" });
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(...MID_GRAY);
+    doc.text(`El pago debe realizarse antes del ${dueStr}.`, margin, y);
+    y += 10;
   }
+
+  // ─── SIGNATURE ───
+  // Anclamos la firma a una posición fija desde el footer para que nunca se solape
+  const footerTopY = ph - 26;
+  const signatureY = Math.min(Math.max(y + 24, footerTopY - 24), footerTopY - 16);
+
+  doc.setDrawColor(...DARK);
+  doc.setLineWidth(0.5);
+  doc.line(margin, signatureY, margin + 80, signatureY);
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...DARK);
+  doc.text("David Alejandro Arias Salazar", margin, signatureY + 6);
+
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...MID_GRAY);
+  doc.text(`C.C. ${CC}`, margin, signatureY + 11);
+
+  // ─── FOOTER ───
+  doc.setDrawColor(...MUSTARD);
+  doc.setLineWidth(0.5);
+  doc.line(margin, footerTopY, pw - margin, footerTopY);
+
+  doc.setFontSize(7);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...MID_GRAY);
+  doc.text(ADDRESS, margin, footerTopY + 6);
+  doc.text(CITY, margin, footerTopY + 10);
+
+  doc.text(`NEQUI ${NEQUI}`, pw - margin, footerTopY + 6, { align: "right" });
+  doc.text(FULL_NAME, pw - margin, footerTopY + 10, { align: "right" });
 
   doc.setFontSize(5);
   doc.setTextColor(...LIGHT_GRAY);
-  doc.text("Documento generado automáticamente", pw / 2, footerY + 10, { align: "center" });
+  doc.text("Documento generado automáticamente", pw / 2, footerTopY + 16, { align: "center" });
 
   if (!existingDoc) {
     const safeName = inv.clientName.toLowerCase().replace(/\s+/g, "-");
