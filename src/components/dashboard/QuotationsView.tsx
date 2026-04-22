@@ -213,10 +213,14 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
         toast.success("Usando cuenta de cobro existente");
       }
 
-      await generateCombinedQuotationInvoicePDF(q, {
+      const { taxId, cleanDescription } = extractTaxId(q.description);
+      const cleanQuotation = { ...q, description: cleanDescription, client_tax_id: taxId || null } as any;
+
+      await generateCombinedQuotationInvoicePDF(cleanQuotation, {
         concept: invoice.concept,
         amount: Number(invoice.amount),
         clientName: invoice.client_name || clientName,
+        clientTaxId: taxId || null,
         createdAt: invoice.created_at,
         notes: invoice.notes,
         due_date: invoice.due_date,
@@ -236,6 +240,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
       {/* Title & Client */}
       <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Título *" className={inputCls} />
       <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
+      <input value={form.client_tax_id} onChange={(e) => setForm({ ...form, client_tax_id: e.target.value })} placeholder="NIT / Cédula del cliente (opcional, solo aparecerá en el PDF)" className={inputCls} maxLength={30} />
 
       <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descripción / Objetivo" className={`${inputCls} min-h-[50px]`} rows={2} />
       <QuotationAIAssistant
