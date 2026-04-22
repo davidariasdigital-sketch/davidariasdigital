@@ -165,6 +165,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
               </div>
             </div>
             <input value={form.client_name} onChange={(e) => setForm({ ...form, client_name: e.target.value })} placeholder="Cliente" className={inputCls} />
+            <input value={form.client_tax_id} onChange={(e) => setForm({ ...form, client_tax_id: e.target.value })} placeholder="NIT / Cédula del cliente (opcional, solo aparecerá en el PDF)" className={inputCls} maxLength={30} />
             <select value={form.quotation_id} onChange={(e) => {
               const qId = e.target.value;
               const qt = quotations.find((q) => q.id === qId);
