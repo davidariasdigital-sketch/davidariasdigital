@@ -59,7 +59,7 @@ const QuotationsView = ({ embedded = false, triggerNew = 0, onMutate }: Quotatio
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Quotation | null>(null);
-  const [form, setForm] = useState({ title: "", description: "", client_name: "", status: "borrador" as string, delivery_date: "" });
+  const [form, setForm] = useState({ title: "", description: "", client_name: "", client_tax_id: "", status: "borrador" as string, delivery_date: "" });
   const [items, setItems] = useState<QuotationItem[]>([{ description: "", amount: 0, entregables: [] }]);
   const [selectedConditions, setSelectedConditions] = useState<boolean[]>(DEFAULT_CONDITIONS.map(() => true));
   const [selectedCostos, setSelectedCostos] = useState<boolean[]>(COSTOS_OPTIONS.map(() => false));
