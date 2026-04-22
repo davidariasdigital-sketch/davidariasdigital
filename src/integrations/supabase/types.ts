@@ -444,6 +444,36 @@ export type Database = {
           },
         ]
       }
+      routine_progress: {
+        Row: {
+          created_at: string
+          id: string
+          period_start: string
+          routine_key: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_start?: string
+          routine_key: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_start?: string
+          routine_key?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       service_costs: {
         Row: {
           category: string
