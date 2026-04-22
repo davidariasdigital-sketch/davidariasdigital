@@ -234,7 +234,7 @@ const InvoicesView = ({ embedded = false, triggerNew = 0, onMutate }: InvoicesVi
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={() => generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.client_name || inv.clients?.name || "Cliente", createdAt: inv.created_at, notes: inv.notes, due_date: inv.due_date })} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
+              <button onClick={() => { const { taxId, cleanNotes } = extractTaxId(inv.notes); generateInvoicePDF({ concept: inv.concept, amount: Number(inv.amount), clientName: inv.client_name || inv.clients?.name || "Cliente", clientTaxId: taxId || null, createdAt: inv.created_at, notes: cleanNotes || null, due_date: inv.due_date }); }} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-primary transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]" title="Descargar PDF"><FileDown size={14} /></button>
               <button onClick={() => handleEdit(inv)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors rounded-lg hover:bg-[hsl(0,0%,96%)]"><Edit2 size={14} /></button>
               <button onClick={() => handleDelete(inv.id)} className="p-2 text-[hsl(var(--dash-text-muted))] hover:text-destructive transition-colors rounded-lg hover:bg-red-50"><Trash2 size={14} /></button>
             </div>
