@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dumbbell, BookOpen, Film, Plus, Minus, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Routine {
   icon: any;
@@ -14,6 +15,16 @@ const ROUTINES: Routine[] = [
   { icon: BookOpen, title: "LEER", unit: "30 min / día", goal: 1, type: "check" },
   { icon: Film, title: "CINE", unit: "película / sem", goal: 1, type: "counter" },
 ];
+
+// Lunes como inicio de semana (formato YYYY-MM-DD)
+const getWeekStart = (): string => {
+  const d = new Date();
+  const day = d.getDay(); // 0 = domingo
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString().slice(0, 10);
+};
 
 interface ProgressRingProps {
   value: number;
@@ -89,13 +100,57 @@ const RoutineSection = () => {
     LEER: 0,
     CINE: 0,
   });
+  const [userId, setUserId] = useState<string | null>(null);
+  const weekStart = getWeekStart();
 
-  const inc = (key: string, max: number) =>
-    setProgress((p) => ({ ...p, [key]: Math.min(max, (p[key] ?? 0) + 1) }));
-  const dec = (key: string) =>
-    setProgress((p) => ({ ...p, [key]: Math.max(0, (p[key] ?? 0) - 1) }));
-  const toggle = (key: string) =>
-    setProgress((p) => ({ ...p, [key]: (p[key] ?? 0) > 0 ? 0 : 1 }));
+  // Cargar progreso de la semana actual al montar
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !mounted) return;
+      setUserId(user.id);
+
+      const { data } = await supabase
+        .from("routine_progress" as any)
+        .select("routine_key, value")
+        .eq("user_id", user.id)
+        .eq("period_start", weekStart);
+
+      if (data && mounted) {
+        const map: Record<string, number> = { GYM: 0, LEER: 0, CINE: 0 };
+        (data as any[]).forEach((r) => { map[r.routine_key] = r.value; });
+        setProgress(map);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [weekStart]);
+
+  const persist = async (key: string, value: number) => {
+    if (!userId) return;
+    await supabase.from("routine_progress" as any).upsert(
+      { user_id: userId, routine_key: key, value, period_start: weekStart },
+      { onConflict: "user_id,routine_key,period_start" }
+    );
+  };
+
+  const update = (key: string, next: number) => {
+    setProgress((p) => ({ ...p, [key]: next }));
+    persist(key, next);
+  };
+
+  const inc = (key: string, max: number) => {
+    const next = Math.min(max, (progress[key] ?? 0) + 1);
+    update(key, next);
+  };
+  const dec = (key: string) => {
+    const next = Math.max(0, (progress[key] ?? 0) - 1);
+    update(key, next);
+  };
+  const toggle = (key: string) => {
+    const next = (progress[key] ?? 0) > 0 ? 0 : 1;
+    update(key, next);
+  };
 
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-purple-50 border-purple-200 flex flex-col">
