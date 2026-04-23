@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Briefcase, Film, Smartphone, Star, Calendar as CalIcon, Check } from "lucide-react";
+import { Plus, X, Briefcase, Film, Smartphone, Star, Calendar as CalIcon, Check, Pencil, Trash2 } from "lucide-react";
 
 interface Priority {
   id: string;
@@ -57,6 +57,8 @@ const PrioritiesSection = () => {
   const [loading, setLoading] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, { title: string; due_date: string }>>({});
   const [activeInput, setActiveInput] = useState<string | null>(null); // priority.id
+  const [editingTask, setEditingTask] = useState<string | null>(null);
+  const [taskEdit, setTaskEdit] = useState<{ title: string; due_date: string }>({ title: "", due_date: "" });
 
   const fetchAll = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -152,6 +154,24 @@ const PrioritiesSection = () => {
     await supabase.from("tasks").update({ completed: true } as any).eq("id", id);
   };
 
+  const deleteTask = async (id: string) => {
+    setTasks(prev => prev.filter(t => t.id !== id));
+    await supabase.from("tasks").delete().eq("id", id);
+  };
+
+  const startEditTask = (t: Task) => {
+    setEditingTask(t.id);
+    setTaskEdit({ title: t.title, due_date: t.due_date ?? "" });
+  };
+
+  const saveEditTask = async (id: string) => {
+    const title = taskEdit.title.trim();
+    if (!title) { setEditingTask(null); return; }
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, title, due_date: taskEdit.due_date || null } : t));
+    setEditingTask(null);
+    await supabase.from("tasks").update({ title, due_date: taskEdit.due_date || null } as any).eq("id", id);
+  };
+
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
       {loading ? (
@@ -203,28 +223,80 @@ const PrioritiesSection = () => {
 
                 {/* Task slots */}
                 <div className="space-y-1.5 flex-1">
-                  {pTasks.map((t) => (
-                    <div
-                      key={t.id}
-                      className={`${style.chipBg} rounded-lg px-2.5 py-1.5 flex items-center gap-2 group/task`}
-                    >
-                      <button
-                        onClick={() => completeTask(t.id)}
-                        title="Completar"
-                        className="w-3.5 h-3.5 rounded border border-current/40 hover:bg-white flex items-center justify-center shrink-0"
+                  {pTasks.map((t) => {
+                    const isEditing = editingTask === t.id;
+                    return (
+                      <div
+                        key={t.id}
+                        className={`${style.chipBg} rounded-lg px-2.5 py-1.5 flex items-center gap-2 group/task`}
                       >
-                        <Check size={9} className={`${style.chipText} opacity-0 group-hover/task:opacity-100`} />
-                      </button>
-                      <p className={`text-[11px] font-semibold leading-tight ${style.chipText} flex-1 truncate`}>
-                        {t.title}
-                      </p>
-                      {t.due_date && (
-                        <span className={`text-[9px] font-bold ${style.chipText} opacity-70 shrink-0`}>
-                          {formatDue(t.due_date)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                        <button
+                          onClick={() => completeTask(t.id)}
+                          title="Completar"
+                          className="w-3.5 h-3.5 rounded border border-current/40 hover:bg-white flex items-center justify-center shrink-0"
+                        >
+                          <Check size={9} className={`${style.chipText} opacity-0 group-hover/task:opacity-100`} />
+                        </button>
+
+                        {isEditing ? (
+                          <>
+                            <input
+                              autoFocus
+                              value={taskEdit.title}
+                              onChange={(e) => setTaskEdit(prev => ({ ...prev, title: e.target.value }))}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") saveEditTask(t.id);
+                                if (e.key === "Escape") setEditingTask(null);
+                              }}
+                              className={`flex-1 bg-white/70 rounded px-1 text-[11px] font-semibold outline-none ${style.text} min-w-0`}
+                            />
+                            <input
+                              type="date"
+                              value={taskEdit.due_date}
+                              onChange={(e) => setTaskEdit(prev => ({ ...prev, due_date: e.target.value }))}
+                              className={`bg-white/70 rounded px-1 text-[9px] outline-none ${style.text} shrink-0`}
+                            />
+                            <button
+                              onClick={() => saveEditTask(t.id)}
+                              title="Guardar"
+                              className={`p-0.5 rounded ${style.chipText} hover:bg-white/60 shrink-0`}
+                            >
+                              <Check size={11} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <p
+                              onClick={() => startEditTask(t)}
+                              title="Editar"
+                              className={`text-[11px] font-semibold leading-tight ${style.chipText} flex-1 truncate cursor-text`}
+                            >
+                              {t.title}
+                            </p>
+                            {t.due_date && (
+                              <span className={`text-[9px] font-bold ${style.chipText} opacity-70 shrink-0`}>
+                                {formatDue(t.due_date)}
+                              </span>
+                            )}
+                            <button
+                              onClick={() => startEditTask(t)}
+                              title="Editar tarea"
+                              className={`p-0.5 rounded ${style.chipText} opacity-0 group-hover/task:opacity-70 hover:opacity-100 hover:bg-white/60 shrink-0`}
+                            >
+                              <Pencil size={9} />
+                            </button>
+                            <button
+                              onClick={() => deleteTask(t.id)}
+                              title="Eliminar tarea"
+                              className={`p-0.5 rounded ${style.chipText} opacity-0 group-hover/task:opacity-70 hover:opacity-100 hover:bg-white/60 shrink-0`}
+                            >
+                              <Trash2 size={9} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
 
                   {/* Empty slot placeholders */}
                   {!isAdding && Array.from({ length: emptySlots }).map((_, idx) => (
