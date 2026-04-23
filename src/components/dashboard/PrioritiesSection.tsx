@@ -57,6 +57,8 @@ const PrioritiesSection = () => {
   const [loading, setLoading] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, { title: string; due_date: string }>>({});
   const [activeInput, setActiveInput] = useState<string | null>(null); // priority.id
+  const [editingTask, setEditingTask] = useState<string | null>(null);
+  const [taskEdit, setTaskEdit] = useState<{ title: string; due_date: string }>({ title: "", due_date: "" });
 
   const fetchAll = async () => {
     const { data: { user } } = await supabase.auth.getUser();
