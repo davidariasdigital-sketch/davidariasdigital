@@ -154,6 +154,24 @@ const PrioritiesSection = () => {
     await supabase.from("tasks").update({ completed: true } as any).eq("id", id);
   };
 
+  const deleteTask = async (id: string) => {
+    setTasks(prev => prev.filter(t => t.id !== id));
+    await supabase.from("tasks").delete().eq("id", id);
+  };
+
+  const startEditTask = (t: Task) => {
+    setEditingTask(t.id);
+    setTaskEdit({ title: t.title, due_date: t.due_date ?? "" });
+  };
+
+  const saveEditTask = async (id: string) => {
+    const title = taskEdit.title.trim();
+    if (!title) { setEditingTask(null); return; }
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, title, due_date: taskEdit.due_date || null } : t));
+    setEditingTask(null);
+    await supabase.from("tasks").update({ title, due_date: taskEdit.due_date || null } as any).eq("id", id);
+  };
+
   return (
     <div className="dash-tile rounded-2xl p-4 sm:p-6">
       {loading ? (
