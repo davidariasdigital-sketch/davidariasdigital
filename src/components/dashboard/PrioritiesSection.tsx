@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, X, Briefcase, Film, Smartphone, Star, Calendar as CalIcon, Check } from "lucide-react";
+import { Plus, X, Briefcase, Film, Smartphone, Star, Calendar as CalIcon, Check, Pencil, Trash2 } from "lucide-react";
 
 interface Priority {
   id: string;
