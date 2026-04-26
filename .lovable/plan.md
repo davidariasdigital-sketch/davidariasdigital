@@ -1,103 +1,102 @@
+## Plan: Nueva ventana de Salud
 
+### Qué se va a añadir
 
-## Plan: Centro de Contenido — layout 2 columnas + estadísticas de seguidores
-
-### Diseño de la nueva interfaz
+Crearé una nueva sección en el dashboard llamada **Salud**, accesible desde el menú lateral y la navegación móvil. Allí podrás registrar y consultar:
 
 ```text
-┌─ Centro de Contenido ──────────────────────────────────┐
-│                                                         │
-│  ┌──────────────────────────┐ ┌──────────────────────┐ │
-│  │  PLANEADOR (col izq)     │ │  OBJETIVOS (col der) │ │
-│  │                          │ │                      │ │
-│  │  Tabs: Planeador|Resumen │ │  ┌─ KPIs (2x2) ───┐  │ │
-│  │                          │ │  │ Pub │ Cola     │  │ │
-│  │  Instagram               │ │  │ Idea│ % publ.  │  │ │
-│  │  [4 columnas grid]       │ │  └────────────────┘  │ │
-│  │                          │ │                      │ │
-│  │  TikTok                  │ │  ┌─ Metas mes ───┐  │ │
-│  │  [4 columnas grid]       │ │  │ IG  8/15  ▓▓░│  │ │
-│  │                          │ │  │ TT  4/10  ▓░░│  │ │
-│  │  Ideas Futuras           │ │  │ Sol 1/3   ▓░░│  │ │
-│  │  [8 columnas grid]       │ │  │ [editar metas]│  │ │
-│  │                          │ │  └───────────────┘  │ │
-│  │  Solar                   │ │                      │ │
-│  │  [4 columnas grid]       │ │  ┌─ Distribución ┐  │ │
-│  │                          │ │  │ Donut formato │  │ │
-│  │                          │ │  └───────────────┘  │ │
-│  └──────────────────────────┘ └──────────────────────┘ │
-│                                                         │
-│  ┌─ Crecimiento de seguidores (full width) ──────────┐ │
-│  │  Tabs: Instagram | TikTok | Solar                  │ │
-│  │  ┌──────────────────────────────────────────────┐ │ │
-│  │  │  Línea/área chart — últimos 30 días          │ │ │
-│  │  │  Eje Y: seguidores  Eje X: día               │ │ │
-│  │  └──────────────────────────────────────────────┘ │ │
-│  │  [+ Registrar conteo de hoy]                      │ │
-│  │  Tabla compacta: fecha · cuenta · seguidores · Δ  │ │
-│  └────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
+┌─ Salud ───────────────────────────────────────────────┐
+│                                                       │
+│  Peso actual       Cambio total       Tendencia        │
+│                                                       │
+│  ┌──────────── Gráfica de peso mensual ────────────┐  │
+│  │ línea histórica con tus pesajes 2022–2026        │  │
+│  └─────────────────────────────────────────────────┘  │
+│                                                       │
+│  Registrar peso mensual                               │
+│  Fecha + peso + botón Guardar                         │
+│                                                       │
+│  Rutina de comida              Rutina de ejercicios   │
+│  Cards editables/checklist     Cards editables        │
+│                                                       │
+│  Historial de pesajes recientes                       │
+└───────────────────────────────────────────────────────┘
 ```
 
-**Mobile (< lg)**: las 2 columnas se apilan (Planeador arriba, Objetivos debajo), y la tabla de seguidores siempre full-width.
+### Funcionalidades
 
-**Desktop (lg+)**: `grid-cols-[1fr_360px]` — planeador ocupa el espacio flexible, objetivos columna fija a la derecha sticky para que no se pierda al hacer scroll.
+1. **Nueva pestaña “Salud”**
+   - Añadiré un icono de salud al sidebar de escritorio.
+   - Añadiré la opción también en la barra inferior móvil.
+   - El dashboard tendrá un nuevo `view: "health"`.
 
-### Componentes y datos
+2. **Historial de peso**
+   - Crearé una tabla para guardar pesajes por usuario.
+   - Cargaré tu historial inicial con los datos que enviaste, normalizando fechas y pesos.
+   - Corregiré formatos ambiguos como:
+     - `67-1` → `67.1 kg`
+     - `08 otc` → `08 oct`
+     - fechas en inglés/español a formato estándar.
 
-1. **Columna izquierda — Planeador**
-   - Reutiliza el grid actual (IG, TikTok, Ideas, Solar) sin cambios de lógica.
-   - Tabs internos pill-style: **Planeador** (grid actual) / **Resumen** (lista cronológica de últimos 10 publicados + próximos en cola).
+3. **Registro mensual de peso**
+   - Formulario compacto con fecha y peso.
+   - Si registras otro peso para la misma fecha, se actualizará en vez de duplicarse.
+   - Validación: peso positivo y fecha obligatoria.
 
-2. **Columna derecha — Objetivos**
-   - **KPIs 2x2** (`dash-tile`, números grandes):
-     - Publicados este mes
-     - En cola
-     - Ideas
-     - Tasa de publicación %
-   - **Metas mensuales** (`dash-tile`):
-     - Barra de progreso por sección (IG, TikTok, Solar) usando datos del mes actual.
-     - Botón "Editar metas" → Dialog con inputs.
-     - Persistencia: nueva tabla `content_goals`.
-   - **Distribución por formato** (`dash-tile`):
-     - Donut con `recharts` agrupando items publicados por `format`.
-     - Leyenda compacta debajo.
+4. **Estadísticas**
+   - Peso actual.
+   - Peso inicial del historial.
+   - Cambio total.
+   - Cambio del último registro vs el anterior.
+   - Promedio reciente y tendencia visual.
 
-3. **Sección inferior — Crecimiento de seguidores** (full width, `dash-tile`)
-   - Tabs por plataforma: **Instagram / TikTok / Solar**.
-   - Gráfico de **área** (`AreaChart` de recharts) mostrando evolución de seguidores en el tiempo.
-   - Botón "+ Registrar conteo de hoy" → Dialog rápido (input numérico por plataforma).
-   - Tabla compacta debajo: fecha · plataforma · seguidores · Δ vs anterior.
-   - Persistencia: nueva tabla `follower_snapshots`.
+5. **Gráfica**
+   - Gráfica de línea/área usando `recharts`, siguiendo el estilo del dashboard.
+   - Mostrará la evolución histórica completa.
+   - En móvil se mantendrá compacta y legible.
 
-### Cambios técnicos
+6. **Rutina de comida y ejercicios**
+   - Crearé módulos editables para:
+     - **Rutina de comida**
+     - **Rutina de ejercicios**
+   - Cada rutina permitirá añadir elementos, marcarlos como activos/completados y editarlos/eliminarlos.
+   - Quedarán guardados por usuario para que no se reinicien al salir.
 
-- **Migración SQL**:
-  - `content_goals` (user_id PK, ig_goal int, tiktok_goal int, solar_goal int, ideas_goal int) — 1 fila por usuario, upsert.
-  - `follower_snapshots` (id, user_id, platform text, count int, snapshot_date date, created_at) — RLS estándar `auth.uid() = user_id`. Índice por (user_id, platform, snapshot_date).
+### Datos iniciales que se cargarán
 
-- **`ContentPlannerView.tsx`**: refactor a layout `lg:grid-cols-[1fr_360px]` con header arriba, sección de seguidores debajo. Extraer el grid existente a sub-componente `<PlannerGrid />` para mantener el archivo legible.
+Se insertará el historial de pesajes enviado desde 2022 hasta 2026 como registros iniciales de tu usuario. Ejemplos:
 
-- **Nuevos componentes**:
-  - `ContentGoalsCard.tsx` — KPIs + metas + dialog editar.
-  - `FormatDistributionCard.tsx` — donut.
-  - `FollowerGrowthSection.tsx` — chart + dialog registrar + tabla.
+- 2022-12-19: 70.3 kg
+- 2023-01-03: 70.2 kg
+- 2024-02-04: 64.0 kg
+- 2025-10-07: 70.8 kg
+- 2026-03-10: 68.0 kg
 
-- **Sin cambios** en lógica drag & drop, edición, formato, guion ni en `content_items`.
+### Detalles técnicos
 
-### Estilo
+- Nueva tabla `health_weight_entries`:
+  - `id`, `user_id`, `entry_date`, `weight_kg`, `notes`, `created_at`, `updated_at`
+  - RLS para que cada usuario solo gestione sus propios datos.
+  - restricción única por `user_id + entry_date` para evitar duplicados diarios.
 
-- Bento `gap-3 sm:gap-4`, `dash-tile rounded-2xl`.
-- Columna derecha `lg:sticky lg:top-4 lg:self-start` para que las métricas queden visibles.
-- Chart de seguidores con color primario (amarillo) + gradient suave, sin grid pesado, ejes minimalistas.
-- KPI numbers `text-2xl sm:text-3xl font-bold`, labels `text-xs uppercase tracking-wider text-muted`.
+- Nueva tabla `health_routine_items`:
+  - `id`, `user_id`, `routine_type` (`food` o `exercise`), `title`, `description`, `completed`, `sort_order`, timestamps.
+  - RLS por usuario.
 
-### Archivos tocados
+- Nuevo componente:
+  - `src/components/dashboard/HealthView.tsx`
 
-- Editado: `src/components/dashboard/ContentPlannerView.tsx` (layout 2 cols + integración).
-- Nuevo: `src/components/dashboard/content/PlannerGrid.tsx` (extracción del grid actual).
-- Nuevo: `src/components/dashboard/content/ContentGoalsCard.tsx`.
-- Nuevo: `src/components/dashboard/content/FormatDistributionCard.tsx`.
-- Nuevo: `src/components/dashboard/content/FollowerGrowthSection.tsx`.
-- Nueva migración SQL: `content_goals` + `follower_snapshots` con RLS.
+- Archivos a actualizar:
+  - `src/pages/Dashboard.tsx`
+  - `src/components/dashboard/DashboardSidebar.tsx`
+  - `src/components/dashboard/MobileBottomNav.tsx`
 
+### Validación y seguridad
+
+- Validaré inputs en el cliente con límites razonables.
+- La base de datos también tendrá políticas de seguridad por usuario.
+- No se tocarán archivos autogenerados de la integración backend.
+
+### Resultado esperado
+
+Tendrás una ventana nueva de **Salud** donde podrás ver tu evolución de peso desde 2022, añadir nuevos pesajes mensuales, ver estadísticas rápidas y mantener rutinas de comida/ejercicio persistentes.
