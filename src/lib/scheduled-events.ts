@@ -12,17 +12,6 @@ type ScheduleRule = {
 export const SCHEDULE_COLOR_OPTIONS = ["primary", "blue", "green", "red", "purple"] as const;
 export type ScheduleColor = (typeof SCHEDULE_COLOR_OPTIONS)[number];
 
-export const getScheduleColor = (key: string, fallback: ScheduleColor): ScheduleColor => {
-  if (typeof window === "undefined") return fallback;
-  const saved = window.localStorage.getItem(`schedule-color:${key}`);
-  return SCHEDULE_COLOR_OPTIONS.includes(saved as ScheduleColor) ? (saved as ScheduleColor) : fallback;
-};
-
-export const setScheduleColor = (key: string, color: ScheduleColor) => {
-  window.localStorage.setItem(`schedule-color:${key}`, color);
-  window.dispatchEvent(new CustomEvent("schedule-colors-updated"));
-};
-
 export const SCHEDULES: ScheduleRule[] = [
   {
     key: "colombina",
@@ -86,7 +75,7 @@ export const ensureScheduledEvents = async (start: Date, end: Date) => {
         event_date: date,
         event_time: times.start,
         end_time: times.end,
-        color: getScheduleColor(schedule.key, schedule.defaultColor as ScheduleColor),
+        color: schedule.defaultColor,
         show_in_monthly: schedule.showInMonthly,
       });
     });
@@ -114,6 +103,16 @@ export const ensureScheduledEvents = async (start: Date, end: Date) => {
       .eq("user_id", user.id)
       .in("description", hiddenMarkers);
   }
+
+  await Promise.all(
+    candidates.map((candidate) =>
+      supabase
+        .from("events")
+        .update({ color: candidate.color, show_in_monthly: candidate.show_in_monthly } as any)
+        .eq("user_id", user.id)
+        .eq("description", candidate.description)
+    )
+  );
 
   if (missing.length) await supabase.from("events").insert(missing as any);
 };
