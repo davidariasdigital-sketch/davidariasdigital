@@ -21,19 +21,10 @@ const schedules = [
 
 const ScheduleSection = () => {
   return (
-    <div className="dash-tile rounded-2xl p-4 sm:p-5 flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display font-bold text-base uppercase tracking-wide text-[hsl(var(--dash-text))]">
-          Horarios
-        </h3>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">
-          Auto
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 gap-2">
+    <div className="dash-tile rounded-2xl p-3 flex flex-col">
+      <div className="grid grid-cols-1 gap-1.5">
         {schedules.map(({ icon: Icon, title, description, note, color, iconColor }) => (
-          <div key={title} className={`${color} border rounded-xl p-3 flex items-start gap-3`}>
+          <div key={title} className={`${color} border rounded-xl p-2.5 flex items-start gap-2.5`}>
             <Icon size={18} className={`${iconColor} shrink-0 mt-0.5`} strokeWidth={2.5} />
             <div className="min-w-0">
               <p className="text-xs font-extrabold uppercase tracking-wide leading-none">{title}</p>

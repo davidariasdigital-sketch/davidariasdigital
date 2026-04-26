@@ -148,11 +148,11 @@ const OverviewView = ({ onNavigate }: Props) => {
   return (
     <div className="space-y-4">
       {/* Weekly + priorities side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-2 items-start">
+        <div>
           <WeeklyView />
         </div>
-        <div className="lg:col-span-1 flex flex-col gap-4">
+        <div className="lg:col-span-1 flex flex-col gap-2">
           <PrioritiesSection />
           <RoutineSection />
           <ScheduleSection />
