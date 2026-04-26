@@ -3,17 +3,31 @@ import { supabase } from "@/integrations/supabase/client";
 type ScheduleRule = {
   key: string;
   title: string;
-  color: string;
+  defaultColor: string;
   showInMonthly: boolean;
   appliesTo: (day: number) => boolean;
   timesFor: (day: number) => { start: string; end: string } | null;
+};
+
+export const SCHEDULE_COLOR_OPTIONS = ["primary", "blue", "green", "red", "purple"] as const;
+export type ScheduleColor = (typeof SCHEDULE_COLOR_OPTIONS)[number];
+
+export const getScheduleColor = (key: string, fallback: ScheduleColor): ScheduleColor => {
+  if (typeof window === "undefined") return fallback;
+  const saved = window.localStorage.getItem(`schedule-color:${key}`);
+  return SCHEDULE_COLOR_OPTIONS.includes(saved as ScheduleColor) ? (saved as ScheduleColor) : fallback;
+};
+
+export const setScheduleColor = (key: string, color: ScheduleColor) => {
+  window.localStorage.setItem(`schedule-color:${key}`, color);
+  window.dispatchEvent(new CustomEvent("schedule-colors-updated"));
 };
 
 export const SCHEDULES: ScheduleRule[] = [
   {
     key: "colombina",
     title: "Colombina",
-    color: "red",
+    defaultColor: "red",
     showInMonthly: false,
     appliesTo: (day) => day >= 1 && day <= 5,
     timesFor: (day) => (day === 5 ? { start: "08:00", end: "13:00" } : { start: "08:00", end: "17:00" }),
@@ -21,7 +35,7 @@ export const SCHEDULES: ScheduleRule[] = [
   {
     key: "ingles",
     title: "Inglés",
-    color: "blue",
+    defaultColor: "blue",
     showInMonthly: false,
     appliesTo: (day) => day === 5,
     timesFor: () => ({ start: "17:00", end: "18:00" }),
@@ -72,7 +86,7 @@ export const ensureScheduledEvents = async (start: Date, end: Date) => {
         event_date: date,
         event_time: times.start,
         end_time: times.end,
-        color: schedule.color,
+        color: getScheduleColor(schedule.key, schedule.defaultColor as ScheduleColor),
         show_in_monthly: schedule.showInMonthly,
       });
     });
