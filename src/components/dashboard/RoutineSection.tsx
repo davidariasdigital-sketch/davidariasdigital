@@ -153,15 +153,7 @@ const RoutineSection = () => {
   };
 
   return (
-    <div className="dash-tile rounded-2xl p-4 sm:p-5 bg-purple-50 border-purple-200 flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-display font-bold text-base uppercase tracking-wide text-black">
-          Rutina
-        </h3>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-black/50">
-          Hábitos
-        </span>
-      </div>
+    <div className="dash-tile rounded-2xl p-3 bg-purple-50 border-purple-200 flex flex-col">
       <div className="flex-1 grid grid-cols-3 gap-2 sm:gap-3">
         {ROUTINES.map(({ icon: Icon, title, unit, goal, type }) => {
           const current = progress[title] ?? 0;
@@ -169,7 +161,7 @@ const RoutineSection = () => {
           return (
             <div
               key={title}
-              className="bg-white border border-purple-200 rounded-2xl p-3 flex flex-col items-center justify-between gap-2 transition-shadow hover:shadow-md text-center"
+              className="bg-white border border-purple-200 rounded-2xl p-2.5 flex flex-col items-center justify-between gap-1.5 transition-shadow hover:shadow-md text-center"
             >
               {/* Header: icon + title */}
               <div className="flex flex-col items-center gap-1">
