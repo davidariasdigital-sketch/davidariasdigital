@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, Apple, CalendarDays, Check, Dumbbell, Plus, Scale, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, Apple, CalendarDays, Check, ChevronLeft, ChevronRight, Dumbbell, Plus, Scale, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,11 @@ interface RoutineItem {
   sort_order: number;
 }
 
+interface TrainingDay {
+  id: string;
+  training_date: string;
+}
+
 const INITIAL_WEIGHTS = [
   ["2022-12-19", 70.3],
   ["2023-01-03", 70.2], ["2023-01-14", 70.3], ["2023-01-29", 70.1], ["2023-02-11", 70.4], ["2023-03-10", 70.3], ["2023-04-01", 70.7], ["2023-08-26", 72.8], ["2023-09-07", 73], ["2023-09-26", 71],
@@ -37,10 +42,15 @@ const DEFAULT_ROUTINES: Record<RoutineType, string[]> = {
 
 const formatDate = (date: string) => new Date(`${date}T00:00:00`).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" });
 const formatWeight = (value: number) => `${Number(value).toFixed(1)} kg`;
+const toISODate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const WEEK_DAYS = ["L", "M", "X", "J", "V", "S", "D"];
 
 const HealthView = () => {
   const [weights, setWeights] = useState<WeightEntry[]>([]);
   const [routines, setRoutines] = useState<RoutineItem[]>([]);
+  const [trainingDays, setTrainingDays] = useState<TrainingDay[]>([]);
+  const [trainingMonth, setTrainingMonth] = useState(() => new Date());
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [weightForm, setWeightForm] = useState({ entry_date: new Date().toISOString().slice(0, 10), weight_kg: "" });
@@ -80,13 +90,15 @@ const HealthView = () => {
       await supabase.from("health_routine_items" as any).insert(defaults);
     }
 
-    const [freshWeights, freshRoutines] = await Promise.all([
+    const [freshWeights, freshRoutines, freshTrainingDays] = await Promise.all([
       supabase.from("health_weight_entries" as any).select("id, entry_date, weight_kg, notes").order("entry_date", { ascending: true }),
       supabase.from("health_routine_items" as any).select("id, routine_type, title, description, completed, sort_order").order("sort_order", { ascending: true }),
+      supabase.from("health_training_days" as any).select("id, training_date").order("training_date", { ascending: true }),
     ]);
 
     setWeights(((freshWeights.data || []) as any[]).map((w) => ({ ...w, weight_kg: Number(w.weight_kg) })) as WeightEntry[]);
     setRoutines((freshRoutines.data || []) as unknown as RoutineItem[]);
+    setTrainingDays((freshTrainingDays.data || []) as unknown as TrainingDay[]);
     setLoading(false);
   }, []);
 
