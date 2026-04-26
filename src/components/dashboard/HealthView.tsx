@@ -308,6 +308,36 @@ const HealthView = () => {
       </div>
 
       <div className="dash-tile rounded-2xl p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="font-display font-extrabold text-[hsl(var(--dash-text))]">Días de entreno</h2>
+            <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5">Se marca al completar cualquier rutina de ejercicios.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => changeTrainingMonth(-1)} className="p-2 rounded-xl hover:bg-[hsl(0_0%_94%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors" aria-label="Mes anterior">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="min-w-28 text-center text-sm font-bold text-[hsl(var(--dash-text))]">{MONTHS[trainingMonth.getMonth()]} {trainingMonth.getFullYear()}</span>
+            <button onClick={() => changeTrainingMonth(1)} className="p-2 rounded-xl hover:bg-[hsl(0_0%_94%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors" aria-label="Mes siguiente">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-7 gap-1.5">
+          {WEEK_DAYS.map((day) => <div key={day} className="text-center text-[10px] font-bold text-[hsl(var(--dash-text-muted))] py-1">{day}</div>)}
+          {trainingCalendarDays.map((day, index) => {
+            const date = day ? toISODate(new Date(trainingMonth.getFullYear(), trainingMonth.getMonth(), day)) : "";
+            const trained = day ? trainingDates.has(date) : false;
+            return (
+              <div key={`${day ?? "empty"}-${index}`} className={`aspect-square rounded-xl border flex items-center justify-center text-sm font-bold tabular-nums ${day ? "border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))]" : "border-transparent"} ${trained ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] border-[hsl(var(--primary))]" : "bg-[hsl(0_0%_98%)]"}`}>
+                {day || ""}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="dash-tile rounded-2xl p-4 sm:p-5">
         <h2 className="font-display font-extrabold text-[hsl(var(--dash-text))] mb-3">Historial de pesajes</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
