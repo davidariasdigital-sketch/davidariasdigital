@@ -8,9 +8,10 @@ import OverviewView from "@/components/dashboard/OverviewView";
 import FinanceView from "@/components/dashboard/FinanceView";
 import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
 import ServiceCostsView from "@/components/dashboard/ServiceCostsView";
+import HealthView from "@/components/dashboard/HealthView";
 import { motion } from "framer-motion";
 
-type View = "overview" | "finance" | "content-planner" | "service-costs";
+type View = "overview" | "finance" | "content-planner" | "service-costs" | "health";
 
 const Dashboard = () => {
   const [view, setView] = useState<View>("overview");
@@ -44,6 +45,7 @@ const Dashboard = () => {
       case "finance":return <FinanceView />;
       case "content-planner":return <ContentPlannerView />;
       case "service-costs":return <ServiceCostsView />;
+      case "health":return <HealthView />;
     }
   };
 

@@ -1,14 +1,15 @@
-import { LayoutDashboard, Wallet, CalendarRange, Receipt, LogOut } from "lucide-react";
+import { LayoutDashboard, Wallet, CalendarRange, Receipt, LogOut, HeartPulse } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-type View = "overview" | "finance" | "content-planner" | "service-costs";
+type View = "overview" | "finance" | "content-planner" | "service-costs" | "health";
 
 const items = [
   { title: "Inicio", view: "overview" as View, icon: LayoutDashboard },
   { title: "Finanzas", view: "finance" as View, icon: Wallet },
   { title: "Plan", view: "content-planner" as View, icon: CalendarRange },
   { title: "Costos", view: "service-costs" as View, icon: Receipt },
+  { title: "Salud", view: "health" as View, icon: HeartPulse },
 ];
 
 interface Props {

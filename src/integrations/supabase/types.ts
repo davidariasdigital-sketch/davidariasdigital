@@ -235,6 +235,72 @@ export type Database = {
         }
         Relationships: []
       }
+      health_routine_items: {
+        Row: {
+          completed: boolean
+          created_at: string
+          description: string | null
+          id: string
+          routine_type: string
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          routine_type: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          routine_type?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_weight_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           amount: number
