@@ -86,7 +86,7 @@ const HealthView = () => {
     ]);
 
     setWeights(((freshWeights.data || []) as any[]).map((w) => ({ ...w, weight_kg: Number(w.weight_kg) })) as WeightEntry[]);
-    setRoutines((freshRoutines.data || []) as RoutineItem[]);
+    setRoutines((freshRoutines.data || []) as unknown as RoutineItem[]);
     setLoading(false);
   }, []);
 
