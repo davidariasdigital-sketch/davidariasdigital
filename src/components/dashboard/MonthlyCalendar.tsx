@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, DragEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, Plus, X, Trash2, Calendar, Copy, Pencil } from "lucide-react";
+import { ensureScheduledEvents } from "@/lib/scheduled-events";
 
 interface CalendarEvent {
   id: string;title: string;description: string | null;event_date: string;
@@ -56,6 +57,7 @@ const MonthlyCalendar = () => {
     const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
     const endDate = new Date(year, month + 1, 0);
     const endStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
+    await ensureScheduledEvents(new Date(`${startDate}T00:00:00`), new Date(`${endStr}T00:00:00`));
     const [ev, cl] = await Promise.all([
     supabase.from("events").select("*, clients(name)").gte("event_date", startDate).lte("event_date", endStr).order("event_date"),
     supabase.from("clients").select("id, name").order("name")]

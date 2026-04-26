@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, DragEvent, MouseEvent as ReactMouseEvent }
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight, X, Trash2, Copy, CalendarOff, Calendar as CalendarIcon } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ensureScheduledEvents } from "@/lib/scheduled-events";
 
 interface EventItem {
   id: string;
@@ -110,6 +111,7 @@ const WeeklyView = () => {
   }, [weekStart]);
 
   const fetchEvents = async () => {
+    await ensureScheduledEvents(weekStart, weekEnd);
     const { data } = await supabase
       .from("events")
       .select("*")
