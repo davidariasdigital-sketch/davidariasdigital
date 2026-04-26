@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, Apple, CalendarDays, Check, Dumbbell, Plus, Scale, Trash2, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, Apple, CalendarDays, Check, ChevronLeft, ChevronRight, Dumbbell, Plus, Scale, Trash2, TrendingDown, TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,11 @@ interface RoutineItem {
   sort_order: number;
 }
 
+interface TrainingDay {
+  id: string;
+  training_date: string;
+}
+
 const INITIAL_WEIGHTS = [
   ["2022-12-19", 70.3],
   ["2023-01-03", 70.2], ["2023-01-14", 70.3], ["2023-01-29", 70.1], ["2023-02-11", 70.4], ["2023-03-10", 70.3], ["2023-04-01", 70.7], ["2023-08-26", 72.8], ["2023-09-07", 73], ["2023-09-26", 71],
@@ -37,10 +42,15 @@ const DEFAULT_ROUTINES: Record<RoutineType, string[]> = {
 
 const formatDate = (date: string) => new Date(`${date}T00:00:00`).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" });
 const formatWeight = (value: number) => `${Number(value).toFixed(1)} kg`;
+const toISODate = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const WEEK_DAYS = ["L", "M", "X", "J", "V", "S", "D"];
 
 const HealthView = () => {
   const [weights, setWeights] = useState<WeightEntry[]>([]);
   const [routines, setRoutines] = useState<RoutineItem[]>([]);
+  const [trainingDays, setTrainingDays] = useState<TrainingDay[]>([]);
+  const [trainingMonth, setTrainingMonth] = useState(() => new Date());
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [weightForm, setWeightForm] = useState({ entry_date: new Date().toISOString().slice(0, 10), weight_kg: "" });
@@ -80,13 +90,15 @@ const HealthView = () => {
       await supabase.from("health_routine_items" as any).insert(defaults);
     }
 
-    const [freshWeights, freshRoutines] = await Promise.all([
+    const [freshWeights, freshRoutines, freshTrainingDays] = await Promise.all([
       supabase.from("health_weight_entries" as any).select("id, entry_date, weight_kg, notes").order("entry_date", { ascending: true }),
       supabase.from("health_routine_items" as any).select("id, routine_type, title, description, completed, sort_order").order("sort_order", { ascending: true }),
+      supabase.from("health_training_days" as any).select("id, training_date").order("training_date", { ascending: true }),
     ]);
 
     setWeights(((freshWeights.data || []) as any[]).map((w) => ({ ...w, weight_kg: Number(w.weight_kg) })) as WeightEntry[]);
     setRoutines((freshRoutines.data || []) as unknown as RoutineItem[]);
+    setTrainingDays((freshTrainingDays.data || []) as unknown as TrainingDay[]);
     setLoading(false);
   }, []);
 
@@ -143,13 +155,42 @@ const HealthView = () => {
   };
 
   const toggleRoutine = async (item: RoutineItem) => {
-    await supabase.from("health_routine_items" as any).update({ completed: !item.completed }).eq("id", item.id);
-    setRoutines((prev) => prev.map((r) => r.id === item.id ? { ...r, completed: !r.completed } : r));
+    const nextCompleted = !item.completed;
+    await supabase.from("health_routine_items" as any).update({ completed: nextCompleted }).eq("id", item.id);
+
+    if (item.routine_type === "exercise" && nextCompleted && userId) {
+      const today = toISODate(new Date());
+      await supabase.from("health_training_days" as any).upsert(
+        { user_id: userId, training_date: today },
+        { onConflict: "user_id,training_date" }
+      );
+      setTrainingDays((prev) => prev.some((day) => day.training_date === today) ? prev : [...prev, { id: today, training_date: today }]);
+    }
+
+    setRoutines((prev) => prev.map((r) => r.id === item.id ? { ...r, completed: nextCompleted } : r));
   };
 
   const deleteRoutine = async (id: string) => {
     await supabase.from("health_routine_items" as any).delete().eq("id", id);
     setRoutines((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const trainingDates = useMemo(() => new Set(trainingDays.map((day) => day.training_date)), [trainingDays]);
+
+  const trainingCalendarDays = useMemo(() => {
+    const year = trainingMonth.getFullYear();
+    const month = trainingMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    return [
+      ...Array.from({ length: startOffset }, () => null),
+      ...Array.from({ length: totalDays }, (_, index) => index + 1),
+    ];
+  }, [trainingMonth]);
+
+  const changeTrainingMonth = (direction: number) => {
+    setTrainingMonth((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1));
   };
 
   const RoutineCard = ({ type, title, icon: Icon }: { type: RoutineType; title: string; icon: typeof Apple }) => {
@@ -264,6 +305,36 @@ const HealthView = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         <RoutineCard type="food" title="Rutina de comida" icon={Apple} />
         <RoutineCard type="exercise" title="Rutina de ejercicios" icon={Dumbbell} />
+      </div>
+
+      <div className="dash-tile rounded-2xl p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 className="font-display font-extrabold text-[hsl(var(--dash-text))]">Días de entreno</h2>
+            <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5">Se marca al completar cualquier rutina de ejercicios.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => changeTrainingMonth(-1)} className="p-2 rounded-xl hover:bg-[hsl(0_0%_94%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors" aria-label="Mes anterior">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="min-w-28 text-center text-sm font-bold text-[hsl(var(--dash-text))]">{MONTHS[trainingMonth.getMonth()]} {trainingMonth.getFullYear()}</span>
+            <button onClick={() => changeTrainingMonth(1)} className="p-2 rounded-xl hover:bg-[hsl(0_0%_94%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors" aria-label="Mes siguiente">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-7 gap-1.5">
+          {WEEK_DAYS.map((day) => <div key={day} className="text-center text-[10px] font-bold text-[hsl(var(--dash-text-muted))] py-1">{day}</div>)}
+          {trainingCalendarDays.map((day, index) => {
+            const date = day ? toISODate(new Date(trainingMonth.getFullYear(), trainingMonth.getMonth(), day)) : "";
+            const trained = day ? trainingDates.has(date) : false;
+            return (
+              <div key={`${day ?? "empty"}-${index}`} className={`aspect-square rounded-xl border flex items-center justify-center text-sm font-bold tabular-nums ${day ? "border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))]" : "border-transparent"} ${trained ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] border-[hsl(var(--primary))]" : "bg-[hsl(0_0%_98%)]"}`}>
+                {day || ""}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="dash-tile rounded-2xl p-4 sm:p-5">
