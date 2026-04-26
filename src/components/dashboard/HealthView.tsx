@@ -155,13 +155,42 @@ const HealthView = () => {
   };
 
   const toggleRoutine = async (item: RoutineItem) => {
-    await supabase.from("health_routine_items" as any).update({ completed: !item.completed }).eq("id", item.id);
-    setRoutines((prev) => prev.map((r) => r.id === item.id ? { ...r, completed: !r.completed } : r));
+    const nextCompleted = !item.completed;
+    await supabase.from("health_routine_items" as any).update({ completed: nextCompleted }).eq("id", item.id);
+
+    if (item.routine_type === "exercise" && nextCompleted && userId) {
+      const today = toISODate(new Date());
+      await supabase.from("health_training_days" as any).upsert(
+        { user_id: userId, training_date: today },
+        { onConflict: "user_id,training_date" }
+      );
+      setTrainingDays((prev) => prev.some((day) => day.training_date === today) ? prev : [...prev, { id: today, training_date: today }]);
+    }
+
+    setRoutines((prev) => prev.map((r) => r.id === item.id ? { ...r, completed: nextCompleted } : r));
   };
 
   const deleteRoutine = async (id: string) => {
     await supabase.from("health_routine_items" as any).delete().eq("id", id);
     setRoutines((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const trainingDates = useMemo(() => new Set(trainingDays.map((day) => day.training_date)), [trainingDays]);
+
+  const trainingCalendarDays = useMemo(() => {
+    const year = trainingMonth.getFullYear();
+    const month = trainingMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    return [
+      ...Array.from({ length: startOffset }, () => null),
+      ...Array.from({ length: totalDays }, (_, index) => index + 1),
+    ];
+  }, [trainingMonth]);
+
+  const changeTrainingMonth = (direction: number) => {
+    setTrainingMonth((current) => new Date(current.getFullYear(), current.getMonth() + direction, 1));
   };
 
   const RoutineCard = ({ type, title, icon: Icon }: { type: RoutineType; title: string; icon: typeof Apple }) => {
