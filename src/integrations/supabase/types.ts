@@ -271,6 +271,30 @@ export type Database = {
         }
         Relationships: []
       }
+      health_training_days: {
+        Row: {
+          created_at: string
+          id: string
+          training_date: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          training_date: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          training_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_weight_entries: {
         Row: {
           created_at: string
