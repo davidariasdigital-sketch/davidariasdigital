@@ -154,20 +154,38 @@ const HealthView = () => {
     fetchHealth();
   };
 
+  const saveTrainingDay = async (date: string) => {
+    if (!userId) return false;
+    const { data, error } = await supabase
+      .from("health_training_days" as any)
+      .upsert({ user_id: userId, training_date: date }, { onConflict: "user_id,training_date" })
+      .select("id, training_date")
+      .single();
+
+    if (error) {
+      toast.error("No se pudo guardar el entreno");
+      return false;
+    }
+
+    setTrainingDays((prev) => prev.some((day) => day.training_date === date) ? prev : [...prev, data as unknown as TrainingDay]);
+    return true;
+  };
+
   const toggleRoutine = async (item: RoutineItem) => {
     const nextCompleted = !item.completed;
     await supabase.from("health_routine_items" as any).update({ completed: nextCompleted }).eq("id", item.id);
 
     if (item.routine_type === "exercise" && nextCompleted && userId) {
       const today = toISODate(new Date());
-      await supabase.from("health_training_days" as any).upsert(
-        { user_id: userId, training_date: today },
-        { onConflict: "user_id,training_date" }
-      );
-      setTrainingDays((prev) => prev.some((day) => day.training_date === today) ? prev : [...prev, { id: today, training_date: today }]);
+      await saveTrainingDay(today);
     }
 
     setRoutines((prev) => prev.map((r) => r.id === item.id ? { ...r, completed: nextCompleted } : r));
+  };
+
+  const handleTrainingDayClick = async (date: string) => {
+    const saved = await saveTrainingDay(date);
+    if (saved) toast.success("Entreno registrado");
   };
 
   const deleteRoutine = async (id: string) => {
@@ -329,9 +347,9 @@ const HealthView = () => {
             const date = day ? toISODate(new Date(trainingMonth.getFullYear(), trainingMonth.getMonth(), day)) : "";
             const trained = day ? trainingDates.has(date) : false;
             return (
-              <div key={`${day ?? "empty"}-${index}`} className={`aspect-square rounded-xl border flex items-center justify-center text-sm font-bold tabular-nums ${day ? "border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))]" : "border-transparent"} ${trained ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] border-[hsl(var(--primary))]" : "bg-[hsl(0_0%_98%)]"}`}>
+              <button key={`${day ?? "empty"}-${index}`} type="button" disabled={!day || trained} onClick={() => day && handleTrainingDayClick(date)} className={`aspect-square rounded-xl border flex items-center justify-center text-sm font-bold tabular-nums transition-colors ${day ? "border-[hsl(var(--dash-card-border))] text-[hsl(var(--dash-text))] hover:border-[hsl(var(--primary))]" : "border-transparent"} ${trained ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] border-[hsl(var(--primary))]" : "bg-[hsl(0_0%_98%)]"}`}>
                 {day || ""}
-              </div>
+              </button>
             );
           })}
         </div>
