@@ -4,6 +4,7 @@ import { getScheduleColor, ScheduleColor, SCHEDULE_COLOR_OPTIONS, setScheduleCol
 
 const schedules = [
   {
+    key: "colombina",
     icon: BriefcaseBusiness,
     title: "Colombina",
     description: "Lun–Jue · 8:00 am – 5:00 pm",
@@ -12,6 +13,7 @@ const schedules = [
     iconColor: "text-pink-500",
   },
   {
+    key: "ingles",
     icon: GraduationCap,
     title: "Inglés",
     description: "Viernes · 5:00 pm – 6:00 pm",
