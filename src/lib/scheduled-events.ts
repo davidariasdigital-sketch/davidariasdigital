@@ -14,7 +14,7 @@ export const SCHEDULES: ScheduleRule[] = [
     key: "colombina",
     title: "Colombina",
     color: "red",
-    showInMonthly: true,
+    showInMonthly: false,
     appliesTo: (day) => day >= 1 && day <= 5,
     timesFor: (day) => (day === 5 ? { start: "08:00", end: "13:00" } : { start: "08:00", end: "17:00" }),
   },
@@ -91,5 +91,15 @@ export const ensureScheduledEvents = async (start: Date, end: Date) => {
 
   const existingMarkers = new Set((existing ?? []).map((event) => event.description));
   const missing = candidates.filter((candidate) => !existingMarkers.has(candidate.description));
+  const hiddenMarkers = candidates.filter((candidate) => !candidate.show_in_monthly).map((candidate) => candidate.description);
+
+  if (hiddenMarkers.length) {
+    await supabase
+      .from("events")
+      .update({ show_in_monthly: false } as any)
+      .eq("user_id", user.id)
+      .in("description", hiddenMarkers);
+  }
+
   if (missing.length) await supabase.from("events").insert(missing as any);
 };
