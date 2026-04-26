@@ -1,4 +1,4 @@
-import { LayoutDashboard, Wallet, CalendarRange, LogOut, Palette, Receipt } from "lucide-react";
+import { LayoutDashboard, Wallet, CalendarRange, LogOut, Palette, Receipt, HeartPulse } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -14,13 +14,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import davidImg from "@/assets/david-navbar.jpg";
 
-type View = "overview" | "finance" | "content-planner" | "service-costs";
+type View = "overview" | "finance" | "content-planner" | "service-costs" | "health";
 
 const items = [
   { title: "Dashboard", view: "overview" as View, icon: LayoutDashboard },
   { title: "Finanzas", view: "finance" as View, icon: Wallet },
   { title: "Planeador", view: "content-planner" as View, icon: CalendarRange },
   { title: "Costos", view: "service-costs" as View, icon: Receipt },
+  { title: "Salud", view: "health" as View, icon: HeartPulse },
 ];
 
 interface Props {
