@@ -1,102 +1,92 @@
-## Plan: Nueva ventana de Salud
+## Rediseño del Centro de Contenido — Planner nativo
 
-### Qué se va a añadir
+El objetivo es un planner pensado para creadores de contenido: visual, rápido de escanear, con jerarquía clara entre plataformas y un editor de guion serio. Solo se reutiliza la **paleta y el lenguaje de chips** del sistema (no la estructura de Cotizaciones).
 
-Crearé una nueva sección en el dashboard llamada **Salud**, accesible desde el menú lateral y la navegación móvil. Allí podrás registrar y consultar:
+### 1. Layout: Board tipo Kanban por plataforma
+
+Reemplazar las 4 secciones apiladas verticalmente (Instagram → TikTok → Ideas → Solar) por un **board horizontal** donde cada plataforma es una columna scrolleable independiente, estilo Trello/Notion pero más visual.
 
 ```text
-┌─ Salud ───────────────────────────────────────────────┐
-│                                                       │
-│  Peso actual       Cambio total       Tendencia        │
-│                                                       │
-│  ┌──────────── Gráfica de peso mensual ────────────┐  │
-│  │ línea histórica con tus pesajes 2022–2026        │  │
-│  └─────────────────────────────────────────────────┘  │
-│                                                       │
-│  Registrar peso mensual                               │
-│  Fecha + peso + botón Guardar                         │
-│                                                       │
-│  Rutina de comida              Rutina de ejercicios   │
-│  Cards editables/checklist     Cards editables        │
-│                                                       │
-│  Historial de pesajes recientes                       │
-└───────────────────────────────────────────────────────┘
+┌─────────────┬─────────────┬─────────────┬─────────────┐
+│ ● Instagram │ ● TikTok    │ ● Solar     │ ● Ideas     │
+│ Marca pers. │ Día a día   │ Cinemato.   │ Banco       │
+│   3/4 pub.  │   1/4 pub.  │   2/4 pub.  │   5 ideas   │
+├─────────────┼─────────────┼─────────────┼─────────────┤
+│ ┌─────────┐ │ ┌─────────┐ │ ┌─────────┐ │ ┌─────────┐ │
+│ │ [Reel]  │ │ │ [Post]  │ │ │ [Corto] │ │ │ 💡 Idea │ │
+│ │ Título  │ │ │ Título  │ │ │ Título  │ │ │ libre   │ │
+│ │ 📄 Guion│ │ │         │ │ │ 📄 Guion│ │ │         │ │
+│ │ ✓ Pub.  │ │ │ ○ Borr. │ │ │ ○ Borr. │ │ │         │ │
+│ └─────────┘ │ └─────────┘ │ └─────────┘ │ └─────────┘ │
+│ ┌─────────┐ │ + Añadir    │ + Añadir    │ + Añadir    │
+│ │  + idea │ │             │             │             │
+│ └─────────┘ │             │             │             │
+└─────────────┴─────────────┴─────────────┴─────────────┘
 ```
 
-### Funcionalidades
+- **Encabezado de columna**: punto de color de la plataforma + nombre + objetivo en una línea + contador `publicados/total` como mini-progress.
+- **Drag & drop** entre columnas (ya existe la lógica) — mover una idea a Instagram la convierte automáticamente en post de IG.
+- En **móvil**: las columnas se vuelven swipeables horizontalmente con snap (gesto natural en mobile, como historias). Indicador de puntos abajo para saber en qué plataforma estás.
 
-1. **Nueva pestaña “Salud”**
-   - Añadiré un icono de salud al sidebar de escritorio.
-   - Añadiré la opción también en la barra inferior móvil.
-   - El dashboard tendrá un nuevo `view: "health"`.
+### 2. Tarjeta de contenido (rediseño)
 
-2. **Historial de peso**
-   - Crearé una tabla para guardar pesajes por usuario.
-   - Cargaré tu historial inicial con los datos que enviaste, normalizando fechas y pesos.
-   - Corregiré formatos ambiguos como:
-     - `67-1` → `67.1 kg`
-     - `08 otc` → `08 oct`
-     - fechas en inglés/español a formato estándar.
+Tarjeta tipo "post-it" más visual, sin parecer un campo de formulario:
 
-3. **Registro mensual de peso**
-   - Formulario compacto con fecha y peso.
-   - Si registras otro peso para la misma fecha, se actualizará en vez de duplicarse.
-   - Validación: peso positivo y fecha obligatoria.
+- `rounded-2xl`, fondo blanco, sombra muy suave, **borde izquierdo de 3px** con el color de la plataforma (identidad visual rápida).
+- **Chip de formato** arriba (`Reel`, `Carrusel`, `Cortometraje`...) con fondo de color suave por tipo — visualmente distinguible de un vistazo, no un `<select>` nativo.
+- **Título** grande, editable inline al click (sin input feo — solo el texto se vuelve editable).
+- Fila inferior con **microacciones siempre visibles** (no solo en hover):
+  - `📄 Guion` → chip con preview de las primeras palabras del guion si existe, o `+ Guion` si está vacío.
+  - `✓` toggle publicado (verde si publicado).
+  - `⋯` menú (eliminar, duplicar).
+- Cuando está **publicado**: la tarjeta toma un fondo verde muy sutil + check verde a la izquierda — se ve "completado" sin perder legibilidad.
 
-4. **Estadísticas**
-   - Peso actual.
-   - Peso inicial del historial.
-   - Cambio total.
-   - Cambio del último registro vs el anterior.
-   - Promedio reciente y tendencia visual.
+### 3. Editor de Guion — Drawer dedicado
 
-5. **Gráfica**
-   - Gráfica de línea/área usando `recharts`, siguiendo el estilo del dashboard.
-   - Mostrará la evolución histórica completa.
-   - En móvil se mantendrá compacta y legible.
+El Dialog actual es pequeño y poco usable para escribir un guion real. Lo reemplazo por un **Drawer lateral derecho** (mismo componente `Drawer` que ya usa Finanzas en mobile, pero en desktop también) que ocupa ~520px de ancho y todo el alto:
 
-6. **Rutina de comida y ejercicios**
-   - Crearé módulos editables para:
-     - **Rutina de comida**
-     - **Rutina de ejercicios**
-   - Cada rutina permitirá añadir elementos, marcarlos como activos/completados y editarlos/eliminarlos.
-   - Quedarán guardados por usuario para que no se reinicien al salir.
+```text
+┌──────────────────────────────────┐
+│ ← Cerrar              ✓ Guardado │
+│ ───────────────────────────────  │
+│ ● Instagram · Reel               │ ← chips contexto
+│ Título grande del video          │ ← editable
+│                                  │
+│ ┌─ HOOK (0–3 seg) ─────────────┐ │
+│ │ Idea para enganchar...       │ │
+│ └──────────────────────────────┘ │
+│ ┌─ DESARROLLO ─────────────────┐ │
+│ │ Cuerpo del video...          │ │
+│ └──────────────────────────────┘ │
+│ ┌─ CTA / CIERRE ───────────────┐ │
+│ │ Llamado a la acción...       │ │
+│ └──────────────────────────────┘ │
+│ ┌─ NOTAS DE GRABACIÓN ─────────┐ │
+│ │ Cámara, locación, props...   │ │
+│ └──────────────────────────────┘ │
+│                                  │
+│ Duración estimada: [ 30 ] seg    │
+└──────────────────────────────────┘
+```
 
-### Datos iniciales que se cargarán
+- Estructura **pensada para video corto**: Hook / Desarrollo / CTA / Notas — los 4 bloques que cualquier creador piensa antes de grabar.
+- Cada bloque es un textarea con autosize, placeholder específico ("¿Qué dices o pasa en los primeros 3 segundos?").
+- Auto-save al cerrar y al pausar de escribir (debounce 800ms) con indicador `✓ Guardado` arriba.
+- Datos siguen guardándose en la columna `description` existente, serializados como JSON `{hook, body, cta, notes, duration}` — sin migración de DB necesaria. Compatibilidad: si `description` ya tiene texto plano, se carga en el bloque "Desarrollo".
+- En **móvil** el Drawer ocupa pantalla completa desde abajo (ya es el comportamiento por defecto).
 
-Se insertará el historial de pesajes enviado desde 2022 hasta 2026 como registros iniciales de tu usuario. Ejemplos:
+### 4. Sidebar de Objetivos
 
-- 2022-12-19: 70.3 kg
-- 2023-01-03: 70.2 kg
-- 2024-02-04: 64.0 kg
-- 2025-10-07: 70.8 kg
-- 2026-03-10: 68.0 kg
+Se mantiene `ContentGoalsCard` pero con un pequeño cambio: el indicador lateral de cada plataforma usa el mismo color que su columna del board, reforzando la conexión visual. Es la única "guía" del planner — recordatorio del propósito de cada plataforma mientras planeas.
 
-### Detalles técnicos
+### Archivos a modificar
 
-- Nueva tabla `health_weight_entries`:
-  - `id`, `user_id`, `entry_date`, `weight_kg`, `notes`, `created_at`, `updated_at`
-  - RLS para que cada usuario solo gestione sus propios datos.
-  - restricción única por `user_id + entry_date` para evitar duplicados diarios.
+- `src/components/dashboard/ContentPlannerView.tsx` — sustituir `Dialog` de guion por `Drawer`, manejar el JSON estructurado del guion, pasar plataforma activa si aplica.
+- `src/components/dashboard/content/PlannerGrid.tsx` — refactor mayor: layout de board horizontal con columnas por plataforma, header de columna con objetivo + progreso, scroll horizontal en mobile con snap, nuevo diseño de tarjeta con borde de color y chips de formato coloreados.
+- `src/components/dashboard/content/ContentGoalsCard.tsx` — alinear colores de indicador con los del board.
 
-- Nueva tabla `health_routine_items`:
-  - `id`, `user_id`, `routine_type` (`food` o `exercise`), `title`, `description`, `completed`, `sort_order`, timestamps.
-  - RLS por usuario.
+### Lo que NO cambia
 
-- Nuevo componente:
-  - `src/components/dashboard/HealthView.tsx`
-
-- Archivos a actualizar:
-  - `src/pages/Dashboard.tsx`
-  - `src/components/dashboard/DashboardSidebar.tsx`
-  - `src/components/dashboard/MobileBottomNav.tsx`
-
-### Validación y seguridad
-
-- Validaré inputs en el cliente con límites razonables.
-- La base de datos también tendrá políticas de seguridad por usuario.
-- No se tocarán archivos autogenerados de la integración backend.
-
-### Resultado esperado
-
-Tendrás una ventana nueva de **Salud** donde podrás ver tu evolución de peso desde 2022, añadir nuevos pesajes mensuales, ver estadísticas rápidas y mantener rutinas de comida/ejercicio persistentes.
+- Esquema de Supabase (`content_items`): mismas columnas, el guion estructurado vive dentro de `description` como JSON.
+- Lógica de drag & drop, publicar, eliminar, cambiar formato.
+- Datos existentes — guiones actuales se cargan en "Desarrollo" automáticamente.

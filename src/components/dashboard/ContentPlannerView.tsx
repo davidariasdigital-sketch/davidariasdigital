@@ -1,10 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
+import ScriptEditorDrawer, { ScriptData, serializeScript } from "./content/ScriptEditorDrawer";
+
+const PLATFORM_META: Record<string, { label: string; accent: string }> = {
+  IG: { label: "Instagram", accent: "text-pink-500" },
+  TIKTOK: { label: "TikTok", accent: "text-[hsl(var(--dash-text))]" },
+  SOLAR: { label: "Solar", accent: "text-orange-500" },
+  IDEAS: { label: "Ideas", accent: "text-amber-500" },
+};
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -13,7 +19,6 @@ const ContentPlannerView = () => {
   const [editValue, setEditValue] = useState("");
   const [dragItem, setDragItem] = useState<ContentItem | null>(null);
   const [scriptItem, setScriptItem] = useState<ContentItem | null>(null);
-  const [scriptValue, setScriptValue] = useState("");
 
   const fetchItems = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -81,15 +86,15 @@ const ContentPlannerView = () => {
 
   const openScript = (item: ContentItem) => {
     setScriptItem(item);
-    setScriptValue(item.description || "");
   };
 
-  const saveScript = async () => {
+  const saveScript = async (data: ScriptData) => {
     if (!scriptItem) return;
-    const { error } = await supabase.from("content_items").update({ description: scriptValue }).eq("id", scriptItem.id);
+    const description = serializeScript(data);
+    const { error } = await supabase.from("content_items").update({ description }).eq("id", scriptItem.id);
     if (error) { toast.error("Error al guardar guion"); return; }
-    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description: scriptValue } : i));
-    setScriptItem(null);
+    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description } : i));
+    setScriptItem((curr) => curr ? { ...curr, description } : curr);
   };
 
   if (loading) {
@@ -99,6 +104,8 @@ const ContentPlannerView = () => {
       </div>
     );
   }
+
+  const meta = scriptItem ? PLATFORM_META[scriptItem.month] || { label: scriptItem.month, accent: "text-[hsl(var(--dash-text))]" } : null;
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -130,20 +137,13 @@ const ContentPlannerView = () => {
         </aside>
       </div>
 
-      {/* Script Dialog */}
-      <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] bg-white text-gray-900 border-gray-200">
-          <DialogHeader>
-            <DialogTitle className="text-base font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
-          </DialogHeader>
-          <Textarea
-            placeholder="Escribe el guion del video aquí..."
-            value={scriptValue}
-            onChange={(e) => setScriptValue(e.target.value)}
-            className="min-h-[400px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
-          />
-        </DialogContent>
-      </Dialog>
+      <ScriptEditorDrawer
+        item={scriptItem}
+        platformLabel={meta?.label || ""}
+        platformAccent={meta?.accent || ""}
+        onClose={() => setScriptItem(null)}
+        onSave={saveScript}
+      />
     </div>
   );
 };
