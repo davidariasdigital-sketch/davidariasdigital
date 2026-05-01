@@ -133,7 +133,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
             </div>
           </div>
         </header>
-        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "grid-cols-2"} gap-2.5 sm:gap-3`}>
+        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "grid-cols-2"} gap-2`}>
           {Array.from({ length: count }).map((_, colIdx) => (
             <ContentColumn
               key={`${section}-${colIdx}`}
