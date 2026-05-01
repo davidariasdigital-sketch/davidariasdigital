@@ -119,7 +119,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
     const theme = THEMES[section];
     const totalItems = props.items.filter((i) => i.month === sectionKey(section)).length;
     return (
-      <section className={`relative rounded-3xl border ${theme.moduleBorder} ${theme.moduleBg} p-4 sm:p-5 shadow-sm`}>
+      <section className={`relative rounded-3xl border ${theme.moduleBorder} ${theme.moduleBg} p-3 shadow-sm`}>
         <header className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             <span className={`flex items-center justify-center h-8 w-8 rounded-xl ${theme.headerIconBg} ${theme.headerIconText} shadow-sm`}>
@@ -133,7 +133,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
             </div>
           </div>
         </header>
-        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "grid-cols-2"} gap-2.5 sm:gap-3`}>
+        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "grid-cols-2"} gap-2`}>
           {Array.from({ length: count }).map((_, colIdx) => (
             <ContentColumn
               key={`${section}-${colIdx}`}
@@ -193,7 +193,7 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`group/col rounded-2xl min-h-[110px] p-2.5 flex flex-col gap-2 transition-all border ${theme.slotBorder} ${theme.slotBg} ${dragOver ? "ring-2 ring-primary/40 scale-[1.02]" : ""}`}
+      className={`group/col rounded-xl min-h-[120px] p-1.5 flex flex-col gap-1.5 transition-all border ${theme.slotBorder} ${theme.slotBg} ${dragOver ? "ring-2 ring-primary/40 scale-[1.02]" : ""}`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
@@ -204,7 +204,7 @@ const ContentColumn = ({
           draggable
           onDragStart={() => onDragStart(item)}
           onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
-          className={`group relative rounded-xl px-2.5 pt-2.5 pb-2 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm ${
+          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
             item.published
               ? "bg-emerald-50 border-emerald-300 text-emerald-800"
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
@@ -240,23 +240,22 @@ const ContentColumn = ({
               className="w-full bg-transparent outline-none text-xs text-center font-medium py-1"
             />
           ) : (
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="text-[11px] leading-snug font-semibold text-center w-full break-words">
+            <div className="flex flex-col items-stretch gap-1 h-full">
+              <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
                 {item.title || "Sin título"}
               </span>
               {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
-              {/* Guion button - bottom, full width, well placed */}
               <button
                 onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
-                className={`mt-0.5 w-full flex items-center justify-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium transition-all border ${
+                className={`w-full flex items-center justify-center gap-1 rounded-md px-1 py-0.5 text-[9.5px] font-medium transition-all border ${
                   item.description
                     ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
                     : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                 }`}
                 title="Guion"
               >
-                <FileText className="h-3 w-3" />
-                <span>{item.description ? "Ver guion" : "Guion"}</span>
+                <FileText className="h-2.5 w-2.5" />
+                <span>Guion</span>
               </button>
             </div>
           )}
