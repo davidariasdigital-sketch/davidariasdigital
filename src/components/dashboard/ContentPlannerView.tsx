@@ -86,15 +86,15 @@ const ContentPlannerView = () => {
 
   const openScript = (item: ContentItem) => {
     setScriptItem(item);
-    setScriptValue(item.description || "");
   };
 
-  const saveScript = async () => {
+  const saveScript = async (data: ScriptData) => {
     if (!scriptItem) return;
-    const { error } = await supabase.from("content_items").update({ description: scriptValue }).eq("id", scriptItem.id);
+    const description = serializeScript(data);
+    const { error } = await supabase.from("content_items").update({ description }).eq("id", scriptItem.id);
     if (error) { toast.error("Error al guardar guion"); return; }
-    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description: scriptValue } : i));
-    setScriptItem(null);
+    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description } : i));
+    setScriptItem((curr) => curr ? { ...curr, description } : curr);
   };
 
   if (loading) {
@@ -104,6 +104,8 @@ const ContentPlannerView = () => {
       </div>
     );
   }
+
+  const meta = scriptItem ? PLATFORM_META[scriptItem.month] || { label: scriptItem.month, accent: "text-[hsl(var(--dash-text))]" } : null;
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -135,20 +137,13 @@ const ContentPlannerView = () => {
         </aside>
       </div>
 
-      {/* Script Dialog */}
-      <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] bg-white text-gray-900 border-gray-200">
-          <DialogHeader>
-            <DialogTitle className="text-base font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
-          </DialogHeader>
-          <Textarea
-            placeholder="Escribe el guion del video aquí..."
-            value={scriptValue}
-            onChange={(e) => setScriptValue(e.target.value)}
-            className="min-h-[400px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
-          />
-        </DialogContent>
-      </Dialog>
+      <ScriptEditorDrawer
+        item={scriptItem}
+        platformLabel={meta?.label || ""}
+        platformAccent={meta?.accent || ""}
+        onClose={() => setScriptItem(null)}
+        onSave={saveScript}
+      />
     </div>
   );
 };
