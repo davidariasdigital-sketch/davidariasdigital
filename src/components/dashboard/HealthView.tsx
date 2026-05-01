@@ -257,11 +257,6 @@ const HealthView = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Salud</h1>
-        <p className="text-xs sm:text-sm text-[hsl(var(--dash-text-muted))] mt-0.5">Peso, estadísticas y rutinas de comida y ejercicio.</p>
-      </div>
-
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: "Peso actual", value: formatWeight(stats.current), sub: stats.latestDate ? formatDate(stats.latestDate) : "Sin registros", icon: Scale },
