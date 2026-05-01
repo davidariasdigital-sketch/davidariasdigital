@@ -3,12 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus } from "lucide-react";
 import QuotationsView from "./QuotationsView";
 import InvoicesView from "./InvoicesView";
+import ServiceCostsView from "./ServiceCostsView";
 
-type Tab = "quotations" | "invoices";
+type Tab = "quotations" | "invoices" | "costs";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "quotations", label: "Cotizaciones" },
   { id: "invoices", label: "Cuentas por cobrar" },
+  { id: "costs", label: "Estructura de costos" },
 ];
 
 const formatCOP = (v: number) =>
@@ -47,12 +49,14 @@ const FinanceView = () => {
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Finanzas</h1>
-        <button
-          onClick={handleNew}
-          className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0"
-        >
-          <Plus size={14} /> {tab === "quotations" ? "Cotización" : "Cuenta"}
-        </button>
+        {tab !== "costs" && (
+          <button
+            onClick={handleNew}
+            className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0"
+          >
+            <Plus size={14} /> {tab === "quotations" ? "Cotización" : "Cuenta"}
+          </button>
+        )}
       </div>
 
       {/* Summary cards */}
@@ -94,11 +98,9 @@ const FinanceView = () => {
 
       {/* Active tab content */}
       <div>
-        {tab === "quotations" ? (
-          <QuotationsView embedded triggerNew={triggerNewQ} onMutate={fetchStats} />
-        ) : (
-          <InvoicesView embedded triggerNew={triggerNewI} onMutate={fetchStats} />
-        )}
+        {tab === "quotations" && <QuotationsView embedded triggerNew={triggerNewQ} onMutate={fetchStats} />}
+        {tab === "invoices" && <InvoicesView embedded triggerNew={triggerNewI} onMutate={fetchStats} />}
+        {tab === "costs" && <ServiceCostsView />}
       </div>
     </div>
   );

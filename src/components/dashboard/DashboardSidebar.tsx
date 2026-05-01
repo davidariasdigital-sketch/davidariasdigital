@@ -20,7 +20,6 @@ const items = [
   { title: "Dashboard", view: "overview" as View, icon: LayoutDashboard },
   { title: "Finanzas", view: "finance" as View, icon: Wallet },
   { title: "Planeador", view: "content-planner" as View, icon: CalendarRange },
-  { title: "Costos", view: "service-costs" as View, icon: Receipt },
   { title: "Salud", view: "health" as View, icon: HeartPulse },
 ];
 
