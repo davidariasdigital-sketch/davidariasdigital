@@ -597,6 +597,45 @@ export type Database = {
         }
         Relationships: []
       }
+      social_accounts: {
+        Row: {
+          access_token: string | null
+          account_id: string | null
+          created_at: string
+          follower_count: number | null
+          id: string
+          last_synced_at: string | null
+          platform: string
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          access_token?: string | null
+          account_id?: string | null
+          created_at?: string
+          follower_count?: number | null
+          id?: string
+          last_synced_at?: string | null
+          platform: string
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          access_token?: string | null
+          account_id?: string | null
+          created_at?: string
+          follower_count?: number | null
+          id?: string
+          last_synced_at?: string | null
+          platform?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           category: string
