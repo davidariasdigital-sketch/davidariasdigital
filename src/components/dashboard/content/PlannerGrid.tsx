@@ -164,10 +164,12 @@ const PlannerGrid = (props: PlannerGridProps) => {
 
   return (
     <div className="space-y-5">
-      {renderModule("instagram", "Instagram", <Instagram className="h-4 w-4" />, 4, FORMATS)}
-      {renderModule("tiktok", "TikTok", <Video className="h-4 w-4" />, 4, FORMATS)}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {renderModule("instagram", "Instagram", <Instagram className="h-4 w-4" />, 4, FORMATS)}
+        {renderModule("tiktok", "TikTok", <Video className="h-4 w-4" />, 4, FORMATS)}
+        {renderModule("solar", "Solar", <Sun className="h-4 w-4" />, 4, SOLAR_FORMATS)}
+      </div>
       {renderModule("ideas", "Ideas Futuras", <Lightbulb className="h-4 w-4" />, 8, FORMATS)}
-      {renderModule("solar", "Solar", <Sun className="h-4 w-4" />, 4, SOLAR_FORMATS)}
     </div>
   );
 };
@@ -263,11 +265,6 @@ const ContentColumn = ({
       {items.length === 0 && (
         <button onClick={onAdd} className={`flex-1 flex items-center justify-center rounded-xl transition-all min-h-[80px] ${theme.addBtn}`}>
           <Plus className="h-5 w-5" />
-        </button>
-      )}
-      {items.length > 0 && (
-        <button onClick={onAdd} className={`flex items-center justify-center rounded-lg py-1 text-[10px] font-medium transition-all ${theme.addBtn}`}>
-          <Plus className="h-3 w-3 mr-0.5" /> Añadir
         </button>
       )}
     </div>
