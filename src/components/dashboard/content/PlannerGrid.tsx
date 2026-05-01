@@ -193,7 +193,7 @@ const ContentColumn = ({
 
   return (
     <div
-      className={`group/col rounded-2xl min-h-[110px] p-2.5 flex flex-col gap-2 transition-all border ${theme.slotBorder} ${theme.slotBg} ${dragOver ? "ring-2 ring-primary/40 scale-[1.02]" : ""}`}
+      className={`group/col rounded-xl min-h-[120px] p-1.5 flex flex-col gap-1.5 transition-all border ${theme.slotBorder} ${theme.slotBg} ${dragOver ? "ring-2 ring-primary/40 scale-[1.02]" : ""}`}
       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
