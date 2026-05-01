@@ -147,9 +147,9 @@ const PlannerGrid = (props: PlannerGridProps) => {
               items={list}
               published={published}
               progressPct={pct}
+              {...props}
               onAdd={() => props.onAdd(p.section, nextColIndex(p.section))}
               onDrop={() => props.onDrop(p.section, nextColIndex(p.section))}
-              {...props}
             />
           );
         })}
