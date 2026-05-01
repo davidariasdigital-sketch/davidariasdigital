@@ -5,8 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
-import FormatDistributionCard from "./content/FormatDistributionCard";
-import FollowerGrowthSection from "./content/FollowerGrowthSection";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -132,13 +130,9 @@ const ContentPlannerView = () => {
 
         {/* Right: goals sidebar */}
         <aside className="space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:self-start">
-          <ContentGoalsCard items={items} />
-          <FormatDistributionCard items={items} />
+          <ContentGoalsCard />
         </aside>
       </div>
-
-      {/* Bottom: follower growth */}
-      <FollowerGrowthSection />
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
