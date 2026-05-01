@@ -1,10 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
+import ScriptEditorDrawer, { ScriptData, serializeScript } from "./content/ScriptEditorDrawer";
+
+const PLATFORM_META: Record<string, { label: string; accent: string }> = {
+  IG: { label: "Instagram", accent: "text-pink-500" },
+  TIKTOK: { label: "TikTok", accent: "text-[hsl(var(--dash-text))]" },
+  SOLAR: { label: "Solar", accent: "text-orange-500" },
+  IDEAS: { label: "Ideas", accent: "text-amber-500" },
+};
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -13,7 +19,6 @@ const ContentPlannerView = () => {
   const [editValue, setEditValue] = useState("");
   const [dragItem, setDragItem] = useState<ContentItem | null>(null);
   const [scriptItem, setScriptItem] = useState<ContentItem | null>(null);
-  const [scriptValue, setScriptValue] = useState("");
 
   const fetchItems = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
