@@ -47,17 +47,16 @@ const FinanceView = () => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2">
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Finanzas</h1>
-        {tab !== "costs" && (
+      {tab !== "costs" && (
+        <div className="flex items-center justify-end gap-2">
           <button
             onClick={handleNew}
             className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0"
           >
             <Plus size={14} /> {tab === "quotations" ? "Cotización" : "Cuenta"}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
