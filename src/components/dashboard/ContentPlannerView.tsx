@@ -102,10 +102,6 @@ const ContentPlannerView = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-display font-extrabold text-[hsl(var(--dash-text))]">Centro de Contenido</h1>
-        <p className="text-xs sm:text-sm text-[hsl(var(--dash-text-muted))] mt-0.5">Planea, publica y mide el crecimiento de tus cuentas.</p>
-      </div>
 
       {/* 2-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5">
