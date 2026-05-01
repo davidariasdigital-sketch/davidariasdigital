@@ -133,7 +133,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
             </div>
           </div>
         </header>
-        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "sm:grid-cols-4"} gap-2.5 sm:gap-3`}>
+        <div className={`grid grid-cols-2 ${count === 8 ? "sm:grid-cols-4" : "grid-cols-2"} gap-2.5 sm:gap-3`}>
           {Array.from({ length: count }).map((_, colIdx) => (
             <ContentColumn
               key={`${section}-${colIdx}`}
@@ -164,7 +164,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {renderModule("instagram", "Instagram", <Instagram className="h-4 w-4" />, 4, FORMATS)}
         {renderModule("tiktok", "TikTok", <Video className="h-4 w-4" />, 4, FORMATS)}
         {renderModule("solar", "Solar", <Sun className="h-4 w-4" />, 4, SOLAR_FORMATS)}
