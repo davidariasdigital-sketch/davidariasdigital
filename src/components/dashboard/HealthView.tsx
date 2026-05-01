@@ -320,16 +320,11 @@ const HealthView = () => {
         </aside>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
-        <RoutineCard type="food" title="Rutina de comida" icon={Apple} />
-        <RoutineCard type="exercise" title="Rutina de ejercicios" icon={Dumbbell} />
-      </div>
-
       <div className="dash-tile rounded-2xl p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
           <div>
             <h2 className="font-display font-extrabold text-[hsl(var(--dash-text))]">Días de entreno</h2>
-            <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5">Se marca al completar cualquier rutina de ejercicios.</p>
+            <p className="text-xs text-[hsl(var(--dash-text-muted))] mt-0.5">Marca los días que has entrenado.</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => changeTrainingMonth(-1)} className="p-2 rounded-xl hover:bg-[hsl(0_0%_94%)] text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors" aria-label="Mes anterior">
