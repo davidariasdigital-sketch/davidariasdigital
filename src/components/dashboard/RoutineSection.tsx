@@ -140,8 +140,17 @@ const RoutineSection = () => {
   };
 
   const inc = (key: string, max: number) => {
-    const next = Math.min(max, (progress[key] ?? 0) + 1);
+    const prev = progress[key] ?? 0;
+    const next = Math.min(max, prev + 1);
     update(key, next);
+    if (key === "GYM" && next > prev && userId) {
+      const today = new Date();
+      const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      supabase
+        .from("health_training_days" as any)
+        .upsert({ user_id: userId, training_date: iso }, { onConflict: "user_id,training_date" })
+        .then(() => {});
+    }
   };
   const dec = (key: string) => {
     const next = Math.max(0, (progress[key] ?? 0) - 1);
