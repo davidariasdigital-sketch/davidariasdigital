@@ -267,11 +267,6 @@ const ContentColumn = ({
           <Plus className="h-5 w-5" />
         </button>
       )}
-      {items.length > 0 && (
-        <button onClick={onAdd} className={`flex items-center justify-center rounded-lg py-1 text-[10px] font-medium transition-all ${theme.addBtn}`}>
-          <Plus className="h-3 w-3 mr-0.5" /> Añadir
-        </button>
-      )}
     </div>
   );
 };
