@@ -119,7 +119,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
     const theme = THEMES[section];
     const totalItems = props.items.filter((i) => i.month === sectionKey(section)).length;
     return (
-      <section className={`relative rounded-3xl border ${theme.moduleBorder} ${theme.moduleBg} p-4 sm:p-5 shadow-sm`}>
+      <section className={`relative rounded-3xl border ${theme.moduleBorder} ${theme.moduleBg} p-3 shadow-sm`}>
         <header className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             <span className={`flex items-center justify-center h-8 w-8 rounded-xl ${theme.headerIconBg} ${theme.headerIconText} shadow-sm`}>
