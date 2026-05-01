@@ -240,23 +240,22 @@ const ContentColumn = ({
               className="w-full bg-transparent outline-none text-xs text-center font-medium py-1"
             />
           ) : (
-            <div className="flex flex-col items-center gap-1.5">
-              <span className="text-[11px] leading-snug font-semibold text-center w-full break-words">
-                {item.title || "Sin título"}
+            <div className="flex flex-col items-stretch gap-1 h-full">
+              <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
+                {item.title || "Sin titulo"}
               </span>
               {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
-              {/* Guion button - bottom, full width, well placed */}
               <button
                 onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
-                className={`mt-0.5 w-full flex items-center justify-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium transition-all border ${
+                className={`w-full flex items-center justify-center gap-1 rounded-md px-1 py-0.5 text-[9.5px] font-medium transition-all border ${
                   item.description
                     ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
                     : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                 }`}
                 title="Guion"
               >
-                <FileText className="h-3 w-3" />
-                <span>{item.description ? "Ver guion" : "Guion"}</span>
+                <FileText className="h-2.5 w-2.5" />
+                <span>Guion</span>
               </button>
             </div>
           )}
