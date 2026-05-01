@@ -242,7 +242,7 @@ const ContentColumn = ({
           ) : (
             <div className="flex flex-col items-stretch gap-1 h-full">
               <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
-                {item.title || "Sin titulo"}
+                {item.title || "Sin título"}
               </span>
               {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
               <button
