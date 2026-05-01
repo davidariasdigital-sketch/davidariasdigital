@@ -204,7 +204,7 @@ const ContentColumn = ({
           draggable
           onDragStart={() => onDragStart(item)}
           onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
-          className={`group relative rounded-xl px-2.5 pt-2.5 pb-2 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm ${
+          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
             item.published
               ? "bg-emerald-50 border-emerald-300 text-emerald-800"
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
