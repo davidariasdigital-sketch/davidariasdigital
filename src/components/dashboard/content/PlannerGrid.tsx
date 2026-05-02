@@ -301,16 +301,21 @@ const ContentColumn = ({
   );
 };
 
-const FormatSelector = ({ value, onChange, formats }: { value: string | null; onChange: (f: string) => void; formats: string[] }) => (
-  <select
-    value={value ?? ""}
-    onClick={(e) => e.stopPropagation()}
-    onChange={(e) => { e.stopPropagation(); onChange(e.target.value); }}
-    className="w-full text-[10px] rounded-full px-2 py-0.5 bg-gray-50 border border-gray-200 text-[hsl(var(--dash-text))] outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-  >
-    <option value="" disabled>Formato</option>
-    {formats.map((f) => <option key={f} value={f}>{f}</option>)}
-  </select>
-);
+const FormatSelector = ({ value, onChange, formats }: { value: string | null; onChange: (f: string) => void; formats: string[] }) => {
+  const colorClass = value && FORMAT_COLORS[value]
+    ? FORMAT_COLORS[value]
+    : "bg-gray-50 border-gray-200 text-[hsl(var(--dash-text-muted))]";
+  return (
+    <select
+      value={value ?? ""}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => { e.stopPropagation(); onChange(e.target.value); }}
+      className={`w-full text-[10px] font-medium rounded-full px-2 py-0.5 border outline-none cursor-pointer transition-colors ${colorClass}`}
+    >
+      <option value="" disabled>Formato</option>
+      {formats.map((f) => <option key={f} value={f}>{f}</option>)}
+    </select>
+  );
+};
 
 export default PlannerGrid;
