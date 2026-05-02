@@ -1,8 +1,39 @@
 import { useState } from "react";
-import { Plus, X, Lightbulb, Instagram, Sun, Check, Video, FileText } from "lucide-react";
+import { Plus, X, Sparkles, Clapperboard, Check, FileText } from "lucide-react";
 
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 export const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
+
+// Distinctive color per format (subtle pill style)
+const FORMAT_COLORS: Record<string, string> = {
+  "Reel": "bg-fuchsia-100 border-fuchsia-300 text-fuchsia-700",
+  "Post": "bg-sky-100 border-sky-300 text-sky-700",
+  "Carrusel": "bg-violet-100 border-violet-300 text-violet-700",
+  "Historia": "bg-rose-100 border-rose-300 text-rose-700",
+  "Live": "bg-red-100 border-red-300 text-red-700",
+  "Colaboración": "bg-teal-100 border-teal-300 text-teal-700",
+  "Short": "bg-cyan-100 border-cyan-300 text-cyan-700",
+  "Podcast": "bg-purple-100 border-purple-300 text-purple-700",
+  "Tutorial": "bg-emerald-100 border-emerald-300 text-emerald-700",
+  "Behind the Scenes": "bg-amber-100 border-amber-300 text-amber-700",
+  "Cortometraje": "bg-orange-100 border-orange-300 text-orange-700",
+  "Videoclip": "bg-indigo-100 border-indigo-300 text-indigo-700",
+};
+
+// Refined monochrome glyphs (no generic brand icons)
+const IGGlyph = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
+  </svg>
+);
+const TTGlyph = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M14 4v9.5a3.5 3.5 0 1 1-3.5-3.5" />
+    <path d="M14 4c.4 2.4 2 4 4.5 4.3" />
+  </svg>
+);
 
 export interface ContentItem {
   id: string; title: string; month: string; column_index: number;
