@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, FileText, ChevronDown, ChevronUp, Calculator, Copy, Check } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface CostModule {
