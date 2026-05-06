@@ -1,102 +1,30 @@
-## Plan: Nueva ventana de Salud
+## Calculadora de Alquiler de Equipos
 
-### Qué se va a añadir
+Añadir una herramienta de selección dentro de la pestaña **Equipos AV** que te permita marcar los equipos que vas a usar en un servicio y sumar automáticamente el valor de alquiler diario, multiplicado por los días que necesites.
 
-Crearé una nueva sección en el dashboard llamada **Salud**, accesible desde el menú lateral y la navegación móvil. Allí podrás registrar y consultar:
+### Cómo funcionará
 
-```text
-┌─ Salud ───────────────────────────────────────────────┐
-│                                                       │
-│  Peso actual       Cambio total       Tendencia        │
-│                                                       │
-│  ┌──────────── Gráfica de peso mensual ────────────┐  │
-│  │ línea histórica con tus pesajes 2022–2026        │  │
-│  └─────────────────────────────────────────────────┘  │
-│                                                       │
-│  Registrar peso mensual                               │
-│  Fecha + peso + botón Guardar                         │
-│                                                       │
-│  Rutina de comida              Rutina de ejercicios   │
-│  Cards editables/checklist     Cards editables        │
-│                                                       │
-│  Historial de pesajes recientes                       │
-└───────────────────────────────────────────────────────┘
-```
-
-### Funcionalidades
-
-1. **Nueva pestaña “Salud”**
-   - Añadiré un icono de salud al sidebar de escritorio.
-   - Añadiré la opción también en la barra inferior móvil.
-   - El dashboard tendrá un nuevo `view: "health"`.
-
-2. **Historial de peso**
-   - Crearé una tabla para guardar pesajes por usuario.
-   - Cargaré tu historial inicial con los datos que enviaste, normalizando fechas y pesos.
-   - Corregiré formatos ambiguos como:
-     - `67-1` → `67.1 kg`
-     - `08 otc` → `08 oct`
-     - fechas en inglés/español a formato estándar.
-
-3. **Registro mensual de peso**
-   - Formulario compacto con fecha y peso.
-   - Si registras otro peso para la misma fecha, se actualizará en vez de duplicarse.
-   - Validación: peso positivo y fecha obligatoria.
-
-4. **Estadísticas**
-   - Peso actual.
-   - Peso inicial del historial.
-   - Cambio total.
-   - Cambio del último registro vs el anterior.
-   - Promedio reciente y tendencia visual.
-
-5. **Gráfica**
-   - Gráfica de línea/área usando `recharts`, siguiendo el estilo del dashboard.
-   - Mostrará la evolución histórica completa.
-   - En móvil se mantendrá compacta y legible.
-
-6. **Rutina de comida y ejercicios**
-   - Crearé módulos editables para:
-     - **Rutina de comida**
-     - **Rutina de ejercicios**
-   - Cada rutina permitirá añadir elementos, marcarlos como activos/completados y editarlos/eliminarlos.
-   - Quedarán guardados por usuario para que no se reinicien al salir.
-
-### Datos iniciales que se cargarán
-
-Se insertará el historial de pesajes enviado desde 2022 hasta 2026 como registros iniciales de tu usuario. Ejemplos:
-
-- 2022-12-19: 70.3 kg
-- 2023-01-03: 70.2 kg
-- 2024-02-04: 64.0 kg
-- 2025-10-07: 70.8 kg
-- 2026-03-10: 68.0 kg
+1. En la pestaña **Equipos AV**, junto al botón "Agregar fila", aparecerá un nuevo botón **"Calcular alquiler"**.
+2. Al hacer clic se abre un panel desplegable (debajo de la tabla) con:
+   - Un **checkbox por cada equipo** del inventario, mostrando nombre y valor de alquiler/día.
+   - Un input numérico para los **días de alquiler** (default: 1).
+   - Un input opcional para **margen comercial %** (default: 0, sugerencia visible: 30–60% para alquileres externos).
+   - Búsqueda rápida por nombre para filtrar el listado largo.
+   - Botones: **"Seleccionar todo"**, **"Limpiar"**.
+3. En la parte inferior del panel se muestra en vivo:
+   - Cantidad de equipos seleccionados.
+   - **Subtotal** (suma de alquileres × días).
+   - **Total con margen** (subtotal × (1 + margen)).
+   - Botón **"Copiar resumen"** que copia al portapapeles el listado de equipos + valores + total (útil para pegar en cotizaciones).
+4. Las selecciones y configuración se guardan en `localStorage` para que persistan entre sesiones (no necesita tabla nueva, es una herramienta de cálculo local).
 
 ### Detalles técnicos
 
-- Nueva tabla `health_weight_entries`:
-  - `id`, `user_id`, `entry_date`, `weight_kg`, `notes`, `created_at`, `updated_at`
-  - RLS para que cada usuario solo gestione sus propios datos.
-  - restricción única por `user_id + entry_date` para evitar duplicados diarios.
-
-- Nueva tabla `health_routine_items`:
-  - `id`, `user_id`, `routine_type` (`food` o `exercise`), `title`, `description`, `completed`, `sort_order`, timestamps.
-  - RLS por usuario.
-
-- Nuevo componente:
-  - `src/components/dashboard/HealthView.tsx`
-
-- Archivos a actualizar:
-  - `src/pages/Dashboard.tsx`
-  - `src/components/dashboard/DashboardSidebar.tsx`
-  - `src/components/dashboard/MobileBottomNav.tsx`
-
-### Validación y seguridad
-
-- Validaré inputs en el cliente con límites razonables.
-- La base de datos también tendrá políticas de seguridad por usuario.
-- No se tocarán archivos autogenerados de la integración backend.
-
-### Resultado esperado
-
-Tendrás una ventana nueva de **Salud** donde podrás ver tu evolución de peso desde 2022, añadir nuevos pesajes mensuales, ver estadísticas rápidas y mantener rutinas de comida/ejercicio persistentes.
+- Modificar `src/components/dashboard/ServiceCostsView.tsx`:
+  - Nuevo subcomponente `RentalCalculator` que recibe las filas del módulo `equipos_av` como prop.
+  - Estado local: `selectedIds: Set<number>`, `days: number`, `margin: number`, `search: string`, `open: boolean`.
+  - Persistencia en `localStorage` bajo la clave `equipos_av_rental_calc`.
+  - Renderizado solo cuando la tab activa es `equipos_av` (añadir debajo de la tabla, antes/después de los botones existentes).
+  - Cálculo: para cada fila seleccionada, parsear `row[2]` (Alquiler/Día) con `parseNum`, sumar, multiplicar por días, aplicar margen.
+  - Estilo consistente con `dash-tile`, mobile-friendly (grid de 1 col en móvil, 2 cols en desktop para el listado de checkboxes).
+- No se requieren cambios en base de datos ni en otros archivos.

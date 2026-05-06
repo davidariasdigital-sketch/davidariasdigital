@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, FileText, ChevronDown, ChevronUp, Calculator, Copy, Check } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface CostModule {
@@ -212,6 +212,207 @@ const recalculateModule = (mod: CostModule): string[][] => {
   }
 
   return rows;
+};
+
+// ============================================================
+// Rental Calculator: pick equipment & sum rental costs
+// ============================================================
+const RENTAL_STORAGE_KEY = "equipos_av_rental_calc_v1";
+
+interface RentalState {
+  selected: string[];
+  days: number;
+  margin: number;
+  open: boolean;
+}
+
+const RentalCalculator = ({ rows }: { rows: string[][] }) => {
+  const [state, setState] = useState<RentalState>(() => {
+    try {
+      const raw = localStorage.getItem(RENTAL_STORAGE_KEY);
+      if (raw) return { open: false, ...JSON.parse(raw) };
+    } catch {}
+    return { selected: [], days: 1, margin: 0, open: false };
+  });
+  const [search, setSearch] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const { open, ...persist } = state;
+    try { localStorage.setItem(RENTAL_STORAGE_KEY, JSON.stringify(persist)); } catch {}
+  }, [state]);
+
+  const items = useMemo(() =>
+    rows
+      .map((r, i) => ({ idx: i, name: r[0] || "", rental: parseNum(r[2] || "0") }))
+      .filter((it) => it.name && it.rental > 0),
+    [rows]
+  );
+
+  const filtered = useMemo(() =>
+    items.filter((it) => it.name.toLowerCase().includes(search.toLowerCase())),
+    [items, search]
+  );
+
+  const selectedItems = items.filter((it) => state.selected.includes(it.name));
+  const subtotal = selectedItems.reduce((s, it) => s + it.rental, 0) * state.days;
+  const total = subtotal * (1 + state.margin / 100);
+
+  const toggle = (name: string) => {
+    setState((s) => ({
+      ...s,
+      selected: s.selected.includes(name)
+        ? s.selected.filter((n) => n !== name)
+        : [...s.selected, name],
+    }));
+  };
+
+  const selectAll = () => setState((s) => ({ ...s, selected: filtered.map((it) => it.name) }));
+  const clearAll = () => setState((s) => ({ ...s, selected: [] }));
+
+  const copySummary = async () => {
+    const lines = [
+      `Alquiler de Equipos — ${state.days} día${state.days !== 1 ? "s" : ""}`,
+      "",
+      ...selectedItems.map((it) => `• ${it.name}: ${formatCOP(it.rental)}/día`),
+      "",
+      `Subtotal: ${formatCOP(subtotal)}`,
+      state.margin > 0 ? `Margen ${state.margin}%: ${formatCOP(total - subtotal)}` : "",
+      `TOTAL: ${formatCOP(total)}`,
+    ].filter(Boolean).join("\n");
+    try {
+      await navigator.clipboard.writeText(lines);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  };
+
+  return (
+    <div className="dash-tile p-0 overflow-hidden">
+      <button
+        onClick={() => setState((s) => ({ ...s, open: !s.open }))}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-[hsl(var(--dash-bg))] transition-colors"
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          <Calculator size={15} className="text-[hsl(var(--primary))]" />
+          <span className="text-sm font-bold text-[hsl(var(--dash-text))]">Calcular alquiler para servicio</span>
+          {state.selected.length > 0 && (
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[hsl(var(--primary))]/10 text-[hsl(var(--primary))]">
+              {state.selected.length} sel · {formatCOP(total)}
+            </span>
+          )}
+        </div>
+        {state.open ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </button>
+
+      {state.open && (
+        <div className="border-t border-[hsl(var(--dash-card-border))] p-4 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Días</label>
+              <input
+                type="number" min={1}
+                value={state.days}
+                onChange={(e) => setState((s) => ({ ...s, days: Math.max(1, parseInt(e.target.value) || 1) }))}
+                className="mt-1 w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-lg px-3 py-2 text-sm text-[hsl(var(--dash-text))] outline-none focus:border-[hsl(var(--primary))]"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Margen %</label>
+              <input
+                type="number" min={0}
+                value={state.margin}
+                onChange={(e) => setState((s) => ({ ...s, margin: Math.max(0, parseFloat(e.target.value) || 0) }))}
+                className="mt-1 w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-lg px-3 py-2 text-sm text-[hsl(var(--dash-text))] outline-none focus:border-[hsl(var(--primary))]"
+                placeholder="0"
+              />
+              <p className="text-[10px] text-[hsl(var(--dash-text-muted))] mt-1">Sugerido externos: 30–60%</p>
+            </div>
+            <div>
+              <label className="text-[10px] font-semibold text-[hsl(var(--dash-text-muted))] uppercase tracking-wider">Buscar equipo</label>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="mt-1 w-full bg-[hsl(var(--dash-bg))] border border-[hsl(var(--dash-card-border))] rounded-lg px-3 py-2 text-sm text-[hsl(var(--dash-text))] outline-none focus:border-[hsl(var(--primary))]"
+                placeholder="Filtrar..."
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-xs">
+            <button onClick={selectAll} className="font-semibold text-[hsl(var(--primary))] hover:opacity-80">
+              Seleccionar visibles
+            </button>
+            <span className="text-[hsl(var(--dash-text-muted))]">·</span>
+            <button onClick={clearAll} className="font-semibold text-[hsl(var(--dash-text-muted))] hover:text-red-500">
+              Limpiar
+            </button>
+            <span className="ml-auto text-[hsl(var(--dash-text-muted))]">{filtered.length} de {items.length} equipos</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-80 overflow-y-auto">
+            {filtered.map((it) => {
+              const checked = state.selected.includes(it.name);
+              return (
+                <label
+                  key={it.idx}
+                  className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg cursor-pointer border transition-colors ${
+                    checked
+                      ? "bg-[hsl(var(--primary))]/5 border-[hsl(var(--primary))]/40"
+                      : "bg-[hsl(var(--dash-bg))] border-[hsl(var(--dash-card-border))] hover:border-[hsl(var(--primary))]/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggle(it.name)}
+                      className="accent-[hsl(var(--primary))] shrink-0"
+                    />
+                    <span className="text-xs font-medium text-[hsl(var(--dash-text))] truncate">{it.name}</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-[hsl(var(--dash-text-muted))] shrink-0">
+                    {formatCOP(it.rental)}/d
+                  </span>
+                </label>
+              );
+            })}
+            {filtered.length === 0 && (
+              <p className="col-span-full text-center text-xs text-[hsl(var(--dash-text-muted))] py-6">
+                No hay equipos que coincidan
+              </p>
+            )}
+          </div>
+
+          <div className="bg-[hsl(var(--dash-bg))] rounded-xl p-4 space-y-1.5">
+            <div className="flex justify-between text-xs">
+              <span className="text-[hsl(var(--dash-text-muted))]">{selectedItems.length} equipos × {state.days} día{state.days !== 1 ? "s" : ""}</span>
+              <span className="font-semibold text-[hsl(var(--dash-text))]">{formatCOP(subtotal)}</span>
+            </div>
+            {state.margin > 0 && (
+              <div className="flex justify-between text-xs">
+                <span className="text-[hsl(var(--dash-text-muted))]">Margen {state.margin}%</span>
+                <span className="font-semibold text-[hsl(var(--dash-text))]">+ {formatCOP(total - subtotal)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center pt-2 border-t border-[hsl(var(--dash-card-border))]">
+              <span className="text-sm font-bold text-[hsl(var(--dash-text))]">TOTAL ALQUILER</span>
+              <span className="text-lg font-extrabold text-[hsl(var(--primary))]">{formatCOP(total)}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={copySummary}
+            disabled={selectedItems.length === 0}
+            className="w-full flex items-center justify-center gap-2 bg-[hsl(var(--dash-text))] text-[hsl(var(--dash-card-bg))] rounded-lg py-2.5 text-xs font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
+          >
+            {copied ? <><Check size={14} /> Copiado</> : <><Copy size={14} /> Copiar resumen</>}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const ServiceCostsView = () => {
@@ -494,6 +695,8 @@ const ServiceCostsView = () => {
             placeholder="Notas aclaratorias..."
           />
         )}
+
+        {mod.module_key === "equipos_av" && <RentalCalculator rows={mod.rows} />}
       </div>
     );
   };
