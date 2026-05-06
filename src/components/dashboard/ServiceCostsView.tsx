@@ -203,8 +203,9 @@ const recalculateModule = (mod: CostModule): string[][] => {
   if (mod.module_key === "equipos_av") {
     for (let ri = 0; ri < rows.length; ri++) {
       const valor = parseNum(rows[ri][1]);
-      if (valor > 0) {
-        // Depreciación a 1 año (12 meses), alquiler por día (22 días hábiles/mes)
+      const current = (rows[ri][2] || "").trim();
+      // Solo autocalcular si el usuario no ha definido un valor manual
+      if (valor > 0 && current === "") {
         const alqDia = Math.round(valor / 12 / 22);
         rows[ri][2] = alqDia.toString();
       }
