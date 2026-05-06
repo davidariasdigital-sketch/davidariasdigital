@@ -494,6 +494,8 @@ const ServiceCostsView = () => {
             placeholder="Notas aclaratorias..."
           />
         )}
+
+        {mod.module_key === "equipos_av" && <RentalCalculator rows={mod.rows} />}
       </div>
     );
   };
