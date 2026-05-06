@@ -1,0 +1,1 @@
+DELETE FROM public.events WHERE description LIKE '[horario:ingles:%';

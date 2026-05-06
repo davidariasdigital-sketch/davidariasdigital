@@ -21,14 +21,6 @@ export const SCHEDULES: ScheduleRule[] = [
     appliesTo: (day) => day >= 1 && day <= 5,
     timesFor: (day) => (day === 5 ? { start: "08:00", end: "13:00" } : { start: "08:00", end: "17:00" }),
   },
-  {
-    key: "ingles",
-    title: "Inglés",
-    defaultColor: "blue",
-    showInMonthly: false,
-    appliesTo: (day) => day === 5,
-    timesFor: () => ({ start: "17:00", end: "18:00" }),
-  },
 ];
 
 export const toISODate = (date: Date) => {

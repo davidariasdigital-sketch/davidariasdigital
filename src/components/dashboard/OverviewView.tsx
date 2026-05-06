@@ -5,7 +5,6 @@ import MonthlyCalendar from "./MonthlyCalendar";
 import PrioritiesSection from "./PrioritiesSection";
 import WeeklyView from "./WeeklyView";
 import RoutineSection from "./RoutineSection";
-import ScheduleSection from "./ScheduleSection";
 
 type View = "overview" | "finance" | "content-planner" | "service-costs";
 
@@ -155,7 +154,6 @@ const OverviewView = ({ onNavigate }: Props) => {
         <div className="lg:col-span-1 flex flex-col gap-2">
           <PrioritiesSection />
           <RoutineSection />
-          <ScheduleSection />
         </div>
       </div>
       <MonthlyCalendar />
