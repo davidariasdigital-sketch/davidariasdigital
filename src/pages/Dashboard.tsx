@@ -58,7 +58,7 @@ const Dashboard = () => {
         </div>
         <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
           {/* Content */}
-          <main className="flex-1 px-3 py-4 sm:px-6 md:px-6 md:py-6 overflow-auto pb-28 md:pb-6">
+          <main className="flex-1 px-3 py-4 sm:px-6 md:px-6 md:py-6 overflow-auto pb-36 md:pb-6">
             <motion.div
               key={view}
               initial={{ opacity: 0 }}
