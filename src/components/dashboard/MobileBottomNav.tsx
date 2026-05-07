@@ -59,12 +59,12 @@ const MobileBottomNav = ({ currentView, onViewChange }: Props) => {
           })}
           <button
             onClick={handleLogout}
-            className="flex-1 min-w-[58px] flex flex-col items-center justify-center gap-0.5 py-1 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"
+            className="flex-1 min-w-[64px] flex flex-col items-center justify-center gap-1 py-1.5 text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] transition-colors"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl">
-              <LogOut size={18} strokeWidth={2} />
+            <div className="flex items-center justify-center w-11 h-11 rounded-xl">
+              <LogOut size={22} strokeWidth={2} />
             </div>
-            <span className="text-[9px] font-bold uppercase tracking-wider leading-none">Salir</span>
+            <span className="text-[10.5px] font-bold uppercase tracking-wider leading-none">Salir</span>
           </button>
         </div>
       </nav>
