@@ -38,20 +38,20 @@ const MobileBottomNav = ({ currentView, onViewChange }: Props) => {
               <button
                 key={item.view}
                 onClick={() => onViewChange(item.view)}
-                className={`flex-1 min-w-[58px] flex flex-col items-center justify-center gap-0.5 py-1 transition-colors ${
+                className={`flex-1 min-w-[64px] flex flex-col items-center justify-center gap-1 py-1.5 transition-colors ${
                   isActive
                     ? "text-primary"
                     : "text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))]"
                 }`}
               >
                 <div
-                  className={`flex items-center justify-center w-9 h-9 rounded-xl transition-all ${
+                  className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all ${
                     isActive ? "bg-primary text-primary-foreground" : ""
                   }`}
                 >
-                  <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
-                <span className={`text-[9px] font-bold uppercase tracking-wider leading-none ${isActive ? "text-[hsl(var(--dash-text))]" : ""}`}>
+                <span className={`text-[10.5px] font-bold uppercase tracking-wider leading-none ${isActive ? "text-[hsl(var(--dash-text))]" : ""}`}>
                   {item.title}
                 </span>
               </button>
