@@ -26,11 +26,11 @@ const MobileBottomNav = ({ currentView, onViewChange }: Props) => {
 
   return (
     <div
-      className="md:hidden fixed bottom-3 left-3 right-3 z-40"
-      style={{ marginBottom: "env(safe-area-inset-bottom)" }}
+      className="md:hidden fixed left-3 right-3 z-40"
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
     >
       <nav className="rounded-2xl border border-[hsl(var(--dash-card-border))] bg-[hsl(var(--dash-card-bg))]/95 backdrop-blur-md shadow-[0_8px_28px_-8px_hsl(0_0%_0%/0.18)]">
-        <div className="flex items-stretch overflow-x-auto no-scrollbar px-1.5 py-1.5">
+        <div className="flex items-stretch overflow-x-auto no-scrollbar px-2 py-2">
           {items.map((item) => {
             const isActive = currentView === item.view;
             const Icon = item.icon;
