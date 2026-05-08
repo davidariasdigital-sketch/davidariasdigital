@@ -34,9 +34,9 @@ const colorDots: Record<string, string> = {
 
 const DAY_NAMES = ["LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM"];
 
-// Hour grid 7:00 → 22:00 (last slot = 21-22). 15 slots of 1h.
-const START_HOUR = 7;
-const END_HOUR = 22;
+// Hour grid 5:00 → 20:00 (last slot = 19-20). 15 slots of 1h.
+const START_HOUR = 5;
+const END_HOUR = 20;
 const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
 const SLOT_HEIGHT_DESKTOP = 48; // px per hour
 const SLOT_HEIGHT_MOBILE = 56; // px per hour on mobile (single day view)
