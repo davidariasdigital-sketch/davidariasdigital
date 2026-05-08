@@ -230,15 +230,23 @@ const WeeklyView = () => {
     const taskRaw = e.dataTransfer.getData("taskDrag");
 
     const newStart = padTime(hour, 0);
-    const newEnd = padTime(hour + 1, 0);
+    const endLimitMin = END_HOUR * 60;
+
+    // Convert total minutes (from start of day) into "HH:MM" within bounds
+    const minsToTime = (totalMins: number) => {
+      const clamped = Math.min(endLimitMin, Math.max(0, totalMins));
+      return padTime(Math.floor(clamped / 60), clamped % 60);
+    };
 
     if (eventId) {
       const ev = events.find(x => x.id === eventId);
-      // Preserve duration when moving
-      let endTime: string | null = newEnd;
+      // Preserve duration (in minutes) when moving
+      let endTime: string | null = padTime(Math.min(END_HOUR, hour + 1), 0);
       if (ev?.event_time && ev?.end_time) {
-        const dur = (timeToHours(ev.end_time)! - timeToHours(ev.event_time)!);
-        endTime = padTime(Math.min(END_HOUR, hour + Math.max(1, Math.round(dur))), 0);
+        const startMins = (timeToHours(ev.event_time) ?? 0) * 60;
+        const endMins = (timeToHours(ev.end_time) ?? startMins + 60) * 60;
+        const durMins = Math.max(15, Math.round(endMins - startMins));
+        endTime = minsToTime(hour * 60 + durMins);
       }
       await supabase.from("events").update({
         event_date: dayISO,
@@ -251,14 +259,12 @@ const WeeklyView = () => {
         const task = JSON.parse(taskRaw);
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-        const durHours = task.estimated_time
-          ? Math.max(1, Math.round(task.estimated_time / 60))
-          : 1;
+        const durMins = task.estimated_time ? Math.max(15, parseInt(task.estimated_time)) : 60;
         await supabase.from("events").insert({
           title: task.title,
           event_date: dayISO,
           event_time: newStart,
-          end_time: padTime(Math.min(END_HOUR, hour + durHours), 0),
+          end_time: minsToTime(hour * 60 + durMins),
           color: task.color || "primary",
           user_id: user.id,
         } as any);
