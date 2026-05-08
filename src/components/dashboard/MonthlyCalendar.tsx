@@ -311,14 +311,14 @@ const MonthlyCalendar = () => {
                     </div>
                     {ev.description && <p className="text-xs opacity-60 mt-1">{ev.description}</p>}
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button onClick={() => startEdit(ev)} title="Editar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-amber-50 transition-all">
+                  <div className="flex items-center gap-0.5 shrink-0">
+                    <button onClick={() => startEdit(ev)} title="Editar" className="w-7 h-7 inline-flex items-center justify-center rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 transition-all">
                       <Pencil size={13} />
                     </button>
-                    <button onClick={() => handleDuplicate(ev)} title="Duplicar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-blue-50 transition-all">
+                    <button onClick={() => handleDuplicate(ev)} title="Duplicar" className="w-7 h-7 inline-flex items-center justify-center rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 transition-all">
                       <Copy size={13} />
                     </button>
-                    <button onClick={() => handleDelete(ev.id)} title="Eliminar" className="p-1.5 rounded-lg opacity-40 hover:opacity-100 hover:bg-red-50 transition-all">
+                    <button onClick={() => handleDelete(ev.id)} title="Eliminar" className="w-7 h-7 inline-flex items-center justify-center rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 hover:text-red-600 transition-all">
                       <Trash2 size={13} />
                     </button>
                   </div>
