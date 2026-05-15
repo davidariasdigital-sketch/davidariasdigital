@@ -14,13 +14,13 @@ const HeroSection = () => {
           </div>
 
           {/* Left: Text content */}
-          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-6 md:space-y-7">
+          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-4 md:space-y-5">
             <div className="flex flex-col items-center md:items-start">
               <h1 className="leading-none tracking-[-0.03em] flex flex-col items-center md:items-start">
-                <span className="text-foreground font-medium text-base md:text-xl leading-none mb-3 md:mb-5">David Arias</span>
+                <span className="text-foreground font-medium text-base md:text-xl leading-none mb-2 md:mb-3">David Arias</span>
                 <img alt="DIGITAL" className="block w-full max-w-[260px] sm:max-w-[340px] md:max-w-[480px] h-auto" src="/lovable-uploads/ea292b88-743f-42b5-ae68-779729afb4a3.png" loading="eager" />
               </h1>
-              <p className="text-muted-foreground text-xs md:text-base max-w-md leading-tight font-light tracking-[0.2em] uppercase mt-4 md:mt-6">Creativo Audiovisual</p>
+              <p className="text-muted-foreground text-xs md:text-base max-w-md leading-tight font-light tracking-[0.2em] uppercase mt-2.5 md:mt-3.5">Creativo Audiovisual</p>
             </div>
 
             <div className="flex flex-col gap-2 md:gap-2.5 items-center md:items-start">
