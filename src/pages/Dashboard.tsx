@@ -19,16 +19,29 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {navigate("/login");return;}
-      setLoading(false);
-    };
-    checkAuth();
+    let active = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) navigate("/login");
+      if (!session) navigate("/login", { replace: true });
+      else if (active) setLoading(false);
     });
-    return () => subscription.unsubscribe();
+
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!active) return;
+        if (!session) navigate("/login", { replace: true });
+        else setLoading(false);
+      } catch {
+        if (active) navigate("/login", { replace: true });
+      }
+    };
+
+    checkAuth();
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (loading) {
