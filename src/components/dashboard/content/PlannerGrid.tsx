@@ -221,16 +221,6 @@ const ContentColumn = ({
   onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
-  const [colors, setColors] = useState<Record<string, string>>(() => readItemColors());
-  useEffect(() => {
-    const refresh = () => setColors(readItemColors());
-    window.addEventListener("storage", refresh);
-    window.addEventListener("content-item-colors-changed", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("content-item-colors-changed", refresh);
-    };
-  }, []);
 
   return (
     <div
@@ -239,27 +229,18 @@ const ContentColumn = ({
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
     >
-      {items.map((item) => {
-        const itemColor = colors[item.id];
-        return (
+      {items.map((item) => (
         <div
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
           onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
-          style={itemColor ? { borderLeftColor: itemColor, borderLeftWidth: 3 } : undefined}
-          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 overflow-hidden ${
+          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
             item.published
               ? "bg-emerald-50 border-emerald-300 text-emerald-800"
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
           }`}
         >
-          {itemColor && (
-            <span
-              className="absolute top-0 left-0 right-0 h-1"
-              style={{ backgroundColor: itemColor }}
-            />
-          )}
           {/* Top action bar (always visible on hover) */}
           {editingId !== item.id && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-gray-200 rounded-full px-1 py-0.5 shadow-md z-10">
@@ -317,8 +298,7 @@ const ContentColumn = ({
             </div>
           )}
         </div>
-        );
-      })}
+      ))}
       {items.length === 0 && (
         <button onClick={onAdd} className={`flex-1 flex items-center justify-center rounded-xl transition-all min-h-[80px] ${theme.addBtn}`}>
           <Plus className="h-5 w-5" />
@@ -375,11 +355,10 @@ const ObjectiveColorPicker = ({ itemId }: { itemId: string }) => {
     <div className="relative flex-shrink-0">
       <button
         onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-        className="h-5 w-5 rounded-full shadow-sm hover:scale-110 transition-transform ring-1 ring-inset ring-gray-200"
-        style={color ? { backgroundColor: color, boxShadow: `0 0 0 2px #fff, 0 0 0 3px ${color}` } : { backgroundImage: "repeating-conic-gradient(#e5e7eb 0% 25%, #fff 0% 50%)", backgroundSize: "8px 8px" }}
+        className="h-4 w-4 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
+        style={{ backgroundColor: color ?? "transparent", borderColor: color ? "#fff" : "hsl(0,0%,85%)" }}
         title={current ? `Objetivo: ${current.label}` : "Asignar objetivo"}
       />
-
       {open && (
         <>
           <div className="fixed inset-0 z-20" onClick={(e) => { e.stopPropagation(); setOpen(false); }} />
