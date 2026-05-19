@@ -325,4 +325,77 @@ const FormatSelector = ({ value, onChange, formats }: { value: string | null; on
   );
 };
 
+const ObjectiveColorPicker = ({ itemId }: { itemId: string }) => {
+  const [open, setOpen] = useState(false);
+  const [objectives, setObjectives] = useState<Objective[]>(() => readObjectives());
+  const [color, setColor] = useState<string | null>(() => readItemColors()[itemId] ?? null);
+
+  useEffect(() => {
+    const refresh = () => {
+      setObjectives(readObjectives());
+      setColor(readItemColors()[itemId] ?? null);
+    };
+    window.addEventListener("storage", refresh);
+    window.addEventListener("content-item-colors-changed", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("content-item-colors-changed", refresh);
+    };
+  }, [itemId]);
+
+  const select = (c: string | null) => {
+    setColor(c);
+    writeItemColor(itemId, c);
+    setOpen(false);
+  };
+
+  const current = color ? objectives.find((o) => o.color === color) : null;
+
+  return (
+    <div className="relative flex-shrink-0">
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        className="h-4 w-4 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
+        style={{ backgroundColor: color ?? "transparent", borderColor: color ? "#fff" : "hsl(0,0%,85%)" }}
+        title={current ? `Objetivo: ${current.label}` : "Asignar objetivo"}
+      />
+      {open && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={(e) => { e.stopPropagation(); setOpen(false); }} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-full left-0 mt-1 z-30 p-2 rounded-xl bg-white border border-gray-200 shadow-lg min-w-[140px]"
+          >
+            <div className="text-[9px] font-bold uppercase tracking-wider text-gray-400 mb-1.5 px-0.5">Objetivos</div>
+            <div className="space-y-1">
+              {objectives.map((o) => (
+                <button
+                  key={o.id}
+                  onClick={() => select(o.color)}
+                  className="w-full flex items-center gap-1.5 px-1.5 py-1 rounded-md hover:bg-gray-50 text-left"
+                >
+                  <span className="h-3 w-3 rounded-full flex-shrink-0 border border-white shadow-sm" style={{ backgroundColor: o.color }} />
+                  <span className="text-[10px] font-medium text-gray-700 truncate">{o.label}</span>
+                </button>
+              ))}
+              {objectives.length === 0 && (
+                <p className="text-[10px] text-gray-400 py-1 px-1">Crea objetivos en el panel</p>
+              )}
+              {color && (
+                <button
+                  onClick={() => select(null)}
+                  className="w-full flex items-center gap-1.5 px-1.5 py-1 rounded-md hover:bg-gray-50 text-left border-t border-gray-100 mt-1 pt-1.5"
+                >
+                  <X className="h-3 w-3 text-gray-400" />
+                  <span className="text-[10px] font-medium text-gray-500">Quitar</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 export default PlannerGrid;
