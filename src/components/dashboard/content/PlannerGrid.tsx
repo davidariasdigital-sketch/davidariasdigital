@@ -213,6 +213,7 @@ interface ContentColumnProps {
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
   onOpenScript: (item: ContentItem) => void;
   theme: SectionTheme; formats: string[]; showFormat?: boolean;
+  onOpenScript: (item: ContentItem) => void;
 }
 
 const ContentColumn = ({
