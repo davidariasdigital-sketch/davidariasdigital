@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
-import LiveFollowersCard from "./content/LiveFollowersCard";
+import ContentObjectivesCard from "./content/ContentObjectivesCard";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
@@ -128,7 +128,7 @@ const ContentPlannerView = () => {
         {/* Right: goals sidebar */}
         <aside className="space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:self-start">
           <ContentGoalsCard />
-          <LiveFollowersCard />
+          <ContentObjectivesCard />
         </aside>
       </div>
 
