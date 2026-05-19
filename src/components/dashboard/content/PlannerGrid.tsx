@@ -221,6 +221,16 @@ const ContentColumn = ({
   onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
+  const [colors, setColors] = useState<Record<string, string>>(() => readItemColors());
+  useEffect(() => {
+    const refresh = () => setColors(readItemColors());
+    window.addEventListener("storage", refresh);
+    window.addEventListener("content-item-colors-changed", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("content-item-colors-changed", refresh);
+    };
+  }, []);
 
   return (
     <div
