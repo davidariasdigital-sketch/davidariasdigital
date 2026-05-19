@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, X, Sparkles, Clapperboard, Check } from "lucide-react";
+import { Plus, X, Sparkles, Clapperboard, Check, FileText } from "lucide-react";
 import { readObjectives, readItemColors, writeItemColor, type Objective } from "./objectiveColors";
 
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
@@ -218,7 +218,7 @@ interface ContentColumnProps {
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, theme, formats, showFormat,
+  onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
   const [colorsMap, setColorsMap] = useState<Record<string, string>>(() => readItemColors());
@@ -308,6 +308,13 @@ const ContentColumn = ({
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
+                    className="flex-shrink-0 h-5 w-5 rounded-full bg-white/80 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors"
+                    title="Editar guion"
+                  >
+                    <FileText className="h-3 w-3" />
+                  </button>
                 </div>
               )}
             </div>
