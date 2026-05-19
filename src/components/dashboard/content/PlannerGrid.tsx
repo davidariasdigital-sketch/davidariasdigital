@@ -250,7 +250,6 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
           style={cardStyle}
           className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
             itemColor
@@ -299,9 +298,13 @@ const ContentColumn = ({
             />
           ) : (
             <div className="flex flex-col items-stretch gap-1 h-full">
-              <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}
+                className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1 cursor-text hover:opacity-80"
+              >
                 {item.title || "Sin título"}
-              </span>
+              </button>
               {showFormat && (
                 <div className="flex items-center gap-1">
                   <ObjectiveColorPicker itemId={item.id} />
@@ -309,8 +312,10 @@ const ContentColumn = ({
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
                   <button
+                    type="button"
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
-                    className="flex-shrink-0 h-5 w-5 rounded-full bg-white/80 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors"
+                    className="flex-shrink-0 h-6 w-6 rounded-full bg-white border border-gray-300 hover:bg-gray-900 hover:text-white hover:border-gray-900 flex items-center justify-center text-gray-600 transition-colors shadow-sm"
                     title="Editar guion"
                   >
                     <FileText className="h-3 w-3" />
@@ -320,6 +325,7 @@ const ContentColumn = ({
             </div>
           )}
         </div>
+
         );
       })}
       {items.length === 0 && (
