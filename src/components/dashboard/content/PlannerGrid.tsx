@@ -375,10 +375,11 @@ const ObjectiveColorPicker = ({ itemId }: { itemId: string }) => {
     <div className="relative flex-shrink-0">
       <button
         onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-        className="h-4 w-4 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
-        style={{ backgroundColor: color ?? "transparent", borderColor: color ? "#fff" : "hsl(0,0%,85%)" }}
+        className="h-5 w-5 rounded-full shadow-sm hover:scale-110 transition-transform ring-1 ring-inset ring-gray-200"
+        style={color ? { backgroundColor: color, boxShadow: `0 0 0 2px #fff, 0 0 0 3px ${color}` } : { backgroundImage: "repeating-conic-gradient(#e5e7eb 0% 25%, #fff 0% 50%)", backgroundSize: "8px 8px" }}
         title={current ? `Objetivo: ${current.label}` : "Asignar objetivo"}
       />
+
       {open && (
         <>
           <div className="fixed inset-0 z-20" onClick={(e) => { e.stopPropagation(); setOpen(false); }} />
