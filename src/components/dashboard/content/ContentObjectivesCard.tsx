@@ -4,6 +4,7 @@ import { Plus, X, Target } from "lucide-react";
 interface Objective {
   id: string;
   label: string;
+  subLabel?: string;
   color: string;
 }
 
