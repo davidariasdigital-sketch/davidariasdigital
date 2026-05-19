@@ -50,6 +50,10 @@ const ContentObjectivesCard = () => {
     persist(objectives.map((o) => (o.id === id ? { ...o, label } : o)));
   };
 
+  const updateSubLabel = (id: string, subLabel: string) => {
+    persist(objectives.map((o) => (o.id === id ? { ...o, subLabel } : o)));
+  };
+
   const updateColor = (id: string, color: string) => {
     persist(objectives.map((o) => (o.id === id ? { ...o, color } : o)));
     setPickerOpen(null);
