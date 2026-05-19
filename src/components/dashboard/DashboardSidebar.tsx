@@ -1,5 +1,5 @@
-import { LayoutDashboard, Wallet, CalendarRange, LogOut, Palette, Receipt, HeartPulse } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Wallet, CalendarRange, LogOut, HeartPulse } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
@@ -84,17 +84,6 @@ const DashboardSidebar = ({ currentView, onViewChange }: Props) => {
         {/* Bottom */}
         <div className="w-full pb-1">
           <SidebarMenu className="space-y-1 items-center">
-            <SidebarMenuItem className="w-auto">
-              <SidebarMenuButton
-                asChild
-                tooltip="Guía de Estilo"
-                className="text-[hsl(var(--dash-text-muted))] hover:text-[hsl(var(--dash-text))] hover:bg-[hsl(0,0%,96%)] rounded-xl !w-10 !h-10 !p-0 flex items-center justify-center"
-              >
-                <Link to="/style-guide">
-                  <Palette className="!h-[18px] !w-[18px] shrink-0" strokeWidth={1.5} />
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem className="w-auto">
               <SidebarMenuButton
                 onClick={handleLogout}
