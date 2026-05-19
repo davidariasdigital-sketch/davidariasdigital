@@ -275,7 +275,14 @@ const ContentColumn = ({
               <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
                 {item.title || "Sin título"}
               </span>
-              {showFormat && <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />}
+              {showFormat && (
+                <div className="flex items-center gap-1">
+                  <ObjectiveColorPicker itemId={item.id} />
+                  <div className="flex-1 min-w-0">
+                    <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
+                  </div>
+                </div>
+              )}
               <button
                 onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
                 className={`w-full flex items-center justify-center gap-1 rounded-md px-1 py-0.5 text-[9.5px] font-medium transition-all border ${
