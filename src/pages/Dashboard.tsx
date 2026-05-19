@@ -1,17 +1,24 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
-import OverviewView from "@/components/dashboard/OverviewView";
-import FinanceView from "@/components/dashboard/FinanceView";
-import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
-import ServiceCostsView from "@/components/dashboard/ServiceCostsView";
-import HealthView from "@/components/dashboard/HealthView";
 import { motion } from "framer-motion";
 
 type View = "overview" | "finance" | "content-planner" | "service-costs" | "health";
+
+const OverviewView = lazy(() => import("@/components/dashboard/OverviewView"));
+const FinanceView = lazy(() => import("@/components/dashboard/FinanceView"));
+const ContentPlannerView = lazy(() => import("@/components/dashboard/ContentPlannerView"));
+const ServiceCostsView = lazy(() => import("@/components/dashboard/ServiceCostsView"));
+const HealthView = lazy(() => import("@/components/dashboard/HealthView"));
+
+const DashboardLoading = () => (
+  <div className="min-h-[50vh] bg-[hsl(var(--dash-bg))] flex items-center justify-center">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 const Dashboard = () => {
   const [view, setView] = useState<View>("overview");
@@ -19,16 +26,29 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {navigate("/login");return;}
-      setLoading(false);
-    };
-    checkAuth();
+    let active = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) navigate("/login");
+      if (!session) navigate("/login", { replace: true });
+      else if (active) setLoading(false);
     });
-    return () => subscription.unsubscribe();
+
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!active) return;
+        if (!session) navigate("/login", { replace: true });
+        else setLoading(false);
+      } catch {
+        if (active) navigate("/login", { replace: true });
+      }
+    };
+
+    checkAuth();
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (loading) {
@@ -65,7 +85,9 @@ const Dashboard = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.15 }}>
               
-              {renderView()}
+              <Suspense fallback={<DashboardLoading />}>
+                {renderView()}
+              </Suspense>
             </motion.div>
           </main>
         </div>
