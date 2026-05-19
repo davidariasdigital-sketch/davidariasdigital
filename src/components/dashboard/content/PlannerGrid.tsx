@@ -317,7 +317,8 @@ const ContentColumn = ({
             </div>
           )}
         </div>
-      ))}
+        );
+      })}
       {items.length === 0 && (
         <button onClick={onAdd} className={`flex-1 flex items-center justify-center rounded-xl transition-all min-h-[80px] ${theme.addBtn}`}>
           <Plus className="h-5 w-5" />
