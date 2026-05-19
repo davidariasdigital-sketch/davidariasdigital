@@ -4,6 +4,7 @@ import { Plus, X, Target } from "lucide-react";
 interface Objective {
   id: string;
   label: string;
+  subLabel?: string;
   color: string;
 }
 
@@ -47,6 +48,10 @@ const ContentObjectivesCard = () => {
 
   const updateLabel = (id: string, label: string) => {
     persist(objectives.map((o) => (o.id === id ? { ...o, label } : o)));
+  };
+
+  const updateSubLabel = (id: string, subLabel: string) => {
+    persist(objectives.map((o) => (o.id === id ? { ...o, subLabel } : o)));
   };
 
   const updateColor = (id: string, color: string) => {
@@ -100,11 +105,21 @@ const ContentObjectivesCard = () => {
               style={{ backgroundColor: o.color }}
               title="Cambiar color"
             />
-            <input
-              value={o.label}
-              onChange={(e) => updateLabel(o.id, e.target.value)}
-              className="flex-1 min-w-0 bg-transparent outline-none text-xs font-medium text-[hsl(var(--dash-text))] focus:bg-[hsl(0,0%,96%)] rounded px-1 py-0.5"
-            />
+            <div className="flex-1 min-w-0 flex items-center gap-1.5">
+              <input
+                value={o.label}
+                onChange={(e) => updateLabel(o.id, e.target.value)}
+                placeholder="Objetivo"
+                className="flex-1 min-w-0 bg-transparent outline-none text-xs font-medium text-[hsl(var(--dash-text))] focus:bg-[hsl(0,0%,96%)] rounded px-1 py-0.5"
+              />
+              <span className="text-[hsl(var(--dash-text-muted))] text-[10px]">·</span>
+              <input
+                value={o.subLabel || ""}
+                onChange={(e) => updateSubLabel(o.id, e.target.value)}
+                placeholder="Subobjetivo"
+                className="flex-1 min-w-0 bg-transparent outline-none text-[11px] text-[hsl(var(--dash-text-muted))] italic focus:bg-[hsl(0,0%,96%)] rounded px-1 py-0.5"
+              />
+            </div>
             <button
               onClick={() => removeObjective(o.id)}
               className="flex-shrink-0 opacity-0 group-hover:opacity-100 text-[hsl(var(--dash-text-muted))] hover:text-red-500 transition-all"
