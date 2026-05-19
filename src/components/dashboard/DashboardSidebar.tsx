@@ -1,5 +1,5 @@
-import { LayoutDashboard, Wallet, CalendarRange, LogOut, Palette, Receipt, HeartPulse } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Wallet, CalendarRange, LogOut, HeartPulse } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sidebar,
