@@ -296,16 +296,16 @@ const ContentColumn = ({
               className="w-full bg-transparent outline-none text-xs text-center font-medium py-1"
             />
           ) : (
-            <div className="flex flex-col items-stretch gap-1 h-full">
+            <div className="flex flex-col items-center justify-center gap-1.5 h-full min-h-[52px]">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}
-                className="flex-1 min-h-[28px] flex items-center justify-center text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 cursor-text"
+                className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 cursor-text"
               >
                 {item.title || "Sin título"}
               </button>
               {showFormat && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-1 w-full">
                   <ObjectiveColorPicker itemId={item.id} />
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
