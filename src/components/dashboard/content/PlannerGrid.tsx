@@ -5,20 +5,20 @@ import { readObjectives, readItemColors, writeItemColor, type Objective } from "
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 export const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
 
-// Distinctive color per format (subtle pill style)
+// Refined, elegant format pills — soft neutrals with subtle accents
 const FORMAT_COLORS: Record<string, string> = {
-  "Reel": "bg-fuchsia-100 border-fuchsia-300 text-fuchsia-700",
-  "Post": "bg-sky-100 border-sky-300 text-sky-700",
-  "Carrusel": "bg-violet-100 border-violet-300 text-violet-700",
-  "Historia": "bg-rose-100 border-rose-300 text-rose-700",
-  "Live": "bg-red-100 border-red-300 text-red-700",
-  "Colaboración": "bg-teal-100 border-teal-300 text-teal-700",
-  "Short": "bg-cyan-100 border-cyan-300 text-cyan-700",
-  "Podcast": "bg-purple-100 border-purple-300 text-purple-700",
-  "Tutorial": "bg-emerald-100 border-emerald-300 text-emerald-700",
-  "Behind the Scenes": "bg-amber-100 border-amber-300 text-amber-700",
-  "Cortometraje": "bg-orange-100 border-orange-300 text-orange-700",
-  "Videoclip": "bg-indigo-100 border-indigo-300 text-indigo-700",
+  "Reel": "bg-stone-50 border-stone-300 text-stone-700",
+  "Post": "bg-slate-50 border-slate-300 text-slate-700",
+  "Carrusel": "bg-zinc-50 border-zinc-300 text-zinc-700",
+  "Historia": "bg-rose-50/70 border-rose-200 text-rose-800",
+  "Live": "bg-red-50/70 border-red-200 text-red-800",
+  "Colaboración": "bg-teal-50/70 border-teal-200 text-teal-800",
+  "Short": "bg-sky-50/70 border-sky-200 text-sky-800",
+  "Podcast": "bg-neutral-50 border-neutral-300 text-neutral-700",
+  "Tutorial": "bg-emerald-50/70 border-emerald-200 text-emerald-800",
+  "Behind the Scenes": "bg-amber-50/70 border-amber-200 text-amber-800",
+  "Cortometraje": "bg-orange-50/70 border-orange-200 text-orange-800",
+  "Videoclip": "bg-indigo-50/70 border-indigo-200 text-indigo-800",
 };
 
 // Refined monochrome glyphs (no generic brand icons)
@@ -88,52 +88,52 @@ interface SectionTheme {
 
 const THEMES: Record<Section, SectionTheme> = {
   instagram: {
-    moduleBg: "bg-gradient-to-br from-pink-50 via-rose-50/60 to-fuchsia-50",
-    moduleBorder: "border-pink-200/70",
-    headerIconBg: "bg-pink-500",
+    moduleBg: "bg-white",
+    moduleBorder: "border-stone-200",
+    headerIconBg: "bg-stone-900",
     headerIconText: "text-white",
-    headerLabel: "text-pink-700",
-    slotBg: "bg-white/70 backdrop-blur-sm",
-    slotBorder: "border-pink-200/60",
-    cardBorder: "border-pink-200",
-    cardHoverBorder: "hover:border-pink-400",
-    addBtn: "text-pink-400 hover:text-pink-600 hover:bg-pink-100/50",
+    headerLabel: "text-stone-900",
+    slotBg: "bg-stone-50/60",
+    slotBorder: "border-stone-200/80",
+    cardBorder: "border-stone-200",
+    cardHoverBorder: "hover:border-stone-400",
+    addBtn: "text-stone-400 hover:text-stone-700 hover:bg-stone-100",
   },
   tiktok: {
-    moduleBg: "bg-gradient-to-br from-slate-50 via-zinc-50/60 to-cyan-50/40",
-    moduleBorder: "border-slate-200/70",
-    headerIconBg: "bg-gradient-to-br from-cyan-500 to-pink-500",
+    moduleBg: "bg-white",
+    moduleBorder: "border-zinc-200",
+    headerIconBg: "bg-zinc-900",
     headerIconText: "text-white",
-    headerLabel: "text-slate-800",
-    slotBg: "bg-white/70 backdrop-blur-sm",
-    slotBorder: "border-slate-200/60",
-    cardBorder: "border-slate-200",
-    cardHoverBorder: "hover:border-slate-400",
-    addBtn: "text-slate-400 hover:text-slate-600 hover:bg-slate-100/50",
+    headerLabel: "text-zinc-900",
+    slotBg: "bg-zinc-50/60",
+    slotBorder: "border-zinc-200/80",
+    cardBorder: "border-zinc-200",
+    cardHoverBorder: "hover:border-zinc-400",
+    addBtn: "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100",
   },
   ideas: {
-    moduleBg: "bg-gradient-to-br from-amber-50 via-yellow-50/60 to-orange-50/40",
-    moduleBorder: "border-amber-200/70",
-    headerIconBg: "bg-amber-400",
-    headerIconText: "text-amber-900",
-    headerLabel: "text-amber-800",
-    slotBg: "bg-white/70 backdrop-blur-sm",
+    moduleBg: "bg-white",
+    moduleBorder: "border-amber-200/80",
+    headerIconBg: "bg-amber-500",
+    headerIconText: "text-white",
+    headerLabel: "text-stone-900",
+    slotBg: "bg-amber-50/30",
     slotBorder: "border-amber-200/60",
-    cardBorder: "border-amber-200",
+    cardBorder: "border-stone-200",
     cardHoverBorder: "hover:border-amber-400",
-    addBtn: "text-amber-400 hover:text-amber-600 hover:bg-amber-100/50",
+    addBtn: "text-amber-400 hover:text-amber-700 hover:bg-amber-100/50",
   },
   solar: {
-    moduleBg: "bg-gradient-to-br from-orange-50 via-amber-50/60 to-red-50/40",
-    moduleBorder: "border-orange-200/70",
+    moduleBg: "bg-white",
+    moduleBorder: "border-orange-200/80",
     headerIconBg: "bg-orange-500",
     headerIconText: "text-white",
-    headerLabel: "text-orange-700",
-    slotBg: "bg-white/70 backdrop-blur-sm",
+    headerLabel: "text-stone-900",
+    slotBg: "bg-orange-50/30",
     slotBorder: "border-orange-200/60",
-    cardBorder: "border-orange-200",
+    cardBorder: "border-stone-200",
     cardHoverBorder: "hover:border-orange-400",
-    addBtn: "text-orange-400 hover:text-orange-600 hover:bg-orange-100/50",
+    addBtn: "text-orange-400 hover:text-orange-700 hover:bg-orange-100/50",
   },
 };
 
@@ -250,7 +250,6 @@ const ContentColumn = ({
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
-          onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
           style={cardStyle}
           className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
             itemColor
@@ -299,9 +298,13 @@ const ContentColumn = ({
             />
           ) : (
             <div className="flex flex-col items-stretch gap-1 h-full">
-              <span className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}
+                className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1 cursor-text hover:opacity-80"
+              >
                 {item.title || "Sin título"}
-              </span>
+              </button>
               {showFormat && (
                 <div className="flex items-center gap-1">
                   <ObjectiveColorPicker itemId={item.id} />
@@ -309,8 +312,10 @@ const ContentColumn = ({
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
                   <button
+                    type="button"
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
-                    className="flex-shrink-0 h-5 w-5 rounded-full bg-white/80 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors"
+                    className="flex-shrink-0 h-6 w-6 rounded-full bg-white border border-gray-300 hover:bg-gray-900 hover:text-white hover:border-gray-900 flex items-center justify-center text-gray-600 transition-colors shadow-sm"
                     title="Editar guion"
                   >
                     <FileText className="h-3 w-3" />
@@ -320,6 +325,7 @@ const ContentColumn = ({
             </div>
           )}
         </div>
+
         );
       })}
       {items.length === 0 && (
