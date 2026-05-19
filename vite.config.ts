@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || "https://brqjujfkwtmkgifstvaa.supabase.co";
-const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIYnJxanVqZmtrdG1rZ2lmc3R2YWEiLCJyZWYiOiJicnFqdWpma3d0bWtn_aWZzdHZhYSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzcyOTg0MDg3LCJleHAiOjIwODg1NjAwODd9.YUOSDoWHkid_4kowgnnxoSST8bA7qncW0qm9XBvUGHE".replace("SHYnJx", "c3Mi").replace("tn_a", "tnp");
+const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIYnJxanVqZmtrdG1rZ2lmc3R2YWEiLCJyZWYiOiJicnFqdWpma3d0bWtn_aWZzdHZhYSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzcyOTg0MDg3LCJleHAiOjIwODg1NjAwODd9.YUOSDoWHkid_4kowgnnxoSST8bA7qncW0qm9XBvUGHE";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
