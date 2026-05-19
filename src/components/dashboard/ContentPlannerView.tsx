@@ -146,16 +146,27 @@ const ContentPlannerView = () => {
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] bg-white text-gray-900 border-gray-200">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto bg-white text-gray-900 border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
           </DialogHeader>
-          <Textarea
-            placeholder="Escribe el guion del video aquí..."
-            value={scriptValue}
-            onChange={(e) => setScriptValue(e.target.value)}
-            className="min-h-[400px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
-          />
+          <div className="space-y-4">
+            {([
+              { key: "hook", label: "HOOK", color: "border-l-fuchsia-400", placeholder: "Gancho inicial para captar atención..." },
+              { key: "cuerpo", label: "CUERPO", color: "border-l-sky-400", placeholder: "Desarrollo del contenido..." },
+              { key: "cta", label: "CTA", color: "border-l-emerald-400", placeholder: "Llamada a la acción..." },
+            ] as const).map((s) => (
+              <div key={s.key} className={`border-l-4 ${s.color} pl-3`}>
+                <label className="text-[11px] font-bold tracking-widest text-gray-600 uppercase">{s.label}</label>
+                <Textarea
+                  placeholder={s.placeholder}
+                  value={scriptParts[s.key]}
+                  onChange={(e) => setScriptParts((prev) => ({ ...prev, [s.key]: e.target.value }))}
+                  className="mt-1 min-h-[100px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
+                />
+              </div>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
