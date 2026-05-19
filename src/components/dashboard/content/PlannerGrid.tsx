@@ -305,7 +305,7 @@ const ContentColumn = ({
                 {item.title || "Sin título"}
               </button>
               {showFormat && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-1 w-full">
                   <ObjectiveColorPicker itemId={item.id} />
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
