@@ -5,20 +5,20 @@ import { readObjectives, readItemColors, writeItemColor, type Objective } from "
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 export const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
 
-// Distinctive color per format (subtle pill style)
+// Refined, elegant format pills — soft neutrals with subtle accents
 const FORMAT_COLORS: Record<string, string> = {
-  "Reel": "bg-fuchsia-100 border-fuchsia-300 text-fuchsia-700",
-  "Post": "bg-sky-100 border-sky-300 text-sky-700",
-  "Carrusel": "bg-violet-100 border-violet-300 text-violet-700",
-  "Historia": "bg-rose-100 border-rose-300 text-rose-700",
-  "Live": "bg-red-100 border-red-300 text-red-700",
-  "Colaboración": "bg-teal-100 border-teal-300 text-teal-700",
-  "Short": "bg-cyan-100 border-cyan-300 text-cyan-700",
-  "Podcast": "bg-purple-100 border-purple-300 text-purple-700",
-  "Tutorial": "bg-emerald-100 border-emerald-300 text-emerald-700",
-  "Behind the Scenes": "bg-amber-100 border-amber-300 text-amber-700",
-  "Cortometraje": "bg-orange-100 border-orange-300 text-orange-700",
-  "Videoclip": "bg-indigo-100 border-indigo-300 text-indigo-700",
+  "Reel": "bg-stone-50 border-stone-300 text-stone-700",
+  "Post": "bg-slate-50 border-slate-300 text-slate-700",
+  "Carrusel": "bg-zinc-50 border-zinc-300 text-zinc-700",
+  "Historia": "bg-rose-50/70 border-rose-200 text-rose-800",
+  "Live": "bg-red-50/70 border-red-200 text-red-800",
+  "Colaboración": "bg-teal-50/70 border-teal-200 text-teal-800",
+  "Short": "bg-sky-50/70 border-sky-200 text-sky-800",
+  "Podcast": "bg-neutral-50 border-neutral-300 text-neutral-700",
+  "Tutorial": "bg-emerald-50/70 border-emerald-200 text-emerald-800",
+  "Behind the Scenes": "bg-amber-50/70 border-amber-200 text-amber-800",
+  "Cortometraje": "bg-orange-50/70 border-orange-200 text-orange-800",
+  "Videoclip": "bg-indigo-50/70 border-indigo-200 text-indigo-800",
 };
 
 // Refined monochrome glyphs (no generic brand icons)
