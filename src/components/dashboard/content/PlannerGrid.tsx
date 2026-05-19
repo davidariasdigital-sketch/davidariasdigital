@@ -300,7 +300,7 @@ const ContentColumn = ({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onEditStart(item.id, item.title); }}
-                className="text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 flex-1 cursor-text hover:opacity-80"
+                className="flex-1 min-h-[28px] flex items-center justify-center text-[10.5px] leading-tight font-semibold text-center w-full break-words px-0.5 cursor-text"
               >
                 {item.title || "Sin título"}
               </button>
