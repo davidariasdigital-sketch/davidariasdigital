@@ -239,18 +239,27 @@ const ContentColumn = ({
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
     >
-      {items.map((item) => (
+      {items.map((item) => {
+        const itemColor = colors[item.id];
+        return (
         <div
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
           onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
-          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
+          style={itemColor ? { borderLeftColor: itemColor, borderLeftWidth: 3 } : undefined}
+          className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 overflow-hidden ${
             item.published
               ? "bg-emerald-50 border-emerald-300 text-emerald-800"
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
           }`}
         >
+          {itemColor && (
+            <span
+              className="absolute top-0 left-0 right-0 h-1"
+              style={{ backgroundColor: itemColor }}
+            />
+          )}
           {/* Top action bar (always visible on hover) */}
           {editingId !== item.id && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-gray-200 rounded-full px-1 py-0.5 shadow-md z-10">
