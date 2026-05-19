@@ -93,14 +93,15 @@ const ContentPlannerView = () => {
 
   const openScript = (item: ContentItem) => {
     setScriptItem(item);
-    setScriptValue(item.description || "");
+    setScriptParts(parseScript(item.description || ""));
   };
 
   const saveScript = async () => {
     if (!scriptItem) return;
-    const { error } = await supabase.from("content_items").update({ description: scriptValue }).eq("id", scriptItem.id);
+    const serialized = JSON.stringify(scriptParts);
+    const { error } = await supabase.from("content_items").update({ description: serialized }).eq("id", scriptItem.id);
     if (error) { toast.error("Error al guardar guion"); return; }
-    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description: scriptValue } : i));
+    setItems((prev) => prev.map((i) => i.id === scriptItem.id ? { ...i, description: serialized } : i));
     setScriptItem(null);
   };
 
