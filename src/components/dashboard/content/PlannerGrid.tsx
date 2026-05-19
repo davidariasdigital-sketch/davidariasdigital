@@ -199,7 +199,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
         {renderModule("instagram", "Instagram", <IGGlyph />, 4, FORMATS)}
         {renderModule("solar", "Solar", <Clapperboard className="h-4 w-4" />, 4, SOLAR_FORMATS)}
       </div>
-      {renderModule("ideas", "Ideas Futuras", <Sparkles className="h-4 w-4" />, 12, FORMATS)}
+      {renderModule("ideas", "Ideas Futuras", <Sparkles className="h-4 w-4" />, 16, FORMATS)}
     </div>
   );
 };
