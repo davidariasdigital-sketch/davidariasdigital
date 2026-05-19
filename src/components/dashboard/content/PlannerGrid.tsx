@@ -308,6 +308,13 @@ const ContentColumn = ({
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
+                    className="flex-shrink-0 h-5 w-5 rounded-full bg-white/80 border border-gray-200 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-800 transition-colors"
+                    title="Editar guion"
+                  >
+                    <FileText className="h-3 w-3" />
+                  </button>
                 </div>
               )}
             </div>
