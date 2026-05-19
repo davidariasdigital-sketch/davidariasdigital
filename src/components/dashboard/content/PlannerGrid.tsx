@@ -218,9 +218,20 @@ interface ContentColumnProps {
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
+  onFormatChange, onTogglePublished, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
+  const [colorsMap, setColorsMap] = useState<Record<string, string>>(() => readItemColors());
+
+  useEffect(() => {
+    const refresh = () => setColorsMap(readItemColors());
+    window.addEventListener("storage", refresh);
+    window.addEventListener("content-item-colors-changed", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("content-item-colors-changed", refresh);
+    };
+  }, []);
 
   return (
     <div
@@ -229,18 +240,34 @@ const ContentColumn = ({
       onDragLeave={() => setDragOver(false)}
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
     >
-      {items.map((item) => (
+      {items.map((item) => {
+        const itemColor = colorsMap[item.id];
+        const cardStyle = itemColor
+          ? { backgroundColor: `${itemColor}26`, borderColor: itemColor, color: "hsl(var(--dash-text))" }
+          : undefined;
+        return (
         <div
           key={item.id}
           draggable
           onDragStart={() => onDragStart(item)}
           onClick={() => { if (editingId !== item.id) onEditStart(item.id, item.title); }}
+          style={cardStyle}
           className={`group relative rounded-lg px-1.5 pt-2 pb-1.5 text-xs cursor-grab active:cursor-grabbing transition-all border shadow-sm flex-1 ${
-            item.published
-              ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+            itemColor
+              ? ""
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
           }`}
         >
+          {/* Published check badge — corner only */}
+          {item.published && editingId !== item.id && (
+            <div
+              className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm ring-2 ring-white z-10"
+              title="Publicado"
+            >
+              <Check className="h-2.5 w-2.5" strokeWidth={3} />
+            </div>
+          )}
+
           {/* Top action bar (always visible on hover) */}
           {editingId !== item.id && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-gray-200 rounded-full px-1 py-0.5 shadow-md z-10">
@@ -283,22 +310,11 @@ const ContentColumn = ({
                   </div>
                 </div>
               )}
-              <button
-                onClick={(e) => { e.stopPropagation(); onOpenScript(item); }}
-                className={`w-full flex items-center justify-center gap-1 rounded-md px-1 py-0.5 text-[9.5px] font-medium transition-all border ${
-                  item.description
-                    ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                    : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                }`}
-                title="Guion"
-              >
-                <FileText className="h-2.5 w-2.5" />
-                <span>Guion</span>
-              </button>
             </div>
           )}
         </div>
-      ))}
+        );
+      })}
       {items.length === 0 && (
         <button onClick={onAdd} className={`flex-1 flex items-center justify-center rounded-xl transition-all min-h-[80px] ${theme.addBtn}`}>
           <Plus className="h-5 w-5" />
