@@ -213,13 +213,12 @@ interface ContentColumnProps {
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
   onOpenScript: (item: ContentItem) => void;
   theme: SectionTheme; formats: string[]; showFormat?: boolean;
-  onOpenScript: (item: ContentItem) => void;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, theme, formats, showFormat,
+  onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
   const [colorsMap, setColorsMap] = useState<Record<string, string>>(() => readItemColors());
