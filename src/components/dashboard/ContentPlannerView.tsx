@@ -14,7 +14,18 @@ const ContentPlannerView = () => {
   const [editValue, setEditValue] = useState("");
   const [dragItem, setDragItem] = useState<ContentItem | null>(null);
   const [scriptItem, setScriptItem] = useState<ContentItem | null>(null);
-  const [scriptValue, setScriptValue] = useState("");
+  const [scriptParts, setScriptParts] = useState<{ hook: string; cuerpo: string; cta: string }>({ hook: "", cuerpo: "", cta: "" });
+
+  const parseScript = (raw: string): { hook: string; cuerpo: string; cta: string } => {
+    if (!raw) return { hook: "", cuerpo: "", cta: "" };
+    try {
+      const p = JSON.parse(raw);
+      if (p && typeof p === "object" && ("hook" in p || "cuerpo" in p || "cta" in p)) {
+        return { hook: p.hook || "", cuerpo: p.cuerpo || "", cta: p.cta || "" };
+      }
+    } catch {}
+    return { hook: "", cuerpo: raw, cta: "" };
+  };
 
   const fetchItems = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
