@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
-import LiveFollowersCard from "./content/LiveFollowersCard";
+import ContentObjectivesCard from "./content/ContentObjectivesCard";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
