@@ -128,7 +128,7 @@ const ContentPlannerView = () => {
         {/* Right: goals sidebar */}
         <aside className="space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:self-start">
           <ContentGoalsCard />
-          <LiveFollowersCard />
+          <ContentObjectivesCard />
         </aside>
       </div>
 
