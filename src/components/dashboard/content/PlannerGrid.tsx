@@ -257,35 +257,34 @@ const ContentColumn = ({
               : `bg-white ${theme.cardBorder} ${theme.cardHoverBorder} text-[hsl(var(--dash-text))]`
           }`}
         >
-          {/* Published check badge — corner only */}
-          {item.published && editingId !== item.id && (
-            <div
-              className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm ring-2 ring-white z-10"
-              title="Publicado"
+          {/* Published toggle — corner badge, always clickable */}
+          {editingId !== item.id && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
+              title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
+              className={`absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full flex items-center justify-center shadow-sm ring-2 ring-white z-10 transition-colors ${
+                item.published
+                  ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                  : "bg-white border border-gray-300 text-gray-300 hover:text-emerald-600 hover:border-emerald-400 opacity-0 group-hover:opacity-100"
+              }`}
             >
               <Check className="h-2.5 w-2.5" strokeWidth={3} />
-            </div>
+            </button>
           )}
 
-          {/* Top action bar (always visible on hover) */}
+          {/* Delete — corner, only on hover */}
           {editingId !== item.id && (
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-gray-200 rounded-full px-1 py-0.5 shadow-md z-10">
-              <button
-                onClick={(e) => { e.stopPropagation(); onTogglePublished(item.id); }}
-                className={`rounded-full p-1 transition-all ${item.published ? "text-emerald-600 bg-emerald-50" : "text-gray-400 hover:text-emerald-600 hover:bg-emerald-50"}`}
-                title={item.published ? "Marcar como no publicado" : "Marcar como publicado"}
-              >
-                <Check className="h-3 w-3" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                className="rounded-full p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
-                title="Eliminar"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+              title="Eliminar"
+              className="absolute -top-1.5 -left-1.5 h-4 w-4 rounded-full bg-white border border-gray-300 text-gray-400 hover:text-red-600 hover:border-red-400 flex items-center justify-center shadow-sm ring-2 ring-white z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="h-2.5 w-2.5" strokeWidth={3} />
+            </button>
           )}
+
 
           {editingId === item.id ? (
             <input
