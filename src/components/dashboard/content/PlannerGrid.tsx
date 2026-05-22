@@ -255,6 +255,7 @@ const ContentColumn = ({
     >
       {items.map((item) => {
         const itemColor = item.objective_color || null;
+        const cardStyle = itemColor
           ? { backgroundColor: `${itemColor}26`, borderColor: itemColor, color: "hsl(var(--dash-text))" }
           : undefined;
         return (
