@@ -319,7 +319,11 @@ const ContentColumn = ({
               </button>
               {showFormat && (
                 <div className="flex items-center justify-center gap-1 w-full">
-                  <ObjectiveColorPicker itemId={item.id} />
+                  <ObjectiveColorPicker
+                    color={itemColor}
+                    objectives={objectives}
+                    onChange={(c) => onObjectiveColorChange(item.id, c)}
+                  />
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
@@ -366,33 +370,23 @@ const FormatSelector = ({ value, onChange, formats }: { value: string | null; on
   );
 };
 
-const ObjectiveColorPicker = ({ itemId }: { itemId: string }) => {
-  const [objectives, setObjectives] = useState<Objective[]>(() => readObjectives());
-  const [color, setColor] = useState<string | null>(() => readItemColors()[itemId] ?? null);
-
-  useEffect(() => {
-    const refresh = () => {
-      setObjectives(readObjectives());
-      setColor(readItemColors()[itemId] ?? null);
-    };
-    window.addEventListener("storage", refresh);
-    window.addEventListener("content-item-colors-changed", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("content-item-colors-changed", refresh);
-    };
-  }, [itemId]);
-
+const ObjectiveColorPicker = ({
+  color,
+  objectives,
+  onChange,
+}: {
+  color: string | null;
+  objectives: Objective[];
+  onChange: (color: string | null) => void;
+}) => {
   const current = color ? objectives.find((o) => o.color === color) : null;
 
   const cycle = () => {
     if (objectives.length === 0) return;
     const idx = color ? objectives.findIndex((o) => o.color === color) : -1;
-    // cycle: none -> 0 -> 1 -> ... -> last -> none
     const nextIdx = idx + 1;
     const next = nextIdx >= objectives.length ? null : objectives[nextIdx].color;
-    setColor(next);
-    writeItemColor(itemId, next);
+    onChange(next);
   };
 
   return (
