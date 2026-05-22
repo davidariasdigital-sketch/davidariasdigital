@@ -234,26 +234,17 @@ interface ContentColumnProps {
   onEditChange: (val: string) => void; onEditSave: (id: string) => void; onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
   onOpenScript: (item: ContentItem) => void;
+  onObjectiveColorChange: (id: string, color: string | null) => void;
+  objectives: Objective[];
   theme: SectionTheme; formats: string[]; showFormat?: boolean;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
+  onFormatChange, onTogglePublished, onOpenScript, onObjectiveColorChange, objectives, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
-  const [colorsMap, setColorsMap] = useState<Record<string, string>>(() => readItemColors());
-
-  useEffect(() => {
-    const refresh = () => setColorsMap(readItemColors());
-    window.addEventListener("storage", refresh);
-    window.addEventListener("content-item-colors-changed", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("content-item-colors-changed", refresh);
-    };
-  }, []);
 
   return (
     <div
