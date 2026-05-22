@@ -188,6 +188,8 @@ const PlannerGrid = (props: PlannerGridProps) => {
               onFormatChange={props.onFormatChange}
               onTogglePublished={props.onTogglePublished}
               onOpenScript={props.onOpenScript}
+              onObjectiveColorChange={props.onObjectiveColorChange}
+              objectives={objectives}
               theme={theme}
               formats={formats}
               showFormat
