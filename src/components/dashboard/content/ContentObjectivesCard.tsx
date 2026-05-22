@@ -1,75 +1,65 @@
 import { useEffect, useState } from "react";
 import { Plus, X, Target } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { DEFAULT_PALETTE, DEFAULT_OBJECTIVES, type Objective } from "./objectiveColors";
 
-interface Objective {
-  id: string;
-  label: string;
-  subLabel?: string;
-  color: string;
-}
-
-const STORAGE_KEY = "content_objectives_v1";
-
-const DEFAULT_PALETTE = [
-  "#ec4899", // pink
-  "#f59e0b", // amber
-  "#10b981", // emerald
-  "#3b82f6", // blue
-  "#a855f7", // purple
-  "#f97316", // orange
-  "#06b6d4", // cyan
-  "#ef4444", // red
-];
-
-const DEFAULTS: Objective[] = [
-  { id: "1", label: "Marca personal", color: "#ec4899" },
-  { id: "2", label: "Engagement", color: "#f59e0b" },
-  { id: "3", label: "Ventas", color: "#10b981" },
-  { id: "4", label: "Educación", color: "#3b82f6" },
-];
+const emitChanged = () => window.dispatchEvent(new CustomEvent("content-objectives-changed"));
 
 const ContentObjectivesCard = () => {
-  const [objectives, setObjectives] = useState<Objective[]>(DEFAULTS);
+  const [objectives, setObjectives] = useState<Objective[]>([]);
   const [pickerOpen, setPickerOpen] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setObjectives(JSON.parse(raw));
-    } catch {}
-  }, []);
+  const load = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data, error } = await supabase
+      .from("content_objectives")
+      .select("*")
+      .order("position", { ascending: true });
+    if (error) { toast.error("Error cargando objetivos"); return; }
 
-  const persist = (next: Objective[]) => {
-    setObjectives(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {}
+    if (!data || data.length === 0) {
+      // Seed defaults the first time
+      const seed = DEFAULT_OBJECTIVES.map((o) => ({ ...o, user_id: session.user.id }));
+      const { data: inserted } = await supabase.from("content_objectives").insert(seed).select();
+      setObjectives((inserted as Objective[]) || []);
+    } else {
+      setObjectives(data as Objective[]);
+    }
+    setLoading(false);
+    emitChanged();
   };
 
-  const updateLabel = (id: string, label: string) => {
-    persist(objectives.map((o) => (o.id === id ? { ...o, label } : o)));
+  useEffect(() => { load(); }, []);
+
+  const updateField = async (id: string, patch: Partial<Objective>) => {
+    setObjectives((prev) => prev.map((o) => (o.id === id ? { ...o, ...patch } : o)));
+    const { error } = await supabase.from("content_objectives").update(patch).eq("id", id);
+    if (error) toast.error("Error al guardar");
+    else emitChanged();
   };
 
-  const updateSubLabel = (id: string, subLabel: string) => {
-    persist(objectives.map((o) => (o.id === id ? { ...o, subLabel } : o)));
-  };
-
-  const updateColor = (id: string, color: string) => {
-    persist(objectives.map((o) => (o.id === id ? { ...o, color } : o)));
-    setPickerOpen(null);
-  };
-
-  const addObjective = () => {
+  const addObjective = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
     const used = objectives.map((o) => o.color);
-    const next = DEFAULT_PALETTE.find((c) => !used.includes(c)) || DEFAULT_PALETTE[0];
-    persist([
-      ...objectives,
-      { id: Date.now().toString(), label: "Nuevo objetivo", color: next },
-    ]);
+    const color = DEFAULT_PALETTE.find((c) => !used.includes(c)) || DEFAULT_PALETTE[0];
+    const { data, error } = await supabase
+      .from("content_objectives")
+      .insert({ user_id: session.user.id, label: "Nuevo objetivo", color, position: objectives.length })
+      .select()
+      .single();
+    if (error) { toast.error("Error al crear"); return; }
+    setObjectives((prev) => [...prev, data as Objective]);
+    emitChanged();
   };
 
-  const removeObjective = (id: string) => {
-    persist(objectives.filter((o) => o.id !== id));
+  const removeObjective = async (id: string) => {
+    setObjectives((prev) => prev.filter((o) => o.id !== id));
+    await supabase.from("content_objectives").delete().eq("id", id);
+    emitChanged();
   };
 
   return (
@@ -108,14 +98,14 @@ const ContentObjectivesCard = () => {
             <div className="flex-1 min-w-0 flex items-center gap-1.5">
               <input
                 value={o.label}
-                onChange={(e) => updateLabel(o.id, e.target.value)}
+                onChange={(e) => updateField(o.id, { label: e.target.value })}
                 placeholder="Objetivo"
                 className="flex-1 min-w-0 bg-transparent outline-none text-xs font-medium text-[hsl(var(--dash-text))] focus:bg-[hsl(0,0%,96%)] rounded px-1 py-0.5"
               />
               <span className="text-[hsl(var(--dash-text-muted))] text-[10px]">·</span>
               <input
-                value={o.subLabel || ""}
-                onChange={(e) => updateSubLabel(o.id, e.target.value)}
+                value={o.sub_label || ""}
+                onChange={(e) => updateField(o.id, { sub_label: e.target.value })}
                 placeholder="Subobjetivo"
                 className="flex-1 min-w-0 bg-transparent outline-none text-[11px] text-[hsl(var(--dash-text-muted))] italic focus:bg-[hsl(0,0%,96%)] rounded px-1 py-0.5"
               />
@@ -133,7 +123,7 @@ const ContentObjectivesCard = () => {
                 {DEFAULT_PALETTE.map((c) => (
                   <button
                     key={c}
-                    onClick={() => updateColor(o.id, c)}
+                    onClick={() => { updateField(o.id, { color: c }); setPickerOpen(null); }}
                     className="h-5 w-5 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
                     style={{ backgroundColor: c }}
                   />
@@ -142,7 +132,7 @@ const ContentObjectivesCard = () => {
             )}
           </div>
         ))}
-        {objectives.length === 0 && (
+        {!loading && objectives.length === 0 && (
           <p className="text-[11px] text-[hsl(var(--dash-text-muted))] text-center py-3">
             Añade tu primer objetivo
           </p>
