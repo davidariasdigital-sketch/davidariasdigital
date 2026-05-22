@@ -42,6 +42,7 @@ export interface ContentItem {
   id: string; title: string; month: string; column_index: number;
   row_index: number; is_idea: boolean; format: string | null; published: boolean;
   description: string;
+  objective_color?: string | null;
 }
 
 export type Section = "instagram" | "ideas" | "solar" | "tiktok";
@@ -68,6 +69,7 @@ interface PlannerGridProps {
   onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void;
   onTogglePublished: (id: string) => void;
+  onObjectiveColorChange: (id: string, color: string | null) => void;
   onOpenScript: (item: ContentItem) => void;
 }
 
