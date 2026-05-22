@@ -1,24 +1,17 @@
-import { lazy, Suspense, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import MobileBottomNav from "@/components/dashboard/MobileBottomNav";
 import { motion } from "framer-motion";
+import OverviewView from "@/components/dashboard/OverviewView";
+import FinanceView from "@/components/dashboard/FinanceView";
+import ContentPlannerView from "@/components/dashboard/ContentPlannerView";
+import ServiceCostsView from "@/components/dashboard/ServiceCostsView";
+import HealthView from "@/components/dashboard/HealthView";
 
 type View = "overview" | "finance" | "content-planner" | "service-costs" | "health";
-
-const OverviewView = lazy(() => import("@/components/dashboard/OverviewView"));
-const FinanceView = lazy(() => import("@/components/dashboard/FinanceView"));
-const ContentPlannerView = lazy(() => import("@/components/dashboard/ContentPlannerView"));
-const ServiceCostsView = lazy(() => import("@/components/dashboard/ServiceCostsView"));
-const HealthView = lazy(() => import("@/components/dashboard/HealthView"));
-
-const DashboardLoading = () => (
-  <div className="min-h-[50vh] bg-[hsl(var(--dash-bg))] flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-  </div>
-);
 
 const Dashboard = () => {
   const [view, setView] = useState<View>("overview");
@@ -84,10 +77,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.15 }}>
-              
-              <Suspense fallback={<DashboardLoading />}>
-                {renderView()}
-              </Suspense>
+              {renderView()}
             </motion.div>
           </main>
         </div>
