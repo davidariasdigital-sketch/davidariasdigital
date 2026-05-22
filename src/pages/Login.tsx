@@ -9,12 +9,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setInfo("");
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -24,6 +26,22 @@ const Login = () => {
     } else {
       navigate("/dashboard");
     }
+  };
+
+  const handleForgot = async () => {
+    setError("");
+    setInfo("");
+    if (!email) {
+      setError("Introduce tu email arriba primero");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) setError(error.message);
+    else setInfo("Te he enviado un enlace al correo. Revisa tu bandeja (y spam).");
   };
 
   return (
@@ -79,6 +97,9 @@ const Login = () => {
           {error && (
             <p className="text-[hsl(0,84%,60%)] text-sm text-center">{error}</p>
           )}
+          {info && (
+            <p className="text-[hsl(142,60%,35%)] text-sm text-center">{info}</p>
+          )}
 
           <button
             type="submit"
@@ -86,6 +107,15 @@ const Login = () => {
             className="w-full bg-[hsl(48,100%,50%)] text-[hsl(0,0%,8%)] font-bold text-sm py-3.5 rounded-full hover:brightness-105 hover:shadow-lg transition-all duration-300 disabled:opacity-50"
           >
             {loading ? "Entrando..." : "Entrar"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleForgot}
+            disabled={loading}
+            className="w-full text-[hsl(0,0%,45%)] text-sm hover:text-[hsl(0,0%,20%)] transition-colors disabled:opacity-50"
+          >
+            ¿Olvidaste tu contraseña?
           </button>
         </form>
 
