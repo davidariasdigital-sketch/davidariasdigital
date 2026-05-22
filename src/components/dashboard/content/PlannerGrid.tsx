@@ -142,6 +142,22 @@ const THEMES: Record<Section, SectionTheme> = {
 };
 
 const PlannerGrid = (props: PlannerGridProps) => {
+  const [objectives, setObjectives] = useState<Objective[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("content_objectives")
+        .select("*")
+        .order("position", { ascending: true });
+      if (data) setObjectives(data as Objective[]);
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener("content-objectives-changed", handler);
+    return () => window.removeEventListener("content-objectives-changed", handler);
+  }, []);
+
   const getSlotItems = (section: Section, colIndex: number) =>
     props.items.filter((i) => i.month === sectionKey(section) && i.column_index === colIndex).sort((a, b) => a.row_index - b.row_index);
 
