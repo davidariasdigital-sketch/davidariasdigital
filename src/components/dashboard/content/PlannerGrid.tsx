@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Plus, X, Sparkles, Clapperboard, Check, FileText } from "lucide-react";
-import { readObjectives, readItemColors, writeItemColor, type Objective } from "./objectiveColors";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { type Objective } from "./objectiveColors";
 
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 export const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
