@@ -254,8 +254,7 @@ const ContentColumn = ({
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
     >
       {items.map((item) => {
-        const itemColor = colorsMap[item.id];
-        const cardStyle = itemColor
+        const itemColor = item.objective_color || null;
           ? { backgroundColor: `${itemColor}26`, borderColor: itemColor, color: "hsl(var(--dash-text))" }
           : undefined;
         return (
