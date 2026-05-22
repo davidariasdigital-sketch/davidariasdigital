@@ -71,6 +71,12 @@ const ContentPlannerView = () => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, format } : i)));
   };
 
+  const updateObjectiveColor = async (id: string, color: string | null) => {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, objective_color: color } : i)));
+    const { error } = await supabase.from("content_items").update({ objective_color: color } as any).eq("id", id);
+    if (error) toast.error("Error al guardar color");
+  };
+
   const togglePublished = async (id: string) => {
     const item = items.find((i) => i.id === id);
     if (!item) return;
@@ -133,6 +139,7 @@ const ContentPlannerView = () => {
             onDelete={deleteItem}
             onFormatChange={updateFormat}
             onTogglePublished={togglePublished}
+            onObjectiveColorChange={updateObjectiveColor}
             onOpenScript={openScript}
           />
         </div>

@@ -86,6 +86,7 @@ export type Database = {
           id: string
           is_idea: boolean
           month: string
+          objective_color: string | null
           published: boolean
           row_index: number
           title: string
@@ -99,6 +100,7 @@ export type Database = {
           id?: string
           is_idea?: boolean
           month: string
+          objective_color?: string | null
           published?: boolean
           row_index?: number
           title?: string
@@ -112,9 +114,40 @@ export type Database = {
           id?: string
           is_idea?: boolean
           month?: string
+          objective_color?: string | null
           published?: boolean
           row_index?: number
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      content_objectives: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          label: string
+          position: number
+          sub_label: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          label?: string
+          position?: number
+          sub_label?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          label?: string
+          position?: number
+          sub_label?: string | null
           user_id?: string
         }
         Relationships: []

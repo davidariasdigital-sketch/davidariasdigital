@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Plus, X, Sparkles, Clapperboard, Check, FileText } from "lucide-react";
-import { readObjectives, readItemColors, writeItemColor, type Objective } from "./objectiveColors";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { type Objective } from "./objectiveColors";
 
 export const FORMATS = ["Reel", "Post", "Carrusel", "Historia", "Live", "Colaboración", "Short", "Podcast", "Tutorial", "Behind the Scenes"];
 export const SOLAR_FORMATS = ["Cortometraje", "Videoclip"];
@@ -40,6 +42,7 @@ export interface ContentItem {
   id: string; title: string; month: string; column_index: number;
   row_index: number; is_idea: boolean; format: string | null; published: boolean;
   description: string;
+  objective_color?: string | null;
 }
 
 export type Section = "instagram" | "ideas" | "solar" | "tiktok";
@@ -66,6 +69,7 @@ interface PlannerGridProps {
   onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void;
   onTogglePublished: (id: string) => void;
+  onObjectiveColorChange: (id: string, color: string | null) => void;
   onOpenScript: (item: ContentItem) => void;
 }
 
@@ -138,6 +142,22 @@ const THEMES: Record<Section, SectionTheme> = {
 };
 
 const PlannerGrid = (props: PlannerGridProps) => {
+  const [objectives, setObjectives] = useState<Objective[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase
+        .from("content_objectives")
+        .select("*")
+        .order("position", { ascending: true });
+      if (data) setObjectives(data as Objective[]);
+    };
+    load();
+    const handler = () => load();
+    window.addEventListener("content-objectives-changed", handler);
+    return () => window.removeEventListener("content-objectives-changed", handler);
+  }, []);
+
   const getSlotItems = (section: Section, colIndex: number) =>
     props.items.filter((i) => i.month === sectionKey(section) && i.column_index === colIndex).sort((a, b) => a.row_index - b.row_index);
 
@@ -184,6 +204,8 @@ const PlannerGrid = (props: PlannerGridProps) => {
               onFormatChange={props.onFormatChange}
               onTogglePublished={props.onTogglePublished}
               onOpenScript={props.onOpenScript}
+              onObjectiveColorChange={props.onObjectiveColorChange}
+              objectives={objectives}
               theme={theme}
               formats={formats}
               showFormat
@@ -212,26 +234,17 @@ interface ContentColumnProps {
   onEditChange: (val: string) => void; onEditSave: (id: string) => void; onDelete: (id: string) => void;
   onFormatChange: (id: string, format: string) => void; onTogglePublished: (id: string) => void;
   onOpenScript: (item: ContentItem) => void;
+  onObjectiveColorChange: (id: string, color: string | null) => void;
+  objectives: Objective[];
   theme: SectionTheme; formats: string[]; showFormat?: boolean;
 }
 
 const ContentColumn = ({
   section, colIndex, items, onAdd, onDrop, onDragStart,
   editingId, editValue, onEditStart, onEditChange, onEditSave, onDelete,
-  onFormatChange, onTogglePublished, onOpenScript, theme, formats, showFormat,
+  onFormatChange, onTogglePublished, onOpenScript, onObjectiveColorChange, objectives, theme, formats, showFormat,
 }: ContentColumnProps) => {
   const [dragOver, setDragOver] = useState(false);
-  const [colorsMap, setColorsMap] = useState<Record<string, string>>(() => readItemColors());
-
-  useEffect(() => {
-    const refresh = () => setColorsMap(readItemColors());
-    window.addEventListener("storage", refresh);
-    window.addEventListener("content-item-colors-changed", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("content-item-colors-changed", refresh);
-    };
-  }, []);
 
   return (
     <div
@@ -241,7 +254,7 @@ const ContentColumn = ({
       onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(section, colIndex); }}
     >
       {items.map((item) => {
-        const itemColor = colorsMap[item.id];
+        const itemColor = item.objective_color || null;
         const cardStyle = itemColor
           ? { backgroundColor: `${itemColor}26`, borderColor: itemColor, color: "hsl(var(--dash-text))" }
           : undefined;
@@ -306,7 +319,11 @@ const ContentColumn = ({
               </button>
               {showFormat && (
                 <div className="flex items-center justify-center gap-1 w-full">
-                  <ObjectiveColorPicker itemId={item.id} />
+                  <ObjectiveColorPicker
+                    color={itemColor}
+                    objectives={objectives}
+                    onChange={(c) => onObjectiveColorChange(item.id, c)}
+                  />
                   <div className="flex-1 min-w-0">
                     <FormatSelector value={item.format} onChange={(f) => onFormatChange(item.id, f)} formats={formats} />
                   </div>
@@ -353,33 +370,23 @@ const FormatSelector = ({ value, onChange, formats }: { value: string | null; on
   );
 };
 
-const ObjectiveColorPicker = ({ itemId }: { itemId: string }) => {
-  const [objectives, setObjectives] = useState<Objective[]>(() => readObjectives());
-  const [color, setColor] = useState<string | null>(() => readItemColors()[itemId] ?? null);
-
-  useEffect(() => {
-    const refresh = () => {
-      setObjectives(readObjectives());
-      setColor(readItemColors()[itemId] ?? null);
-    };
-    window.addEventListener("storage", refresh);
-    window.addEventListener("content-item-colors-changed", refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener("content-item-colors-changed", refresh);
-    };
-  }, [itemId]);
-
+const ObjectiveColorPicker = ({
+  color,
+  objectives,
+  onChange,
+}: {
+  color: string | null;
+  objectives: Objective[];
+  onChange: (color: string | null) => void;
+}) => {
   const current = color ? objectives.find((o) => o.color === color) : null;
 
   const cycle = () => {
     if (objectives.length === 0) return;
     const idx = color ? objectives.findIndex((o) => o.color === color) : -1;
-    // cycle: none -> 0 -> 1 -> ... -> last -> none
     const nextIdx = idx + 1;
     const next = nextIdx >= objectives.length ? null : objectives[nextIdx].color;
-    setColor(next);
-    writeItemColor(itemId, next);
+    onChange(next);
   };
 
   return (
