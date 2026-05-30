@@ -46,18 +46,6 @@ const FinanceView = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      {tab !== "costs" && (
-        <div className="flex items-center justify-end gap-2">
-          <button
-            onClick={handleNew}
-            className="flex items-center gap-2 bg-primary text-primary-foreground text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-full hover:shadow-lg transition-all shrink-0"
-          >
-            <Plus size={14} /> {tab === "quotations" ? "Cotización" : "Cuenta"}
-          </button>
-        </div>
-      )}
-
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="dash-tile-primary rounded-2xl p-4 sm:p-5">
@@ -68,11 +56,21 @@ const FinanceView = () => {
           <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Total cobrado</p>
           <p className="text-xl sm:text-2xl font-display font-extrabold mt-2 text-emerald-600">{formatCOP(stats.paid)}</p>
         </div>
-        <div className="dash-tile rounded-2xl p-4 sm:p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Cotizaciones aceptadas</p>
-          <p className="text-xl sm:text-2xl font-display font-extrabold mt-2 text-[hsl(var(--dash-text))]">
-            {stats.accepted}<span className="text-sm text-[hsl(var(--dash-text-muted))] font-bold"> / {stats.totalQ}</span>
-          </p>
+        <div className="dash-tile rounded-2xl p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--dash-text-muted))]">Cotizaciones aceptadas</p>
+            <p className="text-xl sm:text-2xl font-display font-extrabold mt-2 text-[hsl(var(--dash-text))]">
+              {stats.accepted}<span className="text-sm text-[hsl(var(--dash-text-muted))] font-bold"> / {stats.totalQ}</span>
+            </p>
+          </div>
+          {tab !== "costs" && (
+            <button
+              onClick={handleNew}
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-3 py-2 rounded-full hover:shadow-lg transition-all mt-3 w-full"
+            >
+              <Plus size={14} /> {tab === "quotations" ? "Nueva cotización" : "Nueva cuenta"}
+            </button>
+          )}
         </div>
       </div>
 
