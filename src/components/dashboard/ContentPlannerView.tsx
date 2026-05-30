@@ -3,9 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import PlannerGrid, { ContentItem, Section, sectionKey } from "./content/PlannerGrid";
 import ContentGoalsCard from "./content/ContentGoalsCard";
 import ContentObjectivesCard from "./content/ContentObjectivesCard";
+import { downloadScriptPDF } from "@/lib/script-pdf";
 
 const ContentPlannerView = () => {
   const [items, setItems] = useState<ContentItem[]>([]);
