@@ -218,10 +218,7 @@ const PlannerGrid = (props: PlannerGridProps) => {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {renderModule("instagram", "Instagram", <IGGlyph />, 4, FORMATS)}
-        {renderModule("solar", "Solar", <Clapperboard className="h-4 w-4" />, 4, SOLAR_FORMATS)}
-      </div>
+      {renderModule("instagram", "Instagram", <IGGlyph />, 4, FORMATS)}
       {renderModule("ideas", "Ideas Futuras", <Sparkles className="h-4 w-4" />, 16, FORMATS)}
     </div>
   );
