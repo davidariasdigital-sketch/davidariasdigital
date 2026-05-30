@@ -156,23 +156,34 @@ const ContentPlannerView = () => {
 
       {/* Script Dialog */}
       <Dialog open={!!scriptItem} onOpenChange={(open) => { if (!open) saveScript(); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto bg-white text-gray-900 border-gray-200">
+        <DialogContent className="sm:max-w-5xl w-[95vw] max-h-[92vh] overflow-y-auto bg-white text-gray-900 border-gray-200 p-6 sm:p-8">
           <DialogHeader>
-            <DialogTitle className="text-base font-semibold text-gray-900">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
+            <div className="flex items-center justify-between gap-3 pr-8">
+              <DialogTitle className="text-lg font-semibold text-gray-900 truncate">{scriptItem?.title || "Sin título"} — Guion</DialogTitle>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => scriptItem && downloadScriptPDF(scriptItem.title, scriptParts, scriptItem.format)}
+                className="gap-2 shrink-0"
+              >
+                <Download className="w-4 h-4" /> PDF
+              </Button>
+            </div>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {([
               { key: "hook", label: "HOOK", color: "border-l-fuchsia-400", placeholder: "Gancho inicial para captar atención..." },
-              { key: "cuerpo", label: "CUERPO", color: "border-l-sky-400", placeholder: "Desarrollo del contenido..." },
+              { key: "cuerpo", label: "CUERPO", color: "border-l-sky-400", placeholder: "Desarrollo del contenido...", big: true },
               { key: "cta", label: "CTA", color: "border-l-emerald-400", placeholder: "Llamada a la acción..." },
             ] as const).map((s) => (
-              <div key={s.key} className={`border-l-4 ${s.color} pl-3`}>
+              <div key={s.key} className={`border-l-4 ${s.color} pl-4`}>
                 <label className="text-[11px] font-bold tracking-widest text-gray-600 uppercase">{s.label}</label>
                 <Textarea
                   placeholder={s.placeholder}
                   value={scriptParts[s.key]}
                   onChange={(e) => setScriptParts((prev) => ({ ...prev, [s.key]: e.target.value }))}
-                  className="mt-1 min-h-[100px] text-sm leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y"
+                  className={`mt-2 ${s.key === "cuerpo" ? "min-h-[320px]" : "min-h-[140px]"} text-base leading-relaxed bg-gray-50 text-gray-900 border-gray-200 placeholder:text-gray-400 resize-y`}
                 />
               </div>
             ))}
